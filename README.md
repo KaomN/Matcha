@@ -3,7 +3,8 @@ Hive Helsinki Matcha Project
 
 ## Installing node on School computers with nvm
 
-1. Install nvm with command:
+1. Check url https://github.com/nvm-sh/nvm/releases and see which version is the latest;
+2. Install nvm with command and change version accordingly:
 ```console
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
