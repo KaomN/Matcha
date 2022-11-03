@@ -1,20 +1,15 @@
 # Matcha
 Hive Helsinki Matcha Project
 
-## Installing node on School computers
+## Installing node on School computers with nvm
 
-1.
+1. Install nvm with command:
 ```console
-brew install node
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
-If you get: Error: The contents of the SDKs in your Command Line Tools (CLT) installation do not match the SDK folder names.
+The installation should add PATH to your .zshrc/.profile/.bashrc automatically. Restart the terminal if needed.
 
-Run command below:
+2. to install node with nvm run command:
 ```console
-rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update
+nvm install --lts
 ```
-and then try again with:
-```console
-brew install node
-```
-If you still get the error contact staff.
