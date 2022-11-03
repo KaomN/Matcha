@@ -1,7 +1,7 @@
 # Matcha
 Hive Helsinki Matcha Project
 
-## Installing npm on School computers
+## Installing node on School computers
 
 1.
 ```console
