@@ -17,4 +17,4 @@ and then try again with:
 ```console
 brew install node
 ```
-3. Wait...
+If you still get the error contact staff.
