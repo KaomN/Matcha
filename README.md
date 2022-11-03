@@ -7,7 +7,7 @@ Hive Helsinki Matcha Project
 ```console
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
-The installation should add PATH to your .zshrc/.profile/.bashrc automatically. Restart the terminal if needed.
+The installation should add nvm PATH to your .zshrc/.profile/.bashrc automatically. Restart the terminal if needed.
 
 2. to install node with nvm run command:
 ```console
