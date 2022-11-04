@@ -16,8 +16,8 @@ The installation should add nvm PATH to your .zshrc/.profile/.bashrc automatical
 nvm install --lts
 ```
 
-
-###NodeJS
+# Installed Modules
+## NodeJS
 body-parser and multer:
 ```console
 npm install --save body-parser multer
