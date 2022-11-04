@@ -17,10 +17,7 @@ nvm install --lts
 ```
 
 
-
-#Installed Modules:
-
-##NodeJS
+###NodeJS
 body-parser and multer:
 ```console
 npm install --save body-parser multer
