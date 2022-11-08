@@ -17,40 +17,18 @@ export default function Login() {
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		const formData = new FormData();
-		formData.append("firstname", firstname);
-		formData.append("surname", surname);
-		formData.append("username", username);
-		formData.append("email", email);
-		formData.append("password", password);
-		formData.append("passwordconfirm", passwordConfirm);
 		let response = await fetch('/signup/request', {
 			method: "POST",
-			body: formData
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				firstname: firstname,
+				surname: surname,
+				username: username,
+				email: email,
+				password: password,
+				passwordconfirm: passwordConfirm,
+			})
 		});
-		
-		// let response = await fetch('/signup/request', {
-		// 	method: "POST",
-		// 	body: JSON.stringify({
-		// 		firstname: firstname,
-		// 		surname: surname,
-		// 		username: username,
-		// 		email: email,
-		// 		password: password,
-		// 		passwordconfirm: passwordConfirm,
-		// 	}),
-		// });
-
-		// async function test() {
-		// 	const formData = new FormData();
-		// 	formData.append("test", true);
-		// 	var response = await fetch('/signup', {
-		// 		method: 'POST',
-		// 		body: formData
-		// 	});
-		// 	response = await response.json();
-		console.log(response)
-		// }
 	}
 
 	return (

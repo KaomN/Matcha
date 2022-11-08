@@ -1,9 +1,27 @@
-.Home .lander {
+/* .Home .lander {
 	padding: 80px 0;
-	text-align: center;
   }
   
   .Home .lander h1 {
 	font-family: "Open Sans", sans-serif;
 	font-weight: 600;
   }
+
+  .lander {
+	margin-top: 100px;
+  } */
+
+.home{
+	width: 100%;
+	height: 80%;
+	margin-top: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+img {
+	width: 100%;
+	max-width: 500px;
+	object-fit: contain;
+}

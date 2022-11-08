@@ -1,10 +1,10 @@
 const mysql = require('mysql2/promise');
 
-async function createDatabase() {
+async function createDatabase(host, user, password) {
 	const con =  await mysql.createConnection({
-		host: "localhost",
-		user: "root",
-		password: "password"
+		host: host,
+		user: user,
+		password: password
 	})
 	con.execute("CREATE DATABASE IF NOT EXISTS matcha");
 	con.changeUser({database: "matcha"});
