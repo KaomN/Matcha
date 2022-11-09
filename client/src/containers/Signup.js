@@ -15,7 +15,7 @@ export default function Login() {
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		let response = await fetch('/signup/request', {
+		let response = await fetch('/signup/register', {
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
@@ -24,7 +24,6 @@ export default function Login() {
 				username: username,
 				email: email,
 				password: password,
-				passwordconfirm: passwordConfirm,
 			})
 		});
 		console.log(response);
