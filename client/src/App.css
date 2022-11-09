@@ -1,7 +1,7 @@
 body {
 	--color-primary: #009579;
 	--color-primary-light: #00a284;
-	--color-primary-dark: #00745e;
+	--color-primary-dark: #008f75;
 	--color-primary-darker: #005f55;
 	--color-secondary: #532baf;
 	--color-error: #cc3333;
@@ -34,10 +34,23 @@ header {
 	text-align: right;
 	width: 80%;
 	height: 56px;
-	background-color: #6c757d;
+	background-color: #878e94;
 	color: white;
 	top: 1rem;
 	border-radius: var(--border-radius);
+}
+
+footer {
+	text-align: center;
+	width: 100%;
+	min-width: 213px;
+	height: 1.5rem;
+	background-color: #878e94;
+	color: darkslategray;
+	position: fixed; 
+	bottom: 0;
+	left: 0;
+	z-index: 2;
 }
 
 .title {
@@ -50,8 +63,16 @@ header {
 	margin-left: 10px;
 }
 
+.flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 56px;
+}
+
 h3 {
 	margin: 0;
+	text-align: center;
 }
 
 

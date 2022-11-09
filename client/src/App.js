@@ -26,16 +26,22 @@ import Routes from "./Routes";
 // 			</Navbar>;
 // };
 
-function navbar2() {
-	return <header>
-				<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
+function navbar() {
+	return (<header>
+				<div className="flex-center">
+					<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
+				</div>
 				<nav>
 					<ul>
 						<li><a href="/login" draggable="false" className="login" title="Login">Login</a></li>
 						<li><a href="/signup" draggable="false" className="signup" title="Signup">Signup</a></li>
 					</ul>
 				</nav>
-			</header>
+			</header>);
+};
+
+function footerTag() {
+	return <footer>© 2022 Matcha. conguyen</footer>;
 };
 
 function App() {
@@ -48,11 +54,13 @@ function App() {
 	// }, []);
 	// console.log(data)
 
-	const navigation = navbar2();
+	const navigation = navbar();
+	const footer = footerTag();
 	return (
 		<div className="App">
 			{navigation}
 			<Routes />
+			{footer}
 		</div>
 	);
 }

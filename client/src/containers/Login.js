@@ -1,33 +1,46 @@
 import React, { useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import "./Login.css";
 
 export default function Login() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	function validateForm() {
-		return username.length > 0 && password.length > 0;
-	}
+	// function validateForm() {
+	// 	return username.length > 0 && password.length > 0;
+	// }
 
-	function handleSubmit(event) {
+	async function handleSubmit(event) {
 		event.preventDefault();
+		let response = await fetch('/login/request', {
+			method: "POST",
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				username: username,
+				password: password,
+			})
+		});
+		console.log(response);
 	}
 
 	return (
-		<div className="Login">
-			<Form onSubmit={handleSubmit}>
-				<Form.Group size="lg" controlId="username">
-				<Form.Label>Email</Form.Label>
-				<Form.Control autoFocus type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
-				</Form.Group>
-				<Form.Group size="lg" controlId="password">
-				<Form.Label>Password</Form.Label>
-				<Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-				</Form.Group>
-				<Button className="mt-2" block="true" size="lg" type="submit" disabled={!validateForm()}>Login</Button>
-			</Form>
-		</div>
+		<main className="form-container" id="formLogin">
+			<form onSubmit={handleSubmit}>
+				<h1 className="title-signup">Matcha</h1>
+				<div className="form_message form_message_error"></div>
+				<div className="form_input_group">
+					<input type="text" name="username" className="form_input" autoFocus placeholder="Username" autoComplete="off" value={username} onChange={(e) => setUsername(e.target.value)}/>
+					<div className="form_input_error_message"></div>
+				</div>
+				<div className="form_input_group">
+					<input type="password" name="password" className="form_input" placeholder="Password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)}/>
+					<div className="form_input_error_message"></div>
+				</div>
+				<button className="form_button" name="request" value="loginAction" type="submit">Login</button>
+				<div className="seperator"><div></div><div>OR</div><div></div></div>
+				<div className="center">
+					<a className="form__link" href="forgotpassword">Forgot password?</a>
+				</div>
+			</form>
+		</main>
 	);
 }
