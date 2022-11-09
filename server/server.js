@@ -1,10 +1,9 @@
 const express = require("express");
 //var session = require('express-session')
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 //var multer = require('multer');
 //var upload = multer();
 const app = express();
-const Database = require("./createDatabase.js");
 
 // Environment Variables
 const dotenv = require('dotenv');
@@ -31,11 +30,17 @@ app.get("/test", (req, res) => {
 });
 
 app.get("/createDatabase", () => {
-	Database.createDatabase(process.env.DB_HOST, process.env.DB_USER, process.env.DB_PASSWORD);
+	const Database = require("./createDatabase.js");
+	Database.createDatabase();
 });
 
 app.post("/signup/request", (req, res) => {
-	//console.log(req.body);
+	console.log(req.body);
+	res.json("recieved your request!");
+});
+
+app.post("/login/request", (req, res) => {
+	console.log(req.body);
 	res.json("recieved your request!");
 });
 
