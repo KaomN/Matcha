@@ -9,6 +9,9 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 const PORT = process.env.PORT;
+// Create database
+const Database = require("./createDatabase.js");
+Database.createDatabase();
 
 // For parsing application/json header
 app.use(bodyParser.json()); 
@@ -25,15 +28,6 @@ app.get("/api", (req, res) => {
 	res.json({ message: "Hello from server!" });
 });
 
-app.get("/test", (req, res) => {
-	res.json({ message: "Test" });
-});
-
-app.get("/createDatabase", () => {
-	const Database = require("./createDatabase.js");
-	Database.createDatabase();
-});
-
 app.post("/signup/request", (req, res) => {
 	console.log(req.body);
 	res.json("recieved your request!");
@@ -43,6 +37,9 @@ app.post("/login/request", (req, res) => {
 	console.log(req.body);
 	res.json("recieved your request!");
 });
+// Signup
+const signup = require('./modules/Signup/Signup.js');
+app.use('/signup', signup);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
