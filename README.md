@@ -1,5 +1,7 @@
 # Matcha
 Hive Helsinki Matcha Project
+Frontend: React
+Backend: Node.js + Express.js
 
 ## Installing node on School computers with nvm
 
