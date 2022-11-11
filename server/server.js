@@ -1,17 +1,21 @@
 const express = require("express");
-//var session = require('express-session')
+const session = require('express-session')
 const bodyParser = require('body-parser');
-//var multer = require('multer');
-//var upload = multer();
 const app = express();
-
-// Environment Variables
+const Database = require("./createDatabase");
+Database.createDatabase();
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 const PORT = process.env.PORT;
-// Create database
-const Database = require("./createDatabase.js");
-Database.createDatabase();
+sessionStore = new session.MemoryStore();
+app.use(session({
+	secret: process.env.SESSION_SECRET,
+	store: sessionStore,
+	resave: false,
+	saveUninitialized: true
+}));
+
+
 
 // For parsing application/json header
 app.use(bodyParser.json()); 
@@ -28,13 +32,10 @@ app.get("/api", (req, res) => {
 	res.json({ message: "Hello from server!" });
 });
 
-app.post("/login/request", (req, res) => {
-	console.log(req.body);
-	res.json("recieved your request!");
-});
-// Signup
-const signup = require('./modules/UserModule.js');
-app.use('/signup', signup);
+// UserModule
+const userModule = require('./modules/UserModule');
+app.use('/request', userModule);
+app.use('/request', userModule);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

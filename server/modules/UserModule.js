@@ -1,10 +1,20 @@
 const express = require("express");
+// const app = express();
+// const session = require('express-session')
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
+const crypto = require('crypto')
 const emailValidator = require('email-validator');
+const con =  require("../setup").pool;
+const emailTransporter =  require("../setup").emailTransporter;
 const dotenv = require('dotenv');
+const { MemoryStore } = require("express-session");
 dotenv.config({path: __dirname + '/.env'});
+// app.use(session({
+// 	secret: process.env.SESSION_SECRET,
+// 	resave: true,
+// 	saveUninitialized: true
+// }));
 
 router.post("/register", (req, res) => {
 	function validateInput(error) {
@@ -61,56 +71,129 @@ router.post("/register", (req, res) => {
 			return false;
 		}
 	}
-	
 	var status = {};
 	if(validateInput(status)) {
-		const con =  require("../db").pool;
-		const { firstname, surname, username, email, password, passwordConfirm} = req.body;
+		const { firstname, surname, username, email, password} = req.body;
 		con.getConnection(function(err, dbconn) {
 			dbconn.execute('SELECT * FROM users WHERE username = ?', [username], function(err, result) {
-				if (result.length == 0) {
-					dbconn.execute("SELECT * FROM users WHERE email = ?", [email], function(err, result) {
-						if (result.length === 0) {
-							bcrypt.hash(password, 10, function(err, hash) {
-								console.log(hash)
-								dbconn.execute("INSERT INTO users (firstname, surname, username, email, password) VALUE (?, ?, ?, ?, ?);", [firstname, surname, username, email, hash], function(err, result) {
-									if(result) {
-										const transporter = nodemailer.createTransport({
-											service: 'Gmail',
-											auth: {
-												user: process.env.APP_EMAIL,
-												pass: process.env.APP_PASSWORD,
-											}
-										});
-										const mailOptions = {
-											from: 'kaom.n.92@gmail.com',
-											to: email,
-											subject: 'Matcha account confirmation',
-											text: 'Email content'
-										};
-										transporter.sendMail(mailOptions, function(error, info){
-											if (error) {
-												console.log(error);
-											} else {
-												res.send(status)
-											}
-										});
-									} else {
-										console.log("error")
-									}
-								});
-							});
-						} else {
-							res.send({"errorEmail": "Email taken!", "status": false});
-						}
-					});
+				if(err) {
+					// TODO Log error message
+					console.log(err);
 				} else {
-					res.send({"errorUsername": "Username taken!", "status": false});
+					if (result.length == 0) {
+						dbconn.execute("SELECT * FROM users WHERE email = ?", [email], function(err, result) {
+							if (err) {
+								// TODO Log error message
+								console.log(err);
+							} else {
+								if (result.length === 0) {
+									bcrypt.hash(password, 10, function(err, password) {
+										if (err) {
+											// TODO Log error message
+											console.log(err);
+										} else {
+											// TODO create a token and insert it to database.
+											let token = crypto.createHash('md5').update(username).digest("hex") + crypto.createHash('md5').update(email).digest("hex")
+											console.log(token);
+											dbconn.execute("INSERT INTO users (firstname, surname, username, email, password, token) VALUE (?, ?, ?, ?, ?, ?);", [firstname, surname, username, email, password, token], function(err, result) {
+												if (err) {
+													// TODO Log error message
+													console.log(err);
+												} else {
+													if(result) {
+														const mailOptions = {
+															from: 'kaom.n.92@gmail.com',
+															to: email,
+															subject: 'Matcha account confirmation',
+															text: 'Email content'
+														};
+														emailTransporter.sendMail(mailOptions, function(error, info){
+															if (error) {
+																// TODO Log error message
+																console.log(error);
+															} else {
+																res.send(status);
+															}
+														});
+													} else {
+														console.log("error");
+													}
+												}
+											});
+										}
+									});
+								} else {
+									res.send({"errorEmail": "Email taken!", "status": false});
+								}
+							}
+						});
+					} else {
+						res.send({"errorUsername": "Username taken!", "status": false});
+					}
 				}
 				con.releaseConnection(dbconn);
 			});
 		});
 	} else {
+		res.send(status);
+	}
+});
+
+router.post("/login", (req, res) => {
+	// Get all Session variables
+	// req.sessionStore.all(function(error, session) {
+	// 	console.log(session)
+	// })
+
+	const { username, password } = req.body;
+	var status = {};
+	if(username.trim().length === 0)
+		Object.assign(status, {"errorUsername": "Username required!"});
+	if(password.length === 0)
+		Object.assign(status, {"errorPassword": "Password required!"});
+	if(!("errorUsername" in status) && !("errorPassword" in status)) {
+		con.getConnection(function(err, dbconn) {
+			if (err) {
+				// TODO Log error message
+				console.log(err);
+			} else {
+				dbconn.execute('SELECT * FROM users WHERE username = ?', [username], function(err, result) {
+					if (err) {
+						// TODO Log error message
+						console.log(err);
+					} else {
+						if(result.length === 0) {
+							Object.assign(status, {"status": false, "error": "Wrong username/password"});
+							res.send(status);
+						} else {
+							bcrypt.compare(password, result[0].password, function(err, bool) {
+								if (err) {
+									// TODO Log error message
+									console.log(err);
+								} else {
+									if(bool) {
+										req.session.username = result[0].username;
+										req.session.id = result[0].pk_userid;
+										req.session.firstname = result[0].firstname;
+										req.session.surname = result[0].surname;
+										req.session.email = result[0].email;
+										req.session.rating = result[0].rating;
+										req.session.verified = result[0].verified;
+										Object.assign(status, {"status": true});
+										res.send(status);
+									} else {
+										Object.assign(status, {"status": false, "error": "Wrong username/password"});
+										res.send(status);
+									}
+								}
+							});
+						}
+					}
+				});
+			}
+		});
+	} else {
+		Object.assign(status, {"status": false});
 		res.send(status);
 	}
 });
