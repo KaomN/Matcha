@@ -16,11 +16,12 @@ export default function Login() {
 	const [errorEmail, setErrorEmail] = useState("");
 	const [errorPassword, setErrorPassword] = useState("");
 	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
+	// Other states
+	const [popup, setPopup] = useState("");
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		//validateForm();
-		let response = await fetch('/signup/register', {
+		let response = await fetch('/request/register', {
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
@@ -35,7 +36,9 @@ export default function Login() {
 		if(response.status === 200) {
 			response = await response.json();
 			if (response.status) {
+				// Successful signup
 				console.log("Add user")
+				
 			} else {
 				setErrorFirstname(response.errorFirstname)
 				setErrorSurname(response.errorSurname)
@@ -45,6 +48,7 @@ export default function Login() {
 				setErrorPasswordConfirm(response.errorPasswordConfirm)
 			}
 		} else {
+			// Server error
 			console.log("Server error")
 		}
 	}
