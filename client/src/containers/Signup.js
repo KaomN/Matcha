@@ -2,19 +2,24 @@ import React, { useState } from "react";
 import "./Signup.css";
 
 export default function Login() {
-	const [username, setUsername] = useState("");
+	//Input states
 	const [firstname, setFirstname] = useState("");
 	const [surname, setSurname] = useState("");
+	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [passwordConfirm, setPasswordConfirm] = useState("");
-
-	// function validateForm() {
-	// 	return username.length > 0 && password.length > 0 && firstname.length > 0 && surname.length > 0 && email.length > 0;
-	// }
+	//Error states
+	const [errorFirstname, setErrorFirstname] = useState("");
+	const [errorSurname, setErrorSurname] = useState("");
+	const [errorUsername, setErrorUsername] = useState("");
+	const [errorEmail, setErrorEmail] = useState("");
+	const [errorPassword, setErrorPassword] = useState("");
+	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
 
 	async function handleSubmit(event) {
 		event.preventDefault();
+		//validateForm();
 		let response = await fetch('/signup/register', {
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
@@ -24,9 +29,24 @@ export default function Login() {
 				username: username,
 				email: email,
 				password: password,
+				passwordConfirm: passwordConfirm,
 			})
 		});
-		console.log(response);
+		if(response.status === 200) {
+			response = await response.json();
+			if (response.status) {
+				console.log("Add user")
+			} else {
+				setErrorFirstname(response.errorFirstname)
+				setErrorSurname(response.errorSurname)
+				setErrorUsername(response.errorUsername)
+				setErrorEmail(response.errorEmail)
+				setErrorPassword(response.errorPassword)
+				setErrorPasswordConfirm(response.errorPasswordConfirm)
+			}
+		} else {
+			console.log("Server error")
+		}
 	}
 
 	return(
@@ -36,31 +56,31 @@ export default function Login() {
 				<div className="form_message form_message_error"></div>
 				<div className="flex-row">
 					<div className="form_input_group">
-						<input autoFocus type="text" name="firstname" className="form_input" placeholder="Firstname" autoComplete="off" value={firstname} onChange={(e) => setFirstname(e.target.value)}/>
-						<div className="form_input_error_message"></div>
+						<input autoFocus type="text" name="firstname" className="form_input" placeholder="Firstname" autoComplete="off" value={firstname} onChange={function(e) {setFirstname(e.target.value); setErrorFirstname("")}}/>
+						<div className="form_input_error_message">{errorFirstname}</div>
 					</div>
 					<div className="form_input_group">
-						<input type="text" name="surname" className="form_input" placeholder="Surname" autoComplete="off" value={surname} onChange={(e) => setSurname(e.target.value)}/>
-						<div className="form_input_error_message"></div>
+						<input type="text" name="surname" className="form_input" placeholder="Surname" autoComplete="off" value={surname} onChange={function(e) {setSurname(e.target.value); setErrorSurname("")}}/>
+						<div className="form_input_error_message">{errorSurname}</div>
 					</div>
 				</div>
 				<div className="form_input_group">
-					<input type="text" name="username" className="form_input" placeholder="Username" autoComplete="off" value={username} onChange={(e) => setUsername(e.target.value)}/>
-					<div className="form_input_error_message"></div>
+					<input type="text" name="username" className="form_input" placeholder="Username" autoComplete="off" value={username} onChange={function(e) {setUsername(e.target.value); setErrorUsername("")}}/>
+					<div className="form_input_error_message">{errorUsername}</div>
 				</div>
 				<div className="form_input_group">
-					<input type="text" name="email" className="form_input" placeholder="Email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)}/>
-					<div className="form_input_error_message"></div>
+					<input type="text" name="email" className="form_input" placeholder="Email" autoComplete="off" value={email} onChange={function(e) {setEmail(e.target.value); setErrorEmail("")}}/>
+					<div className="form_input_error_message">{errorEmail}</div>
 				</div>
 				<div className="form_input_group">
-					<input type="password" name="password" className="form_input" placeholder="Password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)}/>
-					<div className="form_input_error_message"></div>
+					<input type="password" name="password" className="form_input" placeholder="Password" autoComplete="off" value={password} onChange={function(e) {setPassword(e.target.value); setErrorPassword("")}}/>
+					<div className="form_input_error_message">{errorPassword}</div>
 				</div>
 				<div className="form_input_group">
-					<input type="password" name="passwordConfirm" className="form_input" placeholder="Confirm Password" autoComplete="off" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)}/>
-					<div className="form_input_error_message"></div>
+					<input type="password" name="passwordConfirm" className="form_input" placeholder="Confirm Password" autoComplete="off" value={passwordConfirm} onChange={function(e) {setPasswordConfirm(e.target.value); setErrorPasswordConfirm("")}}/>
+					<div className="form_input_error_message">{errorPasswordConfirm}</div>
 				</div>
-				<button className="form_button" name="request" value="signupAction" type="submit">Sign up</button>
+				<button className="form_button" name="request" type="submit">Sign up</button>
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">
 					<a className="form__link" href="forgotpassword" draggable="false">Forgot password?</a>
@@ -68,42 +88,4 @@ export default function Login() {
 			</form>
 		</main>
 	);
-
-	// return (
-	// 	<div className="Signup">
-	// 		<Form onSubmit={handleSubmit}>
-	// 			<Form.Group size="lg" controlId="firstname">
-	// 				<Form.Label>Firstname</Form.Label>
-	// 				<Form.Control autoFocus type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)}/>
-	// 			</Form.Group>
-	// 			<Form.Group size="lg" controlId="surname">
-	// 				<Form.Label>Surname</Form.Label>
-	// 				<Form.Control type="text" value={surname} onChange={(e) => setSurname(e.target.value)}/>
-	// 			</Form.Group>
-	// 			<Form.Group size="lg" controlId="username">
-	// 				<Form.Label>Username</Form.Label>
-	// 				<Form.Control type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
-	// 			</Form.Group>
-	// 			<Form.Group size="lg" controlId="email">
-	// 				<Form.Label>Email</Form.Label>
-	// 				<Form.Control type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
-	// 			</Form.Group>
-	// 			<Form.Group size="lg" controlId="password">
-	// 				<Form.Label>Password</Form.Label>
-	// 				<Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-	// 			</Form.Group>
-	// 			<Form.Group size="lg" controlId="passwordconfirm">
-	// 				<Form.Label>Confirm Password</Form.Label>
-	// 				<Form.Control type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)}/>
-	// 			</Form.Group>
-	// 			<div className="text-center">
-	// 				{/* <Button className="mt-2" block="true" size="lg" type="submit" disabled={!validateForm()}>Signup</Button> */}
-	// 				<Button className="mt-2" block="true" size="lg" type="submit" >Signup</Button>
-	// 			</div>
-	// 			<div className="text-center container-fluid mt-3">
-	// 				<a href="/forgotpassword" className="link-primary">Forgot Password</a>
-	// 			</div>
-	// 		</Form>
-	// 	</div>
-	// );
 }
