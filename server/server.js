@@ -28,17 +28,12 @@ app.get("/api", (req, res) => {
 	res.json({ message: "Hello from server!" });
 });
 
-app.post("/signup/request", (req, res) => {
-	console.log(req.body);
-	res.json("recieved your request!");
-});
-
 app.post("/login/request", (req, res) => {
 	console.log(req.body);
 	res.json("recieved your request!");
 });
 // Signup
-const signup = require('./modules/Signup/Signup.js');
+const signup = require('./modules/UserModule.js');
 app.use('/signup', signup);
 
 app.listen(PORT, () => {
