@@ -27,9 +27,8 @@ app.use(bodyParser.json());
 // for parsing multipart/form-data
 // app.use(express.static('public'));
 //app.use(upload.array()); 
-
-app.get("/api", (req, res) => {
-	res.json({ message: "Hello from server!" });
+app.get('/verification', (req, res) => {
+	console.log("test")
 });
 
 // UserModule
