@@ -1,6 +1,4 @@
 const express = require("express");
-// const app = express();
-// const session = require('express-session')
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto')
@@ -8,13 +6,8 @@ const emailValidator = require('email-validator');
 const con =  require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 const dotenv = require('dotenv');
-const { MemoryStore } = require("express-session");
 dotenv.config({path: __dirname + '/.env'});
-// app.use(session({
-// 	secret: process.env.SESSION_SECRET,
-// 	resave: true,
-// 	saveUninitialized: true
-// }));
+
 
 router.post("/register", (req, res) => {
 	function validateInput(error) {
@@ -105,7 +98,7 @@ router.post("/register", (req, res) => {
 															from: 'kaom.n.92@gmail.com',
 															to: email,
 															subject: 'Matcha account confirmation',
-															text: 'Email content'
+															text: 'Please follow the link below to verify your account.\n' + 'http://localhost:3000/verification/' + token
 														};
 														emailTransporter.sendMail(mailOptions, function(error, info){
 															if (error) {
@@ -163,30 +156,32 @@ router.post("/login", (req, res) => {
 						console.log(err);
 					} else {
 						if(result.length === 0) {
-							Object.assign(status, {"status": false, "error": "Wrong username/password"});
-							res.send(status);
+							res.send({"status": false, "error": "Incorrect username/password"});
 						} else {
-							bcrypt.compare(password, result[0].password, function(err, bool) {
-								if (err) {
-									// TODO Log error message
-									console.log(err);
-								} else {
-									if(bool) {
-										req.session.username = result[0].username;
-										req.session.id = result[0].pk_userid;
-										req.session.firstname = result[0].firstname;
-										req.session.surname = result[0].surname;
-										req.session.email = result[0].email;
-										req.session.rating = result[0].rating;
-										req.session.verified = result[0].verified;
-										Object.assign(status, {"status": true});
-										res.send(status);
+							if(result[0].verified == 0) {
+								res.send({"status": false, "verified": false});
+							} else {
+								bcrypt.compare(password, result[0].password, function(err, bool) {
+									if (err) {
+										// TODO Log error message
+										console.log(err);
 									} else {
-										Object.assign(status, {"status": false, "error": "Wrong username/password"});
-										res.send(status);
+										if(bool) {
+											req.session.username = result[0].username;
+											req.session.id = result[0].pk_userid;
+											req.session.firstname = result[0].firstname;
+											req.session.surname = result[0].surname;
+											req.session.email = result[0].email;
+											req.session.rating = result[0].rating;
+											req.session.verified = result[0].verified;
+											Object.assign(status, {"status": true});
+											res.send(status);
+										} else {
+											res.send({"status": false, "error": "Incorrect username/password"});
+										}
 									}
-								}
-							});
+								});
+							}
 						}
 					}
 				});
