@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./containers/Home";
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
+import ForgotPassword from "./containers/ForgotPassword";
 import NotFound from "./containers/NotFound";
 
 export default function Links() {
@@ -10,7 +11,9 @@ export default function Links() {
 		<Routes>
 			<Route path="/" element={<Home />} />
 			<Route path="/login" element={<Login />} />
+			<Route path="/verification/*" element={<Login />} />
 			<Route path="/signup" element={<Signup />} />
+			<Route path="/forgotpassword" element={<ForgotPassword />} />
 			<Route path="*" element={<NotFound />} />
 		</Routes>
 	);
