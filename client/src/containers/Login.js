@@ -9,6 +9,9 @@ export default function Login() {
 	const [errorUsername, setErrorUsername] = useState("");
 	const [errorPassword, setErrorPassword] = useState("");
 	const [error, setError] = useState("");
+	//Other states
+	const [popupNotVerified, setPopupNotVerified] = useState("popup hide-popup");
+	const [popupVerified, setPopupVerified] = useState("popup hide-popup");
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -27,13 +30,16 @@ export default function Login() {
 		} else {
 			if("error" in response) {
 				setError(response.error)
+			} else if("verified" in response) {
+				setPopupNotVerified("popup show-popup")
+				// TODO add user not verified error
+				console.log("not verified")
 			} else {
 				setErrorUsername(response.errorUsername);
 				setErrorPassword(response.errorPassword);
-			}
+			} 
 		}
 	}
-
 	return (
 		<main className="form-container" id="formLogin">
 			<form onSubmit={handleSubmit}>
@@ -47,12 +53,32 @@ export default function Login() {
 					<input type="password" name="password" className="form_input" placeholder="Password" autoComplete="off" value={password} onChange={function(e) {setPassword(e.target.value); setErrorPassword(""); setError("")}}/>
 					<div className="form_input_error_message">{errorPassword}</div>
 				</div>
-				<button className="form_button" name="request" value="loginAction" type="submit">Login</button>
+				<button className="form_button" type="submit">Login</button>
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">
 					<a className="form__link" href="forgotpassword">Forgot password?</a>
 				</div>
 			</form>
+			<div className={popupNotVerified}>
+				<div className="popup-content">
+					<form className="form" id="resendVerifyForm">
+						<p>Your account has not been verified! If you did not receive a link when you registered, press the button below to re-send the link.</p>
+						<div className="form_message"></div>
+						<div className="button_container">
+							<button type="button" className="form_button_verify mr" onClick={function(e) {setPopupNotVerified("popup hide-popup")}}>Back to Login</button>
+							<button type="button" className="form_button_verify" id="resendVerificationBtn">Re-send verification link</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div className={popupVerified}>
+				<div className="popup-content">
+					<p>Success! Your account is now verified!</p>
+					<div className="center">
+						<button type="button" className="form_button_verify" onClick={function(e) {setPopupVerified("popup hide-popup")}}>Login!</button>
+					</div>
+				</div>
+			</div>
 		</main>
 	);
 }
