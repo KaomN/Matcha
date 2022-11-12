@@ -17,7 +17,7 @@ export default function Login() {
 	const [errorPassword, setErrorPassword] = useState("");
 	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
 	// Other states
-	const [popup, setPopup] = useState("");
+	const [popup, setPopup] = useState("popup hide-popup");
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -37,7 +37,8 @@ export default function Login() {
 			response = await response.json();
 			if (response.status) {
 				// Successful signup
-				console.log("Add user")
+				setPopup("popup show-popup")
+				console.log(popup)
 				
 			} else {
 				setErrorFirstname(response.errorFirstname)
@@ -90,6 +91,12 @@ export default function Login() {
 					<a className="form__link" href="forgotpassword" draggable="false">Forgot password?</a>
 				</div>
 			</form>
+			<div className={popup}>
+				<div className="popup-content">
+					<p>Thank you for signing up to Matcha! An email has been sent to you for verification!</p>
+					<a href="/login" draggable="false"><button className="form_button" type="button">Login!</button></a>
+				</div>
+			</div>
 		</main>
 	);
 }
