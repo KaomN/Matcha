@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import "./styles/Home.css";
+import "./styles/Index.css";
 
 export default function Home() {
 	const [popup, setPopup] = useState("");
