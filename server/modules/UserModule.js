@@ -32,30 +32,30 @@ router.post("/register", (req, res) => {
 			Object.assign(error, {"errorUsername": "Username only 'a-z', '0-9', '-' and '_'"});
 		if(email.trim().length === 0)
 			Object.assign(error, {"errorEmail": "Email required!"});
-		else if (email.trim().length > 50)
-			Object.assign(error, {"errorEmail": "Email too long! Max 50 characters!"});
+		else if (email.trim().length > 100)
+			Object.assign(error, {"errorEmail": "Email too long! Max 100 characters!"});
 		else if (!emailValidator.validate(email))
 			Object.assign(error, {"errorEmail": "Invalid Email address!"});
 		if(password.trim().length === 0)
 			Object.assign(error, {"errorPassword": "Password required!"});
-		else if (password.length > 50)
-			Object.assign(error, {"errorPassword": "Password too long! Max 255 characters!"});
-		else if (password.length < 8)
-			Object.assign(error, {"errorPassword": "Password minimum length of 8!"});
-		else if(!rePassword.test(password))
-			Object.assign(error, {"errorPassword": "Password needs to include atleast an uppercase letter or number!"});
+		// else if (password.length > 50)
+		// 	Object.assign(error, {"errorPassword": "Password too long! Max 255 characters!"});
+		// else if (password.length < 8)
+		// 	Object.assign(error, {"errorPassword": "Password minimum length of 8!"});
+		// else if(!rePassword.test(password))
+		// 	Object.assign(error, {"errorPassword": "Password needs to include atleast an uppercase letter or number!"});
 		if(passwordConfirm.length === 0)
 			Object.assign(error, {"errorPasswordConfirm": "Password Confirm required!"});
-		else if (passwordConfirm.length > 50)
-			Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
-		else if (passwordConfirm.length < 8)
-			Object.assign(error, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
-		else if(!rePassword.test(passwordConfirm))
-			Object.assign(error, {"errorPasswordConfirm": "Password needs to include atleast an uppercase letter or number!"});
-		if(password !== passwordConfirm) {
-			Object.assign(error, {"errorPassword": "Password did not match!"});
-			Object.assign(error, {"errorPasswordConfirm": "Password did not match!"});
-		}
+		// else if (passwordConfirm.length > 50)
+		// 	Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
+		// else if (passwordConfirm.length < 8)
+		// 	Object.assign(error, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
+		// else if(!rePassword.test(passwordConfirm))
+		// 	Object.assign(error, {"errorPasswordConfirm": "Password needs to include atleast an uppercase letter or number!"});
+		// if(password !== passwordConfirm) {
+		// 	Object.assign(error, {"errorPassword": "Password did not match!"});
+		// 	Object.assign(error, {"errorPasswordConfirm": "Password did not match!"});
+		// }
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 			Object.assign(error, {"status": true});
 			return true;
@@ -64,7 +64,7 @@ router.post("/register", (req, res) => {
 			return false;
 		}
 	}
-	var status = {};
+	let status = {};
 	if(validateInput(status)) {
 		const { firstname, surname, username, email, password} = req.body;
 		con.getConnection(function(err, dbconn) {
@@ -87,7 +87,6 @@ router.post("/register", (req, res) => {
 										} else {
 											// TODO create a token and insert it to database.
 											let token = crypto.createHash('md5').update(username).digest("hex") + crypto.createHash('md5').update(email).digest("hex")
-											console.log(token);
 											dbconn.execute("INSERT INTO users (firstname, surname, username, email, password, token) VALUE (?, ?, ?, ?, ?, ?);", [firstname, surname, username, email, password, token], function(err, result) {
 												if (err) {
 													// TODO Log error message
@@ -98,7 +97,7 @@ router.post("/register", (req, res) => {
 															from: 'kaom.n.92@gmail.com',
 															to: email,
 															subject: 'Matcha account confirmation',
-															text: 'Please follow the link below to verify your account.\n' + 'http://localhost:3000/verification/' + token
+															text: 'Please follow the link below to verify your account.\n' + 'http://localhost:3000?verification=' + token
 														};
 														emailTransporter.sendMail(mailOptions, function(error, info){
 															if (error) {
@@ -139,7 +138,7 @@ router.post("/login", (req, res) => {
 	// })
 
 	const { username, password } = req.body;
-	var status = {};
+	let status = {};
 	if(username.trim().length === 0)
 		Object.assign(status, {"errorUsername": "Username required!"});
 	if(password.length === 0)
@@ -226,4 +225,130 @@ router.post("/verify", (req, res) => {
 		con.releaseConnection(dbconn);
 	});
 });
+
+router.post("/forgotpassword", (req, res) => {
+	let status = {};
+	let email = req.body.email;
+	if(email.trim().length === 0)
+		Object.assign(status, {"errorEmail": "Email required!"});
+	else if (email.trim().length > 100)
+		Object.assign(status, {"errorEmail": "Email too long! Max 100 characters!"});
+	else if (!emailValidator.validate(email))
+		Object.assign(status, {"errorEmail": "Invalid Email address!"});
+	if(status && Object.keys(status).length === 0 && Object.getPrototypeOf(status) === Object.prototype) {
+		con.getConnection(function(err, dbconn) {
+			if (err) {
+				// TODO Log error message
+				console.log(err);
+			} else {
+				dbconn.execute('SELECT * FROM users WHERE email = ?', [email], function(err, result) {
+					if (err) {
+						// TODO Log error message
+						console.log(err);
+					} else {
+						if (result.length === 0) {
+							res.send({"status": true, "message": "An email has been sent to " + email + ". Please follow instructions on the email to reset your password!"});
+						} else {
+							var token = crypto.createHash('md5').update(result[0].token).digest("hex") + crypto.createHash('md5').update(String(Date.now())).digest("hex")
+							dbconn.execute('INSERT into usertokens (pk_userid, passwordresettoken, passwordresetexpr) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE passwordresettoken = VALUES(passwordresettoken), passwordresetexpr = VALUES(passwordresetexpr)', [result[0].pk_userid, token, Math.floor(Date.now() / 1000)], function(err, result) {
+								if (err) {
+									// TODO Log error message
+									console.log(err);
+								} else {
+									const mailOptions = {
+										from: 'kaom.n.92@gmail.com',
+										to: email,
+										subject: 'Matcha password reset request',
+										text: 'Please follow the link below to reset account password.\n' + 'http://localhost:3000/passwordreset?token=' + token
+									};
+									emailTransporter.sendMail(mailOptions, function(error, info){
+										if (error) {
+											// TODO Log error message
+											console.log(error);
+										} else {
+											res.send({"status": true, "message": "An email has been sent to " + email + ". Please follow instructions on the email to reset your password!"});
+										}
+									});
+								}
+							});
+						}
+					// 	console.log(result[0])
+					// 	res.send(result[0])
+					}
+				});
+			}
+			con.releaseConnection(dbconn);
+		});
+	} else {
+		Object.assign(status, {"status": false});
+		res.send(status)
+	}
+});
+
+router.post("/passwordreset", (req, res) => {
+	let status = {};
+	const {password, passwordConfirm, token} = req.body;
+	if(password.trim().length === 0)
+		Object.assign(status, {"errorPassword": "Password required!"});
+	// else if (password.length > 50)
+	// 	Object.assign(status, {"errorPassword": "Password too long! Max 255 characters!"});
+	// else if (password.length < 8)
+	// 	Object.assign(status, {"errorPassword": "Password minimum length of 8!"});
+	// else if(!rePassword.test(password))
+	// 	Object.assign(status, {"errorPassword": "Password needs to include atleast an uppercase letter or number!"});
+	if(passwordConfirm.length === 0)
+		Object.assign(status, {"errorPasswordConfirm": "Password Confirm required!"});
+	// else if (passwordConfirm.length > 50)
+	// 	Object.assign(status, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
+	// else if (passwordConfirm.length < 8)
+	// 	Object.assign(status, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
+	// else if(!rePassword.test(passwordConfirm))
+	// 	Object.assign(status, {"errorPasswordConfirm": "Password needs to include atleast an uppercase letter or number!"});
+	// if(password !== passwordConfirm) {
+	// 	Object.assign(status, {"errorPassword": "Password did not match!"});
+	// 	Object.assign(status, {"errorPasswordConfirm": "Password did not match!"});
+	// }
+	if(status && Object.keys(status).length === 0 && Object.getPrototypeOf(status) === Object.prototype) {
+		con.getConnection(function(err, dbconn) {
+			if (err) {
+				// TODO Log error message
+				console.log(err);
+			} else {
+				dbconn.execute('SELECT * FROM usertokens WHERE passwordresettoken = ?', [token], function(err, result) {
+					if(result.length === 0) {
+						res.send({"status": false, "error": "Please follow the link you received on your email to reset your account password"})
+					} else {
+						if(result[0].passwordresetexpr + 86400 > Date.now() / 1000) {
+							var id = result[0].pk_userid
+							bcrypt.hash(password, 10, function(err, password) {
+								dbconn.execute('UPDATE users SET password = ? WHERE pk_userid = ?', [password, id], function(err, result) {
+									if (err) {
+										// TODO Log error message
+										console.log(err);
+									} else {
+										dbconn.execute('DELETE FROM usertokens WHERE pk_userid = ?', [id], function(err, result) {
+											if (err) {
+												// TODO Log error message
+												console.log(err);
+											} else {
+												res.send({"status": true, "message": "Password reset!"})
+											}
+										});
+									}
+								});
+							});
+						} else {
+							res.send({"status": false, "error": "Password reset link expired!"})
+						}
+					}
+				});
+			}
+			con.releaseConnection(dbconn);
+		});
+	} else {
+		Object.assign(status, {"status": false});
+		res.send(status)
+	}
+});
+
 module.exports = router;
