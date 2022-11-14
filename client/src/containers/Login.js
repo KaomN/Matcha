@@ -11,7 +11,6 @@ export default function Login() {
 	const [error, setError] = useState("");
 	//Other states
 	const [popupNotVerified, setPopupNotVerified] = useState("popup hide-popup");
-	const [popupVerified, setPopupVerified] = useState("popup hide-popup");
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -25,7 +24,7 @@ export default function Login() {
 		});
 		response = await response.json();
 		if(response.status) {
-			// Set session
+			// Route to app page
 			console.log(response);
 		} else {
 			if("error" in response) {
@@ -40,6 +39,7 @@ export default function Login() {
 			} 
 		}
 	}
+
 	return (
 		<main className="form-container" id="formLogin">
 			<form onSubmit={handleSubmit}>
@@ -65,18 +65,10 @@ export default function Login() {
 						<p>Your account has not been verified! If you did not receive a link when you registered, press the button below to re-send the link.</p>
 						<div className="form_message"></div>
 						<div className="button_container">
-							<button type="button" className="form_button_verify mr" onClick={function(e) {setPopupNotVerified("popup hide-popup")}}>Back to Login</button>
+							<button type="button" className="form_button_verify mr" onClick={() => {setPopupNotVerified("popup hide-popup")}}>Back to Login</button>
 							<button type="button" className="form_button_verify" id="resendVerificationBtn">Re-send verification link</button>
 						</div>
 					</form>
-				</div>
-			</div>
-			<div className={popupVerified}>
-				<div className="popup-content">
-					<p>Success! Your account is now verified!</p>
-					<div className="center">
-						<button type="button" className="form_button_verify" onClick={function(e) {setPopupVerified("popup hide-popup")}}>Login!</button>
-					</div>
 				</div>
 			</div>
 		</main>
