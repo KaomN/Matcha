@@ -158,7 +158,7 @@ router.post("/login", (req, res) => {
 						if(result.length === 0) {
 							res.send({"status": false, "error": "Incorrect username/password"});
 						} else {
-							if(result[0].verified == 0) {
+							if(result[0].verified === 0) {
 								res.send({"status": false, "verified": false});
 							} else {
 								bcrypt.compare(password, result[0].password, function(err, bool) {
@@ -186,6 +186,7 @@ router.post("/login", (req, res) => {
 					}
 				});
 			}
+			con.releaseConnection(dbconn);
 		});
 	} else {
 		Object.assign(status, {"status": false});
@@ -193,4 +194,36 @@ router.post("/login", (req, res) => {
 	}
 });
 
+router.post("/verify", (req, res) => {
+	con.getConnection(function(err, dbconn) {
+		if (err) {
+			// TODO Log error message
+			console.log(err);
+		} else {
+			dbconn.execute('SELECT * FROM users WHERE token = ?', [req.body.token], function(err, result) {
+				if (err) {
+					// TODO Log error message
+					console.log(err);
+				} else {
+					if(result.length === 0) {
+						res.send({"status": false});
+					} else if (result[0].verified === 0) {
+						dbconn.execute("UPDATE users SET users.VERIFIED = 1 WHERE token = ?;", [req.body.token], function(err, result) {
+							if (err) {
+								// TODO Log error message
+								console.log(err);
+							} else {
+								res.send({"status": true, "verified": false});
+							}
+						});
+						
+					} else {
+						res.send({"status": true, "verified": true});
+					}
+				}
+			});
+		}
+		con.releaseConnection(dbconn);
+	});
+});
 module.exports = router;
