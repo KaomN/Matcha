@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import "./Home.css";
+import "./styles/Home.css";
 
 export default function Home() {
 	const [popup, setPopup] = useState("");
-	const [searchParams, setSearchParams] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	useEffect(() => {
 		if(searchParams.get("verification") !== null){
 			async function verifyUser(token) {
@@ -38,7 +38,8 @@ export default function Home() {
 			}
 			verifyUser(searchParams.get("verification"));
 		}
-	}, []);
+		
+	}, [searchParams]);
 	return (
 		<main>
 			<div>

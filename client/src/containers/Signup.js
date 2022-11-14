@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Signup.css";
+import "./styles/Signup.css";
 
 export default function Login() {
 	//Input states
@@ -37,9 +37,7 @@ export default function Login() {
 			response = await response.json();
 			if (response.status) {
 				// Successful signup
-				setPopup("popup show-popup")
-				console.log(popup)
-				
+				setPopup("popup show-popup")				
 			} else {
 				setErrorFirstname(response.errorFirstname)
 				setErrorSurname(response.errorSurname)

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import "./ForgotPassword.css";
+import "./styles/ForgotPassword.css";
 
 export default function Login() {
 	//Input states
 	const [email, setEmail] = useState("");
-	//Error states
-	const [errorEmail, setErrorEmail] = useState("");
+	//Error/Success states
+	const [messageEmail, setMessageEmail] = useState("");
 	const [formInputClass, setFormInputClass] = useState("form_message_error");
 
 	async function handleSubmit(event) {
@@ -19,11 +19,11 @@ export default function Login() {
 		});
 		response = await response.json();
 		if(response.status) {
-			// Show success
 			setFormInputClass("form_message_success")
-			console.log(response);
+			setMessageEmail(response.message)
 		} else {
-			setErrorEmail(response.errorUsername);
+			setFormInputClass("form_message_error")
+			setMessageEmail(response.errorEmail)
 		}
 	}
 
@@ -35,9 +35,9 @@ export default function Login() {
 				</div>
 				<h3 className="title">Trouble Logging in?</h3>
 				<p>Enter your email and we'll send you a link to get back into your account.</p>
-				<div className={formInputClass}>{errorEmail}</div>
+				<div className={formInputClass}>{messageEmail}</div>
 				<div className="form_input_group">
-					<input name="email" type="text" id="forgotPasswordEmail" className="form_input" placeholder="Email" autoComplete="off" value={email} onChange={function(e) {setEmail(e.target.value)}}/>
+					<input name="email" type="text" id="forgotPasswordEmail" className="form_input" placeholder="Email" autoComplete="off" value={email} onChange={function(e) {setEmail(e.target.value); setMessageEmail("")}}/>
 					<div></div>
 				</div>
 				<div className="button_container">
