@@ -4,6 +4,7 @@ import Home from "./containers/Home";
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
 import ForgotPassword from "./containers/ForgotPassword";
+import PasswordReset from "./containers/PasswordReset";
 import NotFound from "./containers/NotFound";
 
 export default function Links() {
@@ -14,6 +15,7 @@ export default function Links() {
 			<Route path="/verification/*" element={<Login />} />
 			<Route path="/signup" element={<Signup />} />
 			<Route path="/forgotpassword" element={<ForgotPassword />} />
+			<Route path="/passwordreset" element={<PasswordReset />} />
 			<Route path="*" element={<NotFound />} />
 		</Routes>
 	);
