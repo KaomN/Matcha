@@ -6,12 +6,11 @@ export default function Login() {
 	const [email, setEmail] = useState("");
 	//Error states
 	const [errorEmail, setErrorEmail] = useState("");
-	const [error, setError] = useState("");
-	const [formInputClass, setFormInputClass] = useState("form_input_error_message");
+	const [formInputClass, setFormInputClass] = useState("form_message_error");
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		let response = await fetch('/request/login', {
+		let response = await fetch('/request/forgotpassword', {
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
@@ -20,14 +19,11 @@ export default function Login() {
 		});
 		response = await response.json();
 		if(response.status) {
-			// Set session
+			// Show success
+			setFormInputClass("form_message_success")
 			console.log(response);
 		} else {
-			if("error" in response) {
-				setError(response.error)
-			} else {
-				setErrorEmail(response.errorUsername);
-			}
+			setErrorEmail(response.errorUsername);
 		}
 	}
 
@@ -39,7 +35,7 @@ export default function Login() {
 				</div>
 				<h3 className="title">Trouble Logging in?</h3>
 				<p>Enter your email and we'll send you a link to get back into your account.</p>
-				<div className="form_message_error"></div>
+				<div className={formInputClass}>{errorEmail}</div>
 				<div className="form_input_group">
 					<input name="email" type="text" id="forgotPasswordEmail" className="form_input" placeholder="Email" autoComplete="off" value={email} onChange={function(e) {setEmail(e.target.value)}}/>
 					<div></div>
