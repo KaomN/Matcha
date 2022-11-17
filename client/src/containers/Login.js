@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./styles/Login.css";
 
 export default function Login() {
@@ -11,6 +12,7 @@ export default function Login() {
 	const [error, setError] = useState("");
 	//Other states
 	const [popupNotVerified, setPopupNotVerified] = useState("popup hide-popup");
+	const navigate = useNavigate();
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -24,6 +26,8 @@ export default function Login() {
 		});
 		response = await response.json();
 		if(response.status) {
+			
+			navigate("/Home");
 			// Route to app page
 			console.log(response);
 		} else {
@@ -43,7 +47,7 @@ export default function Login() {
 	return (
 		<main className="form-container" id="formLogin">
 			<form onSubmit={handleSubmit}>
-				<h1 className="title-signup">Matcha</h1>
+				<h1 className="title-login">Matcha</h1>
 				<div className="form_message form_message_error">{error}</div>
 				<div className="form_input_group">
 					<input type="text" name="username" className="form_input" autoFocus placeholder="Username" autoComplete="off" value={username} onChange={function(e) {setUsername(e.target.value); setErrorUsername(""); setError("")}}/>

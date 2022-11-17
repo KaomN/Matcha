@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./styles/PasswordReset.css";
 
-export default function NotFound() {
+export default function PasswordReset() {
 
 	const [password, setPassword] = useState("");
 	const [passwordConfirm, setPasswordConfirm] = useState("");

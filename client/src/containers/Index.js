@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./styles/Index.css";
 
-export default function Home() {
+export default function Index() {
 	const [popup, setPopup] = useState("");
 	const [searchParams] = useSearchParams();
 	useEffect(() => {

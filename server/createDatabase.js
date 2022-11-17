@@ -10,6 +10,7 @@ function createDatabase() {
 	con.query("CREATE TABLE IF NOT EXISTS tagitem (fk_userid INT NOT NULL, fk_tagid INT NOT NULL)");
 	con.query("CREATE TABLE IF NOT EXISTS tag (pk_tagid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, tag VARCHAR(25))");
 	con.query("CREATE TABLE IF NOT EXISTS usertokens (pk_userid INT NOT NULL PRIMARY KEY, passwordresettoken VARCHAR(70) DEFAULT NULL, passwordresetexpr BIGINT DEFAULT NULL, emailchangetoken VARCHAR(70) DEFAULT NULL, emailexpr BIGINT DEFAULT NULL, emailpin VARCHAR(10) DEFAULT NULL, emailrequest VARCHAR(100) DEFAULT NULL)");
+	con.query("CREATE TABLE IF NOT EXISTS userlocation (pk_userid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, latitude DECIMAL(10, 7), longitude DECIMAL(10, 7))");
 	con.query("ALTER TABLE images ADD FOREIGN KEY(fk_userid) REFERENCES users(pk_userid) ON DELETE CASCADE");
 	con.query("ALTER TABLE tagitem ADD FOREIGN KEY(fk_userid) REFERENCES users(pk_userid) ON DELETE CASCADE");
 	con.query("ALTER TABLE tagitem ADD FOREIGN KEY(fk_tagid) REFERENCES tag(pk_tagid) ON DELETE CASCADE");

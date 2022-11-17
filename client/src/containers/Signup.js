@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./styles/Signup.css";
 
-export default function Login() {
+export default function Signup() {
 	//Input states
 	const [firstname, setFirstname] = useState("");
 	const [surname, setSurname] = useState("");
@@ -53,7 +53,7 @@ export default function Login() {
 	}
 
 	return(
-		<main className="form-container" id="formLogin">
+		<main className="form-container">
 			<form onSubmit={handleSubmit}>
 				<h1 className="title-signup">Signup</h1>
 				<div className="form_message form_message_error"></div>

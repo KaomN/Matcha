@@ -1,0 +1,136 @@
+main {
+	min-height: 200px;
+}
+
+.complete-profile-form {
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem !important;
+}
+
+.complete-form-container {
+	display: flex;
+	position: relative;
+}
+
+.next_button {
+	font: 500 1rem 'Signika Negative', sans-serif;
+}
+
+.next_button {
+	padding: 0.75rem 1.5rem;
+	font-weight: bold;
+	font-size: 1.1rem;
+	border: none;
+	color: #ffffff;
+	border-radius: var(--border-radius);
+	outline: none;
+	cursor: pointer;
+	transition: background 0.7s ease;
+	background: darkslategray;
+}
+
+.complete-form-button {
+	font: 500 1rem 'Signika Negative', sans-serif;
+}
+
+.complete-form-button {
+	padding: 0.75rem 1.5rem;
+	font-weight: bold;
+	font-size: 1.1rem;
+	border: none;
+	color: #ffffff;
+	border-radius: var(--border-radius);
+	outline: none;
+	cursor: pointer;
+	transition: background 0.7s ease;
+	background: darkslategray;
+	margin-left: 3px;
+}
+
+.center-left {
+	position: static;
+	width: 100%;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.center-gap {
+	position: static;
+	width: 100%;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.mb {
+	margin-bottom: 2px;
+}
+
+textarea {
+	margin-bottom: 15px;
+	resize: none;
+}
+
+#genderForm {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+
+}
+
+.flex-column {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+#interest {
+	width: 235px;
+	height: 25px;
+	font-size: 16px;
+}
+
+select {
+	width: 243px;
+}
+
+#preferenceForm {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+
+#biographyForm {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+#interestForm {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+
+}
+
+#pictureForm {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+
+}

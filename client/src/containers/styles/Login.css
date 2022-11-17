@@ -1,3 +1,15 @@
+.title-login {
+	color: var(--color-primary-darker);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	margin-left: 10px;
+	max-width: 400px;
+	min-width: 250px;
+	margin-bottom: 1.5rem;
+}
+
 .popup {
 	position: fixed;
 	z-index: 1;

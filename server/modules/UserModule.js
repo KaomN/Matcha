@@ -8,7 +8,7 @@ const emailTransporter =  require("../setup").emailTransporter;
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 
-
+// Register request
 router.post("/register", (req, res) => {
 	function validateInput(error) {
 		const { firstname, surname, username, email, password, passwordConfirm} = req.body;
@@ -131,6 +131,7 @@ router.post("/register", (req, res) => {
 	}
 });
 
+// Login request
 router.post("/login", (req, res) => {
 	// Get all Session variables
 	// req.sessionStore.all(function(error, session) {
@@ -226,6 +227,7 @@ router.post("/verify", (req, res) => {
 	});
 });
 
+// Forgot password request
 router.post("/forgotpassword", (req, res) => {
 	let status = {};
 	let email = req.body.email;
@@ -285,6 +287,7 @@ router.post("/forgotpassword", (req, res) => {
 	}
 });
 
+// Password reset request
 router.post("/passwordreset", (req, res) => {
 	let status = {};
 	const {password, passwordConfirm, token} = req.body;
@@ -349,6 +352,15 @@ router.post("/passwordreset", (req, res) => {
 		Object.assign(status, {"status": false});
 		res.send(status)
 	}
+});
+
+router.post("/getlocation", async (req, res) => {
+	let response = await fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY, {
+		method: "POST",
+		headers: { 'content-type': 'application/json' },
+	});
+	response = await response.json();
+	res.send(response)
 });
 
 module.exports = router;

@@ -34,7 +34,6 @@ app.get('/verification', (req, res) => {
 // UserModule
 const userModule = require('./modules/UserModule');
 app.use('/request', userModule);
-app.use('/request', userModule);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
