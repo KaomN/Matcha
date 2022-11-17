@@ -35,7 +35,7 @@ export default function Home() {
 		response = await response.json();
 		console.log(response)
 
-		// let response = await fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyB8wL82E7kWfGIg8uMCXmCnQmPSOzERdAY', {
+		// let response = await fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=xxx', {
 		// 	method: "POST",
 		// 	headers: { 'content-type': 'application/json' },
 		// });

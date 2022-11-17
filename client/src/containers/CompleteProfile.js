@@ -1,12 +1,14 @@
-import {useState} from "react";
-import { useResolvedPath } from "react-router-dom";
+import {useState, useEffect} from "react";
 import "./styles/CompleteProfile.css";
+
+var id = 0;
 
 export default function FirstTimeProfile() {
 	const [gender, setGender] = useState("");
 	const [preference, setPreference] = useState("");
 	const [biography, setBiography] = useState("");
 	const [interest, setInterest] = useState([]);
+	const [interestClicked, setInterestClicked] = useState("");
 	const [picture, setPicture] = useState("");
 
 	const [showGenderForm, setGenderForm] = useState(true);
@@ -110,11 +112,30 @@ export default function FirstTimeProfile() {
 	}
 
 	function interestKeydown(event) {
-		console.log(event.key)
 		if(event.key === "Enter") {
-			if(document.getElementById("interest").value.length > 25) {
+			if(event.target.value.length > 25) {
 				setInterestError("Error! Interest tags max length 25!")
+			} else if(event.target.value.trim().length === 0) {
+				setInterestError("Error! Interest tags cant be empty!")
+			} else {
+				let interestValue = event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1).toLowerCase().trim()
+				setInterest([...interest, {id:id++, name:interestValue} ]);
 			}
+		}
+	}
+
+	function selectedInterest(event) {
+		setInterestClicked(event.target.dataset.key);
+	}
+
+	function deleteInterest() {
+		const option = document.querySelector(`[data-key="${interestClicked}"]`)
+		if(option != null) {
+			setInterest(
+				interest.filter(a =>
+				a.id !== parseInt(interestClicked)
+				)
+			);
 		}
 	}
 
@@ -127,18 +148,25 @@ export default function FirstTimeProfile() {
 							<div className="complete-form-container">
 								<div id="interestForm">
 									<div className="center">
-										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Interests</label>
-										<div className="center" style={{marginBottom: "20px"}}>
+										<label style={{fontSize: "23px"}}>Interests</label>
+										<div className="center">
 											<div className="form_message_error">{interestError}</div>
 										</div>
 									</div>
-									<div className="flex-column">
+									<div className="flex-column align-center p-1rem">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
-											<input type="text" id="interest" onKeyDown={interestKeydown}/>
+											<input type="text" id="interest" onKeyDown={interestKeydown} autoComplete="off" className="text-align-center"/>
 										</div>
-										<div style={{border: "0px", marginBottom: "0.5rem"}}>
-											<select multiple id="interestSelect"></select>
+										<div>Interests added:</div>
+										<div style={{border: "0px", marginBottom: "0.5rem"}} >
+											<select multiple id="interestSelect" className="text-align-center">
+											{interest.map(interest => (
+												<option key={interest.id} data-key={interest.id} onClick={selectedInterest}>{interest.name}</option>
+												))}
+											</select>
+											
 										</div>
+										<button className="complete-form-button" onClick={deleteInterest}>Delete Interest</button>
 									</div>
 									<div className="center-gap">
 										<button className="complete-form-button" onClick={interestPrevious}>Previous</button>

@@ -1,3 +1,15 @@
+.align-center {
+	align-items: center !important;
+}
+
+.p-1rem {
+	padding: 1rem;
+}
+
+.text-align-center {
+	text-align: center;
+}
+
 main {
 	min-height: 200px;
 }
@@ -91,13 +103,13 @@ textarea {
 }
 
 #interest {
-	width: 235px;
+	width: 192px;
 	height: 25px;
 	font-size: 16px;
 }
 
 select {
-	width: 243px;
+	width: 200px;
 }
 
 #preferenceForm {
