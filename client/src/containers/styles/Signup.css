@@ -49,7 +49,6 @@ main {
 	padding-bottom: 0.5rem;
 	border-radius: var(--border-radius);
 	background-color: #878e94;
-	box-shadow: 10px 10px 8px #888888;
 	border: 2px solid var(--color-primary-darker);
 }
 
