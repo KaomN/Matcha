@@ -363,4 +363,11 @@ router.post("/getlocation", async (req, res) => {
 	res.send(response)
 });
 
+router.post("/completeprofile", async (req, res) => {
+	console.log(req.files.profilePicture);
+	console.log(req.body);
+	//console.log(req.body)
+	res.send({status:true});
+});
+
 module.exports = router;
