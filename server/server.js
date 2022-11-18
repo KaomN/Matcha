@@ -3,6 +3,9 @@ const session = require('express-session')
 const bodyParser = require('body-parser');
 const app = express();
 const Database = require("./createDatabase");
+const fileUpload = require('express-fileupload');
+// const multer  = require('multer')
+// const upload = multer({ dest: 'uploads/' })
 Database.createDatabase();
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
@@ -18,15 +21,17 @@ app.use(session({
 
 
 // For parsing application/json header
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
+app.use(fileUpload());
 
 // // for parsing application/xwww-
-// app.use(bodyParser.urlencoded({ extended: true })); 
-// //form-urlencoded
+// app.use(express.urlencoded({ extended: true }));
+// // //form-urlencoded
 
-// for parsing multipart/form-data
+// // for parsing multipart/form-data
 // app.use(express.static('public'));
-//app.use(upload.array()); 
+// app.use(express.json());
+// app.use(upload.array()); 
 app.get('/verification', (req, res) => {
 	console.log("test")
 });
@@ -34,6 +39,10 @@ app.get('/verification', (req, res) => {
 // UserModule
 const userModule = require('./modules/UserModule');
 app.use('/request', userModule);
+
+app.post('/upload', function(req, res) {
+	console.log(req.files)
+})
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
