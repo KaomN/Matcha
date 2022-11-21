@@ -3,8 +3,9 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto')
 const emailValidator = require('email-validator');
-const con =  require("../setup").pool;
+const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
+var fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 
@@ -364,10 +365,139 @@ router.post("/getlocation", async (req, res) => {
 });
 
 router.post("/completeprofile", async (req, res) => {
-	console.log(req.files.profilePicture);
-	console.log(req.body);
-	//console.log(req.body)
-	res.send({status:true});
+	//console.log(req.files);
+	//console.log(req.body);
+	function uploadProfilePicture(profilePic, path) {
+		path += "profile.jpg"
+		profilePic.mv(path, function(err) {
+			if (err)
+				return false;
+		});
+		return true;
+	}
+
+	function uploadPictures(picture, path, picturename) {
+		path += picturename + ".jpg"
+		picture.mv(path, function(err) {
+			if (err)
+				return false;
+		});
+		return true;
+	}
+	// Creating Uploads folder
+	var dir = __dirname;
+	dir = dir.slice(0, -8) + "/uploads";
+	if (!fs.existsSync(dir)){
+		fs.mkdirSync(dir);
+	}
+	var error = {};
+	// Creating User folder
+	// dir += "/" + req.session.username;
+	// if (!fs.existsSync(dir)){
+	// 	fs.mkdirSync(dir);
+	// }
+	//console.log(dir)
+	//console.log(req.files)
+	for (let x in req.files) {
+		let ext = req.files[x].name.split(".").pop();
+		let mime = req.files[x].mimetype;
+		console.log(mime)
+		console.log(ext)
+		console.log(x)
+		if (mime != "image/jpeg" && mime != "image/png") {
+			Object.assign(error, {"mime": "Mimetype Error!"});
+		}
+		if (mime === "image/jpeg") {
+			if(ext != "jpg" && ext != "jpeg") {
+				Object.assign(error, {"extension": "Extension Error!"});
+				console.log("that")
+			}
+		} else if (mime === "image/png") {
+			if(ext != "png") {
+				Object.assign(error, {"extension": "Extension Error!"});
+				console.log("this")
+			}
+		}
+	}
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		if(!req.files) {
+			res.send({status:false, message:"empty"});
+		} else {
+			var uploadPath = dir + "/kaom/"
+			for (let x in req.files) {
+				if (x === "profilePicture") {
+					if(uploadProfilePicture(req.files[x], uploadPath)) {
+						con.getConnection(function(err, dbconn) {
+							if (err) {
+								// TODO Log error message
+								console.log(err);
+							} else {
+								var id = 1;
+								var profileId = 1;
+								var profileName = "profile.jpg"
+								dbconn.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName], function(err, result) {
+									if (err) {
+										// TODO Log error message
+										console.log(err);
+									}
+								});
+							}
+							con.releaseConnection(dbconn);
+						});
+					}
+				} else {
+					if(uploadPictures(req.files[x], uploadPath, x)) {
+						con.getConnection(function(err, dbconn) {
+							if (err) {
+								// TODO Log error message
+								console.log(err);
+							} else {
+								var id = 1;
+								var profileName = x + ".jpg"
+								dbconn.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName], function(err, result) {
+									if (err) {
+										// TODO Log error message
+										console.log(err);
+									}
+								});
+							}
+							con.releaseConnection(dbconn);
+						});
+						console.log("picture uploaded")
+
+					}
+				}
+					//console.log("profile pic")
+			}
+			res.send({status:true});
+		}
+		
+
+	} else {
+		res.send(error);
+	}
+	// console.log(error)
+	// // Gets image mimetype
+	// var mime = sampleFile.mimetype;
+	// // Gets image extension
+	// var ext = sampleFile.name.split(".").pop();
+	// // Check that file is an image
+	// if (mime === "image/jpeg" || mime === "image/png") {
+	// 	// Check that mime matches extension
+	// 	if(mime === "image/jpeg" && (ext === "jpg" || ext === "jpeg"))
+	// 		console.log("valid File format")
+	// } else {
+	// 	console.log("invalid File format")
+	// }
+	// var fileName = "test.jpg"
+	
+	// uploadPath = dir + "/kaom/" + fileName
+	// sampleFile.mv(uploadPath, function(err) {
+	// 	if (err)
+	// 		console.log(err)
+	// 	else 
+	// 		res.send({status:true});
+	// });
 });
 
 module.exports = router;
