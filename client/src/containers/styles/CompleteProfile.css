@@ -197,6 +197,11 @@ select {
 	font-size: 16px;
 }
 
+#genderSelect {
+	width: 250px;
+	font-size: 22px;
+}
+
 #preferenceForm {
 	display: flex;
 	flex-direction: column;

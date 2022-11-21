@@ -8,6 +8,7 @@ var numImages = 0;
 
 export default function FirstTimeProfile() {
 	const [age, setAge] = useState("");
+	const [birthDate, setBirthDate] = useState("");
 	const [gender, setGender] = useState("");
 	const [preference, setPreference] = useState("");
 	const [biography, setBiography] = useState("");
@@ -32,9 +33,9 @@ export default function FirstTimeProfile() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
 				// Success function
-				saveLocation, 
-				// Error function
-				getLocationAPI, 
+				saveLocation,
+				// Error function, get location from google API instead
+				getLocationAPI,
 				// Options. See MDN for details.
 				{
 				   enableHighAccuracy: true,
@@ -54,7 +55,6 @@ export default function FirstTimeProfile() {
 	async function getLocationAPI() {
 		let response = await fetch('/request/getlocation', {
 			method: "POST",
-			headers: { 'content-type': 'application/json' },
 		});
 		response = await response.json();
 		setLocation({lat:response.location.lat, lng:response.location.lng})
@@ -68,26 +68,35 @@ export default function FirstTimeProfile() {
 						<div className="complete-profile-form">
 							<div style={{backgroundColor: ""}}>
 								<h1 className="title">Complete your profile</h1>
-								<div className="form_message form_message_error"></div>
 							</div>
 							<div className="complete-form-container">
 								<div id="ageForm">
 									<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
 										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Date of birth</label>
+										<div className="form_message_error"></div>
 									</div>
 									<div className="flex-column pb-2rem">
 										<PikadayWrap />
 									</div>
 									<div className="center-left">
 										<button className="complete-form-button" onClick={() => {
-											let parts = document.getElementById("date").value.split('-');
-											let date = new Date(parts[2], parts[1] - 1, parts[0]);
-											let diff = Math.abs(new Date() - date);
-											setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)));
-											setAgeForm(false);
-											setGenderForm(true);
+											if(document.getElementById('date').value === "") {
+												document.querySelector('.form_message_error').innerHTML = "Empty field!"
+											} else {
+												let parts = document.getElementById("date").value.split('-');
+												let date = new Date(parts[2], parts[1] - 1, parts[0]);
+												let diff = Math.abs(new Date() - date);
+												if(isNaN(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))) {
+													document.querySelector('.form_message_error').innerHTML = "Input error!"
+												} else {
+													setBirthDate(document.getElementById("date").value);
+													setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)));
+													document.querySelector('.form_message_error').innerHTML = "";
+													setAgeForm(false);
+													setGenderForm(true);
+												}
+											}
 											}}>Next</button>
-											<button className="complete-form-button" onClick={handleSubmit}>Submit</button>
 									</div>
 								</div>
 								</div>
@@ -100,26 +109,29 @@ export default function FirstTimeProfile() {
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
-							<div className="form_message form_message_error"></div>
 						</div>
 						<div className="complete-form-container">
 							<div id="genderForm">
 								<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
 									<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Gender</label>
+									<div className="form_message_error"></div>
 								</div>
-								<div className="flex-column">
-									<div style={{marginBottom: "0.5rem"}}>
-										<input type="radio" name="gender" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="male" onClick={() => {setGender("male")}}/>
-										<label style={{fontSize: "23px"}} htmlFor="male">Male</label>
-									</div>
-									<div style={{marginBottom: "0.5rem"}}>
-										<input type="radio" name="gender" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="female" onClick={() => {setGender("female")}}/>
-										<label style={{fontSize: "23px"}} htmlFor="female">Female</label>
-									</div>
-								</div>
+								<select id="genderSelect" style={{border: "0px", marginBottom: "1.5rem"}} onChange={function(e) {setGender(e.target.value)}}>
+									<option value="" >Gender</option>
+									<option value="male" >Male</option>
+									<option value="female" >Female</option>
+								</select>
 								<div className="center-gap">
-									<button className="complete-form-button" onClick={() => {setGenderForm(false); setAgeForm(true)}}>Previous</button>
-									<button className="complete-form-button" onClick={() => {setGenderForm(false); setPreferenceForm(true);}}>Next</button>
+									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setGenderForm(false); setAgeForm(true);}}>Previous</button>
+									<button className="complete-form-button" onClick={() => {
+											if(document.getElementById('genderSelect').value === "") {
+												document.querySelector('.form_message_error').innerHTML = "Empty field!"
+											} else {
+												document.querySelector('.form_message_error').innerHTML = ""
+												setGenderForm(false);
+												setPreferenceForm(true);
+											}
+										}}>Next</button>
 								</div>
 							</div>
 							</div>
@@ -132,21 +144,21 @@ export default function FirstTimeProfile() {
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
-							<div className="form_message form_message_error"></div>
 						</div>
 							<div className="complete-form-container">
 								<div id="preferenceForm">
 									<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
 										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Preference</label>
+										<div className="form_message_error"></div>
 									</div>
 									<div className="flex-column">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
-											<input type="radio" name="preference" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="preferenceMale" onClick={function(e) {setPreference("male")}}/>
-											<label style={{fontSize: "23px"}} htmlFor="preferenceMale">Female</label>
+											<input type="radio" name="preference" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="preferenceFemale" onClick={function(e) {setPreference("female")}}/>
+											<label style={{fontSize: "23px"}} htmlFor="preferenceFemale">Female</label>
 										</div>
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
-											<input type="radio" name="preference" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="preferenceFemale" onClick={function(e) {setPreference("female")}}/>
-											<label style={{fontSize: "23px"}} htmlFor="preferenceFemale">Male</label>
+											<input type="radio" name="preference" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="preferenceMale" onClick={function(e) {setPreference("male")}}/>
+											<label style={{fontSize: "23px"}} htmlFor="preferenceMale">Male</label>
 										</div>
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
 											<input type="radio" name="preference" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="preferenceBoth" onClick={function(e) {setPreference("both")}}/>
@@ -154,8 +166,16 @@ export default function FirstTimeProfile() {
 										</div>
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {setPreferenceForm(false);setGenderForm(true);}}>Previous</button>
-										<button className="complete-form-button" onClick={() => {setPreferenceForm(false);setBiographyForm(true);}}>Next</button>
+										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setPreferenceForm(false);setGenderForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {
+												if(!document.getElementById('preferenceFemale').checked && !document.getElementById('preferenceMale').checked && !document.getElementById('preferenceBoth').checked) {
+													document.querySelector('.form_message_error').innerHTML = "Empty field!"
+												} else {
+													document.querySelector('.form_message_error').innerHTML = ""
+													setPreferenceForm(false);
+													setBiographyForm(true);
+												}
+											}}>Next</button>
 									</div>
 								</div>
 							</div>
@@ -168,19 +188,27 @@ export default function FirstTimeProfile() {
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
-							<div className="form_message form_message_error"></div>
 						</div>
 							<div className="complete-form-container">
 								<div id="biographyForm">
 									<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
 										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Biography</label>
+										<div className="form_message_error"></div>
 									</div>
 									<div className="flex-column">
-										<textarea cols={35} rows={10} onChange={function(e) {setBiography(e.target.value)}}></textarea>
+										<textarea cols={35} rows={10} id="biographyText" onChange={function(e) {setBiography(e.target.value)}}></textarea>
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {setBiographyForm(false);setPreferenceForm(true);}}>Previous</button>
-										<button className="complete-form-button" onClick={() => {setBiographyForm(false);setInterestForm(true);}}>Next</button>
+										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setBiographyForm(false);setPreferenceForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {
+											if(document.getElementById('biographyText').value === "") {
+												document.querySelector('.form_message_error').innerHTML = "Empty field!"
+											} else {
+												document.querySelector('.form_message_error').innerHTML = ""
+												setBiographyForm(false);
+												setInterestForm(true);
+											}
+											}}>Next</button>
 									</div>
 								</div>
 							</div>
@@ -197,8 +225,10 @@ export default function FirstTimeProfile() {
 			} else {
 				let interestValue = event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1).toLowerCase().trim()
 				setInterest([...interest, {id:id++, name:interestValue} ]);
+				event.target.value = "";
 			}
 		}
+		document.querySelector('.form_message_error').innerHTML = ""
 	}
 
 	function deleteInterest() {
@@ -219,14 +249,11 @@ export default function FirstTimeProfile() {
 								<div id="interestForm">
 									<div className="center">
 										<label style={{fontSize: "23px"}}>Interests</label>
-										<div className="center">
-											<div className="form_message_error">{interestError}</div>
-										</div>
+										<div className="form_message_error">{interestError}</div>
 									</div>
 									<div className="flex-column align-center p-1rem">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
 											<input type="text" id="interest" onKeyDown={interestKeydown} autoComplete="off" className="text-align-center"/>
-											
 										</div>
 										<div>Interests added:</div>
 										<div style={{border: "0px", marginBottom: "0.5rem"}} >
@@ -237,8 +264,15 @@ export default function FirstTimeProfile() {
 										<button className="complete-form-button delete-btn" onClick={deleteInterest}>Delete Interest</button>
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {setInterestForm(false);setBiographyForm(true);}}>Previous</button>
-										<button className="complete-form-button" onClick={() => {setInterestForm(false);setProfileForm(true);}}>Next</button>
+										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setInterestForm(false);setBiographyForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {
+												if(document.getElementById('interestSelect').firstChild === null) {
+													document.querySelector('.form_message_error').innerHTML = "Empty field!"
+												} else {
+													setInterestForm(false);
+													setProfileForm(true);
+												}
+											}}>Next</button>
 									</div>
 								</div>
 							</div>
@@ -272,12 +306,12 @@ export default function FirstTimeProfile() {
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
-							<div className="form_message form_message_error"></div>
 						</div>
 						<div className="complete-form-container">
 							<div id="profileForm">
 								<div className="flex flex-col flex-align-center pb-1rem">
 									<label style={{fontSize: "23px"}}>Profile Picture</label>
+									<div className="form_message_error"></div>
 								</div>
 								{fileInput}
 								<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container">
@@ -287,9 +321,16 @@ export default function FirstTimeProfile() {
 										</div>
 								</div>
 								<div className="center-gap">
-									<button className="complete-form-button" onClick={() => {setProfileForm(false);setInterestForm(true);}}>Previous</button>
-									<button className="complete-form-button" onClick={() => {setProfileForm(false);setPictureForm(true);}}>Next</button>
-									<button className="complete-form-button" onClick={handleSubmit}>Submit</button>
+									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setProfileForm(false);setInterestForm(true);
+										}}>Previous</button>
+									<button className="complete-form-button" onClick={() => {
+										if(document.getElementById('profilePic') != null) {
+											document.querySelector('.form_message_error').innerHTML = "Please choose a profile picture!"
+										} else {
+											setProfileForm(false);
+											setPictureForm(true);
+										}
+										}}>Next</button>
 								</div>
 							</div>
 						</div>
@@ -308,6 +349,11 @@ export default function FirstTimeProfile() {
 	}
 
 	function pictureForm() {
+		if (picture.length < 4) {
+			var input = <input type="file" accept="image/*" id="pictureUploads" onChange={saveChosenPicture}/>
+		} else {
+			var input = "";
+		}
 		return (<main className="form-container">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
@@ -325,7 +371,7 @@ export default function FirstTimeProfile() {
 									</div>
 									<div className="flex-column">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
-											<input type="file" accept="image/*" onChange={saveChosenPicture}/>
+											{input}
 										</div>
 									</div>
 									<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container">
@@ -354,16 +400,22 @@ export default function FirstTimeProfile() {
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		//console.log(document.getElementById('profilePic').files[0])
 		const formdata = new FormData();
 		formdata.append("age", age);
-		// formdata.append("gender", gender);
-		// formdata.append("preference", preference);
+		formdata.append("birthDate", birthDate);
+		formdata.append("gender", gender);
+		formdata.append("preference", preference);
 		formdata.append("biography", biography);
-		// formdata.append("interest", interest);
+		var interestString = "";
+		interest.map(interests => (
+			interestString += interests.name + " "
+		));
+		interestString = interestString.trim();
+		formdata.append("interest", interestString);
 		formdata.append("profilePicture", profilePicture);
-		console.log(profilePicture)
-		//formdata.append("age", age);
+		picture.map(pictureElem => (
+			formdata.append("pictureUpload" + pictureElem.id, pictureElem.name)
+		));
 		let response = await fetch('/request/completeprofile', {
 			method: "POST",
 			body: formdata
