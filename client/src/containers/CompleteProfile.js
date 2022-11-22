@@ -27,7 +27,8 @@ export default function FirstTimeProfile() {
 	const [showProfileForm, setProfileForm] = useState(false);
 
 	const [interestError, setInterestError] = useState("");
-	const [location, setLocation] = useState({})
+	const [locationLat, setLocationLat] = useState("")
+	const [locationLng, setLocationLng] = useState("")
 
 	function getLocation() {
 		if (navigator.geolocation) {
@@ -38,9 +39,9 @@ export default function FirstTimeProfile() {
 				getLocationAPI,
 				// Options. See MDN for details.
 				{
-				   enableHighAccuracy: true,
-				   timeout: 5000,
-				   maximumAge: 0
+					enableHighAccuracy: true,
+					timeout: 5000,
+					maximumAge: 0
 				});
 		} else { 
 			// Log not supported
@@ -49,7 +50,8 @@ export default function FirstTimeProfile() {
 	}
 
 	function saveLocation(position) {
-		setLocation({lat:position.coords.latitude, lng:position.coords.longitude})
+		setLocationLat(position.coords.latitude)
+		setLocationLng(position.coords.longitude)
 	}
 
 	async function getLocationAPI() {
@@ -57,10 +59,11 @@ export default function FirstTimeProfile() {
 			method: "POST",
 		});
 		response = await response.json();
-		setLocation({lat:response.location.lat, lng:response.location.lng})
+		setLocationLat(response.location.lat)
+		setLocationLng(response.location.lng)
 	}
 
-	if (location && Object.keys(location).length === 0 && Object.getPrototypeOf(location) === Object.prototype)
+	if (locationLat === "" && locationLng === "")
 		getLocation();
 
 	function ageForm() {
@@ -406,6 +409,8 @@ export default function FirstTimeProfile() {
 		formdata.append("gender", gender);
 		formdata.append("preference", preference);
 		formdata.append("biography", biography);
+		formdata.append("locationLat", locationLat);
+		formdata.append("locationLng", locationLng);
 		var interestString = "";
 		interest.map(interests => (
 			interestString += interests.name + " "
@@ -439,13 +444,3 @@ export default function FirstTimeProfile() {
 	else if(showPictureForm)
 		return pictureForm()
 }
-
-
-/*
-	Male hetero = 1
-	Female hetero = 2
-	Male homo = 3
-	Female homo = 4
-	Male bi = 5
-	Femaile bi = 6
-*/
