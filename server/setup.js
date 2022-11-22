@@ -16,7 +16,8 @@ const pool = mysql.createPool({
 	database: process.env.DB_DATABASE,
 	waitForConnections: true,
 	connectionLimit: 10,
-	queueLimit: 0
+	queueLimit: 0,
+	multipleStatements: true,
 });
 
 const emailTransporter = nodemailer.createTransport({
@@ -26,8 +27,6 @@ const emailTransporter = nodemailer.createTransport({
 		pass: process.env.APP_PASSWORD,
 	}
 });
-
-
 
 module.exports.con = con;
 module.exports.pool = pool;
