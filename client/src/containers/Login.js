@@ -26,8 +26,10 @@ export default function Login() {
 		});
 		response = await response.json();
 		if(response.status) {
-			
-			navigate("/Home");
+			if(response.profile)
+				navigate("/Home");
+			else
+				navigate("/completeprofile");
 			// Route to app page
 			console.log(response);
 		} else {
