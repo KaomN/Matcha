@@ -220,7 +220,10 @@ export default function FirstTimeProfile() {
 	}
 
 	function interestKeydown(event) {
-		if(event.key === "Enter") {
+		//console.log(event.key)
+		if(event.key === " ")
+			event.preventDefault()
+		else if(event.key === "Enter") {
 			if(event.target.value.length > 25) {
 				setInterestError("Error! Interest tags max length 25!")
 			} else if(event.target.value.trim().length === 0) {
