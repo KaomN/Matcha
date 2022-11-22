@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const Database = require("./createDatabase");
 const fileUpload = require('express-fileupload');
+var fs = require('fs');
 // const multer  = require('multer')
 // const upload = multer({ dest: 'uploads/' })
 Database.createDatabase();
@@ -18,6 +19,9 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+if (!fs.existsSync(__dirname + "/uploads")){
+	fs.mkdirSync(__dirname + "/uploads");
+}
 
 
 // For parsing application/json header
