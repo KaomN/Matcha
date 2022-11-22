@@ -6,6 +6,7 @@ const emailValidator = require('email-validator');
 const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
+const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 
@@ -175,7 +176,14 @@ router.post("/login", (req, res) => {
 											req.session.email = result[0].email;
 											req.session.rating = result[0].rating;
 											req.session.verified = result[0].verified;
-											Object.assign(status, {"status": true});
+											// Creating User folder
+											if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
+												fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
+											}
+											if(result[0].profile === 1)
+												Object.assign(status, {"status": true, "profile": true});
+											else
+												Object.assign(status, {"status": true, "profile": false});
 											res.send(status);
 										} else {
 											res.send({"status": false, "error": "Incorrect username/password"});
@@ -253,7 +261,7 @@ router.post("/forgotpassword", (req, res) => {
 							res.send({"status": true, "message": "An email has been sent to " + email + ". Please follow instructions on the email to reset your password!"});
 						} else {
 							var token = crypto.createHash('md5').update(result[0].token).digest("hex") + crypto.createHash('md5').update(String(Date.now())).digest("hex")
-							dbconn.execute('INSERT into usertokens (pk_userid, passwordresettoken, passwordresetexpr) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE passwordresettoken = VALUES(passwordresettoken), passwordresetexpr = VALUES(passwordresetexpr)', [result[0].pk_userid, token, Math.floor(Date.now() / 1000)], function(err, result) {
+							dbconn.execute('INSERT INTO usertokens (pk_userid, passwordresettoken, passwordresetexpr) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE passwordresettoken = VALUES(passwordresettoken), passwordresetexpr = VALUES(passwordresetexpr)', [result[0].pk_userid, token, Math.floor(Date.now() / 1000)], function(err, result) {
 								if (err) {
 									// TODO Log error message
 									console.log(err);
@@ -275,8 +283,6 @@ router.post("/forgotpassword", (req, res) => {
 								}
 							});
 						}
-					// 	console.log(result[0])
-					// 	res.send(result[0])
 					}
 				});
 			}
@@ -356,17 +362,26 @@ router.post("/passwordreset", (req, res) => {
 });
 
 router.post("/getlocation", async (req, res) => {
-	let response = await fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY, {
-		method: "POST",
-		headers: { 'content-type': 'application/json' },
-	});
-	response = await response.json();
-	res.send(response)
+	try {
+		const response = await axios({
+			method: 'post',
+			url:'https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY,
+			headers: { 'content-type': 'application/json' },
+		});
+		//console.log(response.data);
+		res.send(response.data)
+	  } catch (error) {
+		// TODO return error
+		res.send({status: false, msg: "Error fetching API location data"})
+		//console.error(error);
+	  }
 });
 
 router.post("/completeprofile", async (req, res) => {
 	//console.log(req.files);
 	//console.log(req.body);
+	const {age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
+	//console.log(age, birthDate, gender, preference, biography, locationLat, locationLng, interest)
 	function uploadProfilePicture(profilePic, path) {
 		path += "profile.jpg"
 		profilePic.mv(path, function(err) {
@@ -398,24 +413,19 @@ router.post("/completeprofile", async (req, res) => {
 	// }
 	//console.log(dir)
 	//console.log(req.files)
-	for (let x in req.files) {
-		let ext = req.files[x].name.split(".").pop();
-		let mime = req.files[x].mimetype;
-		console.log(mime)
-		console.log(ext)
-		console.log(x)
+	for (let imageName in req.files) {
+		let ext = req.files[imageName].name.split(".").pop();
+		let mime = req.files[imageName].mimetype;
 		if (mime != "image/jpeg" && mime != "image/png") {
 			Object.assign(error, {"mime": "Mimetype Error!"});
 		}
 		if (mime === "image/jpeg") {
 			if(ext != "jpg" && ext != "jpeg") {
 				Object.assign(error, {"extension": "Extension Error!"});
-				console.log("that")
 			}
 		} else if (mime === "image/png") {
 			if(ext != "png") {
 				Object.assign(error, {"extension": "Extension Error!"});
-				console.log("this")
 			}
 		}
 	}
@@ -424,21 +434,30 @@ router.post("/completeprofile", async (req, res) => {
 			res.send({status:false, message:"empty"});
 		} else {
 			var uploadPath = dir + "/kaom/"
-			for (let x in req.files) {
-				if (x === "profilePicture") {
-					if(uploadProfilePicture(req.files[x], uploadPath)) {
+			for (let imageName in req.files) {
+				if (imageName === "profilePicture") {
+					if(uploadProfilePicture(req.files[imageName], uploadPath)) {
 						con.getConnection(function(err, dbconn) {
 							if (err) {
 								// TODO Log error message
 								console.log(err);
 							} else {
+								// change ID to session id
 								var id = 1;
-								var profileId = 1;
-								var profileName = "profile.jpg"
-								dbconn.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName], function(err, result) {
+								dbconn.execute('SELECT * FROM images WHERE images.imagename = "profile.jpg" AND images.fk_userid = ?', [id], function(err, result) {
 									if (err) {
 										// TODO Log error message
 										console.log(err);
+									} else if(!result[0]) {
+										var id = 1;
+										var profileId = 1;
+										var profileName = "profile.jpg"
+										dbconn.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName], function(err, result) {
+											if (err) {
+												// TODO Log error message
+												console.log(err);
+											}
+										});
 									}
 								});
 							}
@@ -446,58 +465,120 @@ router.post("/completeprofile", async (req, res) => {
 						});
 					}
 				} else {
-					if(uploadPictures(req.files[x], uploadPath, x)) {
+					if(uploadPictures(req.files[imageName], uploadPath, imageName)) {
 						con.getConnection(function(err, dbconn) {
 							if (err) {
 								// TODO Log error message
 								console.log(err);
 							} else {
-								var id = 1;
-								var profileName = x + ".jpg"
-								dbconn.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName], function(err, result) {
+								dbconn.execute('SELECT * FROM images WHERE images.imagename = ? AND images.fk_userid = ?', [imageName, id], function(err, result) {
 									if (err) {
 										// TODO Log error message
 										console.log(err);
+									} else if(!result[0]) {
+										// change ID to session id
+										var id = 1;
+										var profileName = imageName + ".jpg"
+										dbconn.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName], function(err, result) {
+											if (err) {
+												// TODO Log error message
+												console.log(err);
+											}
+										});
 									}
 								});
 							}
 							con.releaseConnection(dbconn);
 						});
-						console.log("picture uploaded")
-
 					}
 				}
-					//console.log("profile pic")
 			}
-			res.send({status:true});
 		}
-		
-
+		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+			const interestArr = interest.split(' ')
+			//console.log(interestArr);
+			for (const interest of interestArr) {
+				con.getConnection(function(err, dbconn) {
+					if (err) {
+						// TODO Log error message
+						console.log(err);
+					} else {
+						dbconn.execute('SELECT * FROM tag WHERE tag = ?', [interest], function(err, result) {
+							if(err) {
+								console.log(err);
+							} else if(!result[0]) {
+								dbconn.execute('INSERT INTO tag (tag) VALUES (?)', [interest], function(err, result) {
+										if(err) {
+											// TODO Log error message
+											console.log(err);
+										} else {
+											//console.log(result.insertId)
+											var tagId = result.insertId
+											dbconn.execute('SELECT * FROM tagitem WHERE fk_userid = ? AND fk_tagid = ?', [1, tagId], function(err, result) {
+												if (err) {
+													// TODO Log error message
+													console.log(err);
+												} else if(!result[0]) {
+													dbconn.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, tagId], function(err, result) {
+														if (err) {
+															// TODO Log error message
+															console.log(err);
+														}
+													});
+												}
+											});
+										}
+									});
+							} else {
+								//console.log(result[0])
+								var tagId = result[0].pk_tagid
+								dbconn.execute('SELECT * FROM tagitem WHERE fk_userid = ? AND fk_tagid = ?', [1, tagId], function(err, result) {
+									if (err) {
+										// TODO Log error message
+										console.log(err);
+									} else if(!result[0]) {
+										dbconn.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, tagId], function(err, result) {
+											if (err) {
+												// TODO Log error message
+												console.log(err);
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+					con.releaseConnection(dbconn);
+				});
+			}
+		} else {
+			res.send(error);
+		}
+		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+			con.getConnection(function(err, dbconn) {
+				if (err) {
+					// TODO Log error message
+					console.log(err);
+				} else {
+					// TODO change ID to session id
+					var id = 1;
+					dbconn.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, id], function(err, result) {
+						if(err) {
+							console.log(err);
+						} else {
+							res.send({"status":true});
+						}
+					});
+				}
+				con.releaseConnection(dbconn);
+			});
+		} else {
+			res.send(error);
+		}
+		// Break out and check if there is an error and send it else continue adding user data to database
 	} else {
 		res.send(error);
 	}
-	// console.log(error)
-	// // Gets image mimetype
-	// var mime = sampleFile.mimetype;
-	// // Gets image extension
-	// var ext = sampleFile.name.split(".").pop();
-	// // Check that file is an image
-	// if (mime === "image/jpeg" || mime === "image/png") {
-	// 	// Check that mime matches extension
-	// 	if(mime === "image/jpeg" && (ext === "jpg" || ext === "jpeg"))
-	// 		console.log("valid File format")
-	// } else {
-	// 	console.log("invalid File format")
-	// }
-	// var fileName = "test.jpg"
-	
-	// uploadPath = dir + "/kaom/" + fileName
-	// sampleFile.mv(uploadPath, function(err) {
-	// 	if (err)
-	// 		console.log(err)
-	// 	else 
-	// 		res.send({status:true});
-	// });
 });
 
 module.exports = router;
