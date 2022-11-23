@@ -7,19 +7,25 @@ import ForgotPassword from "./containers/ForgotPassword";
 import PasswordReset from "./containers/PasswordReset";
 import Home from "./containers/Home";
 import CompleteProfile from "./containers/CompleteProfile";
+import Profile from "./containers/Profile";
+import Settings from "./containers/Settings";
+import Chat from "./containers/Chat";
 import NotFound from "./containers/NotFound";
 
 export default function Links() {
 	return (
-		<Routes>
-			<Route path="/" element={<Index />} />
-			<Route path="login" element={<Login />} />
-			<Route path="signup" element={<Signup />} />
-			<Route path="forgotpassword" element={<ForgotPassword />} />
-			<Route path="passwordreset" element={<PasswordReset />} />
-			<Route path="home" element={<Home />} />
-			<Route path="completeprofile" element={<CompleteProfile />} />
-			<Route path="*" element={<NotFound />} />
-		</Routes>
-	);
+			<Routes>
+				<Route path="/" element={<Index />} />
+				<Route path="login" element={<Login />} />
+				<Route path="signup" element={<Signup />} />
+				<Route path="forgotpassword" element={<ForgotPassword />} />
+				<Route path="passwordreset" element={<PasswordReset />} />
+				<Route path="home" element={<Home />} />
+				<Route path="completeprofile" element={<CompleteProfile />} />
+				<Route path="profile" element={<Profile />} />
+				<Route path="settings" element={<Settings />} />
+				<Route path="chat" element={<Chat />} />
+				<Route path="*" element={<NotFound />} />
+			</Routes>
+		);
 }
