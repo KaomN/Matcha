@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from '../components/UserContext';
 import { useNavigate } from "react-router-dom";
 import "./styles/Login.css";
 
 export default function Login() {
+	const { user, login} = useContext(UserContext);
+	console.log(user.auth)
 	//Input states
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -26,6 +29,7 @@ export default function Login() {
 		});
 		response = await response.json();
 		if(response.status) {
+			login(username);
 			if(response.profile)
 				navigate("/Home");
 			else

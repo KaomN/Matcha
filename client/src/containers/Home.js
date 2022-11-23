@@ -1,52 +1,21 @@
-import {useState} from "react";
+import {useState, useContext} from "react";
+import { UserContext } from '../components/UserContext';
 import "./styles/Home.css";
 
 export default function Home() {
-	const [src, setSrc]= useState("");
-
-	function getLocation() {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				// Success function
-				showPosition, 
-				// Error function
-				getLocationAPI, 
-				// Options. See MDN for details.
-				{
-				   enableHighAccuracy: true,
-				   timeout: 5000,
-				   maximumAge: 0
-				});
-		} else { 
-			// Log not supported
-			console.log("Geolocation is not supported by this browser.");
-		}
+	const { user, logout} = useContext(UserContext);
+	//console.log(user.auth, user.name)
+	if (user.auth) {
+		return (
+			<main>
+				<h3>Show profile of other interesting users. Be able to filter by age gap, fame rating gap, location and interest. Also able to sort by them.</h3>
+			</main>
+		);
+	} else {
+		return (
+			<main>
+				<h3>Not logged in</h3>
+			</main>
+		);
 	}
-
-	function showPosition(position) {
-		console.log(position.coords.latitude)
-	}
-
-	async function getLocationAPI() {
-		let response = await fetch('/request/getlocation', {
-			method: "POST",
-			headers: { 'content-type': 'application/json' },
-		});
-		response = await response.json();
-		console.log(response)
-
-		// let response = await fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=xxx', {
-		// 	method: "POST",
-		// 	headers: { 'content-type': 'application/json' },
-		// });
-		// response = await response.json();
-		// console.log("testing google maps api")
-		// console.log(response.location["lat"], response.location["lng"])
-	}
-	getLocation();
-	return (
-		<main>
-			<h3>Logged in!</h3>
-		</main>
-	);
 }
