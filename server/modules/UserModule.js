@@ -368,20 +368,25 @@ router.post("/getlocation", async (req, res) => {
 			url:'https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY,
 			headers: { 'content-type': 'application/json' },
 		});
-		//console.log(response.data);
 		res.send(response.data)
-	  } catch (error) {
-		// TODO return error
+	} catch (error) {
 		res.send({status: false, msg: "Error fetching API location data"})
-		//console.error(error);
-	  }
+	}
+});
+
+router.post("/getloginstatus", async (req, res) => {
+	console.log()
+	if (req.session.username != undefined)
+		res.send({status:true, name:req.session.username})
+	else
+		res.send({status:false})
 });
 
 router.post("/completeprofile", async (req, res) => {
 	//console.log(req.files);
-	//console.log(req.body);
+	//console.log(req.body); 
 	const {age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
-	//console.log(age, birthDate, gender, preference, biography, locationLat, locationLng, interest)
+	var error = {};
 	function uploadProfilePicture(profilePic, path) {
 		path += "profile.jpg"
 		profilePic.mv(path, function(err) {
@@ -399,20 +404,7 @@ router.post("/completeprofile", async (req, res) => {
 		});
 		return true;
 	}
-	// Creating Uploads folder
-	var dir = __dirname;
-	dir = dir.slice(0, -8) + "/uploads";
-	if (!fs.existsSync(dir)){
-		fs.mkdirSync(dir);
-	}
-	var error = {};
-	// Creating User folder
-	// dir += "/" + req.session.username;
-	// if (!fs.existsSync(dir)){
-	// 	fs.mkdirSync(dir);
-	// }
-	//console.log(dir)
-	//console.log(req.files)
+	// Check Images
 	for (let imageName in req.files) {
 		let ext = req.files[imageName].name.split(".").pop();
 		let mime = req.files[imageName].mimetype;
@@ -429,6 +421,7 @@ router.post("/completeprofile", async (req, res) => {
 			}
 		}
 	}
+
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		if(!req.files) {
 			res.send({status:false, message:"empty"});
@@ -439,23 +432,20 @@ router.post("/completeprofile", async (req, res) => {
 					if(uploadProfilePicture(req.files[imageName], uploadPath)) {
 						con.getConnection(function(err, dbconn) {
 							if (err) {
-								// TODO Log error message
-								console.log(err);
+								Object.assign(error, {error: "Something went wrong!"});
 							} else {
 								// change ID to session id
 								var id = 1;
 								dbconn.execute('SELECT * FROM images WHERE images.imagename = "profile.jpg" AND images.fk_userid = ?', [id], function(err, result) {
 									if (err) {
-										// TODO Log error message
-										console.log(err);
+										Object.assign(error, {error: "Something went wrong!"});
 									} else if(!result[0]) {
 										var id = 1;
 										var profileId = 1;
 										var profileName = "profile.jpg"
 										dbconn.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName], function(err, result) {
 											if (err) {
-												// TODO Log error message
-												console.log(err);
+												Object.assign(error, {error: "Something went wrong!"});
 											}
 										});
 									}
@@ -468,21 +458,18 @@ router.post("/completeprofile", async (req, res) => {
 					if(uploadPictures(req.files[imageName], uploadPath, imageName)) {
 						con.getConnection(function(err, dbconn) {
 							if (err) {
-								// TODO Log error message
-								console.log(err);
+								Object.assign(error, {error: "Something went wrong!"});
 							} else {
 								dbconn.execute('SELECT * FROM images WHERE images.imagename = ? AND images.fk_userid = ?', [imageName, id], function(err, result) {
 									if (err) {
-										// TODO Log error message
-										console.log(err);
+										Object.assign(error, {error: "Something went wrong!"});
 									} else if(!result[0]) {
 										// change ID to session id
 										var id = 1;
 										var profileName = imageName + ".jpg"
 										dbconn.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName], function(err, result) {
 											if (err) {
-												// TODO Log error message
-												console.log(err);
+												Object.assign(error, {error: "Something went wrong!"});
 											}
 										});
 									}
@@ -494,35 +481,30 @@ router.post("/completeprofile", async (req, res) => {
 				}
 			}
 		}
+
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 			const interestArr = interest.split(' ')
-			//console.log(interestArr);
 			for (const interest of interestArr) {
 				con.getConnection(function(err, dbconn) {
 					if (err) {
-						// TODO Log error message
-						console.log(err);
+						Object.assign(error, {error: "Something went wrong!"});
 					} else {
 						dbconn.execute('SELECT * FROM tag WHERE tag = ?', [interest], function(err, result) {
 							if(err) {
-								console.log(err);
+								Object.assign(error, {error: "Something went wrong!"});
 							} else if(!result[0]) {
 								dbconn.execute('INSERT INTO tag (tag) VALUES (?)', [interest], function(err, result) {
 										if(err) {
-											// TODO Log error message
-											console.log(err);
+											Object.assign(error, {error: "Something went wrong!"});
 										} else {
-											//console.log(result.insertId)
 											var tagId = result.insertId
 											dbconn.execute('SELECT * FROM tagitem WHERE fk_userid = ? AND fk_tagid = ?', [1, tagId], function(err, result) {
 												if (err) {
-													// TODO Log error message
-													console.log(err);
+													Object.assign(error, {error: "Something went wrong!"});
 												} else if(!result[0]) {
 													dbconn.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, tagId], function(err, result) {
 														if (err) {
-															// TODO Log error message
-															console.log(err);
+															Object.assign(error, {error: "Something went wrong!"});
 														}
 													});
 												}
@@ -530,17 +512,14 @@ router.post("/completeprofile", async (req, res) => {
 										}
 									});
 							} else {
-								//console.log(result[0])
 								var tagId = result[0].pk_tagid
 								dbconn.execute('SELECT * FROM tagitem WHERE fk_userid = ? AND fk_tagid = ?', [1, tagId], function(err, result) {
 									if (err) {
-										// TODO Log error message
-										console.log(err);
+										Object.assign(error, {error: "Something went wrong!"});
 									} else if(!result[0]) {
 										dbconn.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, tagId], function(err, result) {
 											if (err) {
-												// TODO Log error message
-												console.log(err);
+												Object.assign(error, {error: "Something went wrong!"});
 											}
 										});
 									}
@@ -554,17 +533,17 @@ router.post("/completeprofile", async (req, res) => {
 		} else {
 			res.send(error);
 		}
+
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 			con.getConnection(function(err, dbconn) {
 				if (err) {
-					// TODO Log error message
-					console.log(err);
+					Object.assign(error, {error: "Something went wrong!"});
 				} else {
 					// TODO change ID to session id
 					var id = 1;
 					dbconn.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, id], function(err, result) {
 						if(err) {
-							console.log(err);
+							Object.assign(error, {error: "Something went wrong!"});
 						} else {
 							res.send({"status":true});
 						}
@@ -575,7 +554,6 @@ router.post("/completeprofile", async (req, res) => {
 		} else {
 			res.send(error);
 		}
-		// Break out and check if there is an error and send it else continue adding user data to database
 	} else {
 		res.send(error);
 	}
