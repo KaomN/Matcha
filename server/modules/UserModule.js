@@ -142,65 +142,57 @@ router.post("/login", (req, res) => {
 
 	const { username, password } = req.body;
 	let status = {};
-	if(username.trim().length === 0)
-		Object.assign(status, {"errorUsername": "Username required!"});
-	if(password.length === 0)
-		Object.assign(status, {"errorPassword": "Password required!"});
-	if(!("errorUsername" in status) && !("errorPassword" in status)) {
-		con.getConnection(function(err, dbconn) {
-			if (err) {
-				// TODO Log error message
-				console.log(err);
-			} else {
-				dbconn.execute('SELECT * FROM users WHERE username = ?', [username], function(err, result) {
-					if (err) {
-						// TODO Log error message
-						console.log(err);
+	con.getConnection(function(err, dbconn) {
+		if (err) {
+			// TODO Log error message
+			console.log(err);
+		} else {
+			dbconn.execute('SELECT * FROM users WHERE username = ?', [username], function(err, result) {
+				if (err) {
+					// TODO Log error message
+					console.log(err);
+				} else {
+					if(result.length === 0) {
+						res.send({"status": false, "error": "Incorrect username/password"});
 					} else {
-						if(result.length === 0) {
-							res.send({"status": false, "error": "Incorrect username/password"});
+						if(result[0].verified === 0) {
+							res.send({"status": false, "verified": false});
 						} else {
-							if(result[0].verified === 0) {
-								res.send({"status": false, "verified": false});
-							} else {
-								bcrypt.compare(password, result[0].password, function(err, bool) {
-									if (err) {
-										// TODO Log error message
-										console.log(err);
-									} else {
-										if(bool) {
-											req.session.username = result[0].username;
-											req.session.id = result[0].pk_userid;
-											req.session.firstname = result[0].firstname;
-											req.session.surname = result[0].surname;
-											req.session.email = result[0].email;
-											req.session.rating = result[0].rating;
-											req.session.verified = result[0].verified;
-											// Creating User folder
-											if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
-												fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
-											}
-											if(result[0].profile === 1)
-												Object.assign(status, {"status": true, "profile": true});
-											else
-												Object.assign(status, {"status": true, "profile": false});
-											res.send(status);
-										} else {
-											res.send({"status": false, "error": "Incorrect username/password"});
+							bcrypt.compare(password, result[0].password, function(err, bool) {
+								if (err) {
+									// TODO Log error message
+									console.log(err);
+								} else {
+									if(bool) {
+										req.session.username = result[0].username;
+										req.session.id = result[0].pk_userid;
+										req.session.firstname = result[0].firstname;
+										req.session.surname = result[0].surname;
+										req.session.email = result[0].email;
+										req.session.rating = result[0].rating;
+										req.session.token = result[0].token;
+										req.session.verified = result[0].verified;
+										// Creating User folder
+										if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
+											fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
 										}
+										if(result[0].profile === 1)
+											Object.assign(status, {status: true, profile: true, auth: result[0].token});
+										else
+											Object.assign(status, {status: true, profile: false, auth: result[0].token});
+										res.send(status);
+									} else {
+										res.send({"status": false, "error": "Incorrect username/password"});
 									}
-								});
-							}
+								}
+							});
 						}
 					}
-				});
-			}
-			con.releaseConnection(dbconn);
-		});
-	} else {
-		Object.assign(status, {"status": false});
-		res.send(status);
-	}
+				}
+			});
+		}
+		con.releaseConnection(dbconn);
+	});
 });
 
 router.post("/verify", (req, res) => {
@@ -365,9 +357,10 @@ router.post("/getlocation", async (req, res) => {
 	try {
 		const response = await axios({
 			method: 'post',
-			url:'https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY,
-			headers: { 'content-type': 'application/json' },
+			url:'https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY
 		});
+		Object.assign(response.data, {"status": true});
+		console.log(response.data)
 		res.send(response.data)
 	} catch (error) {
 		res.send({status: false, msg: "Error fetching API location data"})
@@ -375,16 +368,15 @@ router.post("/getlocation", async (req, res) => {
 });
 
 router.post("/getloginstatus", async (req, res) => {
-	console.log()
 	if (req.session.username != undefined)
-		res.send({status:true, name:req.session.username})
+		res.send({username:req.session.username, auth:true})
 	else
-		res.send({status:false})
+		res.send({username:"", auth:false})
 });
 
 router.post("/completeprofile", async (req, res) => {
 	//console.log(req.files);
-	//console.log(req.body); 
+	//console.log(req.body);
 	const {age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
 	var error = {};
 	function uploadProfilePicture(profilePic, path) {
