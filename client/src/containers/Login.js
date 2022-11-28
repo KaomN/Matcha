@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
 import { UserContext } from '../components/UserContext';
 import { useNavigate } from "react-router-dom";
+import { trackPromise} from 'react-promise-tracker';
 import "./styles/Login.css";
 
 export default function Login() {
 	const { user, login} = useContext(UserContext);
-	console.log(user.auth)
 	//Input states
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -17,37 +17,85 @@ export default function Login() {
 	const [popupNotVerified, setPopupNotVerified] = useState("popup hide-popup");
 	const navigate = useNavigate();
 
+	function checkState() {
+		
+	}
+
+	function fetchLogin() {
+		const promise = new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve(fetch('/request/login', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({
+						username: username,
+						password: password,
+					})
+				})
+				.then((response) => response.json()));
+			}, 1000)
+		});
+		return promise
+	}
+
 	async function handleSubmit(event) {
 		event.preventDefault();
-		let response = await fetch('/request/login', {
-			method: "POST",
-			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify({
-				username: username,
-				password: password,
-			})
-		});
-		response = await response.json();
-		if(response.status) {
-			login(username);
-			if(response.profile)
-				navigate("/Home");
-			else
-				navigate("/completeprofile");
-			// Route to app page
-			console.log(response);
-		} else {
-			if("error" in response) {
-				setError(response.error)
-			} else if("verified" in response) {
-				setPopupNotVerified("popup show-popup")
-				// TODO add user not verified error
-				console.log("not verified")
+		if(username.trim() != "" && password != "") {
+			var response = await trackPromise(fetchLogin());
+			console.log(response)
+			if(response.status) {
+				//localStorage.setItem('username', username);
+				//localStorage.setItem('auth', response.auth);
+				if(response.profile)
+					navigate("/home");
+				else
+					navigate("/completeprofile");
 			} else {
-				setErrorUsername(response.errorUsername);
-				setErrorPassword(response.errorPassword);
-			} 
+				if("error" in response) {
+					setError(response.error)
+				} else if("verified" in response) {
+					setPopupNotVerified("popup show-popup")
+				}
+			}
+		} else {
+			if(username.trim() === "") {
+				setErrorUsername("Username required!");
+			}
+			if (password === "") {
+				setErrorPassword("Password required!");
+			}
 		}
+		
+		//console.log(test)
+		// let response = await fetch('/request/login', {
+		// 	method: "POST",
+		// 	headers: { 'content-type': 'application/json' },
+		// 	body: JSON.stringify({
+		// 		username: username,
+		// 		password: password,
+		// 	})
+		// });
+		// response = await response.json();
+		// if(response.status) {
+		// 	login(username);
+		// 	//localStorage.setItem('username', username);
+		// 	//localStorage.setItem('auth', response.auth);
+		// 	if(response.profile)
+		// 		navigate("/home");
+		// 	else
+		// 		navigate("/completeprofile");
+		// } else {
+		// 	if("error" in response) {
+		// 		setError(response.error)
+		// 	} else if("verified" in response) {
+		// 		setPopupNotVerified("popup show-popup")
+		// 		// TODO add user not verified error
+		// 		console.log("not verified")
+		// 	} else {
+		// 		setErrorUsername(response.errorUsername);
+		// 		setErrorPassword(response.errorPassword);
+		// 	} 
+		// }
 	}
 
 	return (
