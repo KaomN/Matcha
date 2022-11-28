@@ -11,6 +11,7 @@ import Profile from "./containers/Profile";
 import Settings from "./containers/Settings";
 import Chat from "./containers/Chat";
 import NotFound from "./containers/NotFound";
+import PrivateRoutes from "./components/PrivateRoutes";
 
 export default function Links() {
 	return (
@@ -20,11 +21,13 @@ export default function Links() {
 				<Route path="signup" element={<Signup />} />
 				<Route path="forgotpassword" element={<ForgotPassword />} />
 				<Route path="passwordreset" element={<PasswordReset />} />
-				<Route path="home" element={<Home />} />
-				<Route path="completeprofile" element={<CompleteProfile />} />
-				<Route path="profile" element={<Profile />} />
-				<Route path="settings" element={<Settings />} />
-				<Route path="chat" element={<Chat />} />
+				<Route element={<PrivateRoutes/>}>
+					<Route path="home" element={<Home />} />
+					<Route path="completeprofile" element={<CompleteProfile />} />
+					<Route path="profile" element={<Profile />} />
+					<Route path="settings" element={<Settings />} />
+					<Route path="chat" element={<Chat />} />
+				</Route>
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		);
