@@ -59,8 +59,10 @@ export default function FirstTimeProfile() {
 			method: "POST",
 		});
 		response = await response.json();
-		setLocationLat(response.location.lat)
-		setLocationLng(response.location.lng)
+		if(response.status) {
+			setLocationLat(response.location.lat)
+			setLocationLng(response.location.lng)
+		}
 	}
 
 	if (locationLat === "" && locationLng === "")
