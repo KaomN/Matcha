@@ -4,7 +4,8 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 
 async function userAuth() {
 	var response = await fetch('/request/getloginstatus', {
-		method: "POST",
+		credentials: "include",
+		method: "GET",
 	});
 	response = await response.json()
 	return response.auth;
@@ -20,6 +21,7 @@ const PrivateRoutes = () => {
 			(async function() {
 				try {
 					const isUserLogged = await userAuth();
+					console.log(isUserLogged)
 					setState(isUserLogged ? true : false);
 				} catch {
 					setState(false);
