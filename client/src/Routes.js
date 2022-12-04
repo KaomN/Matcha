@@ -24,7 +24,9 @@ export default function Links() {
 				<Route element={<PrivateRoutes/>}>
 					<Route path="home" element={<Home />} />
 					<Route path="completeprofile" element={<CompleteProfile />} />
-					<Route path="profile" element={<Profile />} />
+					<Route path="profile" element={<Profile />} >
+						{/* Add routes to userprofiles */}
+					</Route>
 					<Route path="settings" element={<Settings />} />
 					<Route path="chat" element={<Chat />} />
 				</Route>
