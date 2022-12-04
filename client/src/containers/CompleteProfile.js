@@ -1,5 +1,6 @@
-import {useState} from "react";
+import { useState } from "react";
 import PikadayWrap from "../components/PikadayWrap";
+import { useNavigate } from "react-router-dom";
 import "./styles/CompleteProfile.css";
 import '../../node_modules/pikaday/css/pikaday.css';
 
@@ -30,6 +31,8 @@ export default function FirstTimeProfile() {
 	const [locationLat, setLocationLat] = useState("")
 	const [locationLng, setLocationLng] = useState("")
 
+	const navigate = useNavigate();
+
 	function getLocation() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
@@ -43,9 +46,6 @@ export default function FirstTimeProfile() {
 					timeout: 5000,
 					maximumAge: 0
 				});
-		} else { 
-			// Log not supported
-			console.log("Geolocation is not supported by this browser.");
 		}
 	}
 
@@ -68,48 +68,48 @@ export default function FirstTimeProfile() {
 	if (locationLat === "" && locationLng === "")
 		getLocation();
 
-	function ageForm() {
-			return (<main className="form-container">
-						<div className="complete-profile-form">
-							<div style={{backgroundColor: ""}}>
-								<h1 className="title">Complete your profile</h1>
-							</div>
-							<div className="complete-form-container">
-								<div id="ageForm">
-									<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
-										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Date of birth</label>
-										<div className="form_message_error"></div>
-									</div>
-									<div className="flex-column pb-2rem">
-										<PikadayWrap />
-									</div>
-									<div className="center-left">
-										<button className="complete-form-button" onClick={() => {
-											if(document.getElementById('date').value === "") {
-												document.querySelector('.form_message_error').innerHTML = "Empty field!"
+	function AgeForm() {
+		return (<main className="form-container">
+					<div className="complete-profile-form">
+						<div style={{backgroundColor: ""}}>
+							<h1 className="title">Complete your profile</h1>
+						</div>
+						<div className="complete-form-container">
+							<div id="ageForm">
+								<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
+									<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Date of birth</label>
+									<div className="form_message_error"></div>
+								</div>
+								<div className="flex-column pb-2rem">
+									<PikadayWrap />
+								</div>
+								<div className="center-left">
+									<button className="complete-form-button" onClick={() => {
+										if(document.getElementById('date').value === "") {
+											document.querySelector('.form_message_error').innerHTML = "Empty field!"
+										} else {
+											let parts = document.getElementById("date").value.split('-');
+											let date = new Date(parts[2], parts[1] - 1, parts[0]);
+											let diff = Math.abs(new Date() - date);
+											if(isNaN(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))) {
+												document.querySelector('.form_message_error').innerHTML = "Input error!"
 											} else {
-												let parts = document.getElementById("date").value.split('-');
-												let date = new Date(parts[2], parts[1] - 1, parts[0]);
-												let diff = Math.abs(new Date() - date);
-												if(isNaN(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))) {
-													document.querySelector('.form_message_error').innerHTML = "Input error!"
-												} else {
-													setBirthDate(document.getElementById("date").value);
-													setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)));
-													document.querySelector('.form_message_error').innerHTML = "";
-													setAgeForm(false);
-													setGenderForm(true);
-												}
+												setBirthDate(document.getElementById("date").value);
+												setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)));
+												document.querySelector('.form_message_error').innerHTML = "";
+												setAgeForm(false);
+												setGenderForm(true);
 											}
-											}}>Next</button>
-									</div>
-								</div>
+										}
+										}}>Next</button>
 								</div>
 							</div>
-						</main>);
+							</div>
+						</div>
+					</main>);
 	}
 
-	function genderForm() {
+	function GenderForm() {
 		return (<main className="form-container">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
@@ -144,7 +144,7 @@ export default function FirstTimeProfile() {
 					</main>);
 	}
 
-	function preferenceForm() {
+	function PreferenceForm() {
 		return (<main className="form-container">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
@@ -188,7 +188,7 @@ export default function FirstTimeProfile() {
 					</main>);
 	}
 
-	function biographyForm() {
+	function BiographyForm() {
 		return (<main className="form-container">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
@@ -247,7 +247,7 @@ export default function FirstTimeProfile() {
 		);
 	}
 
-	function interestForm() {
+	function InterestForm() {
 		return (<main className="form-container">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
@@ -294,21 +294,22 @@ export default function FirstTimeProfile() {
 	}
 
 	
-	function profileForm() {
+	function ProfileForm() {
+		var fileInput, btn
 		if (profilePicture && Object.keys(profilePicture).length === 0 && Object.getPrototypeOf(profilePicture) === Object.prototype) {
-			var btn = ""
-			var fileInput = <div className="flex-column">
+			btn = ""
+			fileInput = <div className="flex-column">
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
 									<input type="file" id="profilePic" accept="image/*" name="profile" onChange={saveProfilePicture}/>
 									<i className="material-icons profile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
 								</div>
 							</div>
 		} else {
-			var btn = <button className="complete-form-button" onClick={() => {
+			btn = <button className="complete-form-button" onClick={() => {
 				setProfilePicture({});
 				setProfilePictureSrc("");
 			}}>Delete</button>
-			var fileInput = ""
+			fileInput = ""
 		}
 		return (<main className="form-container">
 					<div className="complete-profile-form">
@@ -323,8 +324,8 @@ export default function FirstTimeProfile() {
 								</div>
 								{fileInput}
 								<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container">
-										<div className="flex-center wh-100p">
-											<img className="complete-form-img pt-1rem" src={profilePictureSrc}/>
+										<div className="flex-center wh-100p flex-col flex-justify-content-start">
+											<img className="complete-form-img pt-1rem" src={profilePictureSrc} alt=""/>
 											{btn}
 										</div>
 								</div>
@@ -356,11 +357,12 @@ export default function FirstTimeProfile() {
 		}
 	}
 
-	function pictureForm() {
+	function PictureForm() {
+		var input;
 		if (picture.length < 4) {
-			var input = <input type="file" accept="image/*" id="pictureUploads" onChange={saveChosenPicture}/>
+			input = <input type="file" accept="image/*" id="pictureUploads" onChange={saveChosenPicture}/>
 		} else {
-			var input = "";
+			input = "";
 		}
 		return (<main className="form-container">
 					<div className="complete-profile-form">
@@ -382,10 +384,10 @@ export default function FirstTimeProfile() {
 											{input}
 										</div>
 									</div>
-									<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container">
+									<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container flex-col flex-justify-content-start">
 										{picture.map(pictureElem => (
-										<div key={pictureElem.id} data-key={pictureElem.id} className="flex-center wh-100p">
-											<img className="complete-form-img pt-1rem" src={pictureElem.src}/>
+										<div key={pictureElem.id} data-key={pictureElem.id} className="flex-center wh-100p flex-col flex-justify-content-start">
+											<img className="complete-form-img pt-1rem" src={pictureElem.src} alt=""/>
 											<button className="complete-form-button" onClick={() => {
 												setPicture(
 													picture.filter(a =>
@@ -431,21 +433,23 @@ export default function FirstTimeProfile() {
 			body: formdata
 		});
 		response = await response.json();
-		console.log(response);
+		if (response.status) {
+			navigate("/home");
+		}
 	}
 
 	if(showAgeForm)
-		return ageForm()
+		return AgeForm()
 	else if(showGenderForm)
-		return genderForm()
+		return GenderForm()
 	else if(showPreferenceForm)
-		return preferenceForm()
+		return PreferenceForm()
 	else if(showBiographyForm)
-		return biographyForm()
+		return BiographyForm()
 	else if(showInterestForm)
-		return interestForm()
+		return InterestForm()
 	else if(showProfileForm)
-		return profileForm()
+		return ProfileForm()
 	else if(showPictureForm)
-		return pictureForm()
+		return PictureForm()
 }

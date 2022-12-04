@@ -51,36 +51,12 @@
 	height: 100%;
 }
 
-.flex-center {
+/* .flex-center {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	flex-direction: column;
-}
-
-.flex {
-	display: flex;
-}
-
-.flex-align-center {
-	align-items: center;
-}
-
-.flex-justify-center {
-	justify-content: center;
-}
-
-.flex-col {
-	flex-direction: column;
-}
-
-.flex-row {
-	flex-direction: row;
-}
-
-.flex-wrap {
-	flex-wrap: wrap;
-}
+} */
 
 .complete-form-img {
 	object-fit: contain;

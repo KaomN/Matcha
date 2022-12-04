@@ -35,9 +35,10 @@ export default function Signup() {
 		});
 		if(response.status === 200) {
 			response = await response.json();
+			console.log(response)
 			if (response.status) {
 				// Successful signup
-				setPopup("popup show-popup")				
+				setPopup("popup show-popup")
 			} else {
 				setErrorFirstname(response.errorFirstname)
 				setErrorSurname(response.errorSurname)

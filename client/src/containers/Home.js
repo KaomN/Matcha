@@ -1,9 +1,9 @@
-import { useContext } from "react";
-import { UserContext } from '../components/UserContext';
+//import { useContext } from "react";
+//import { UserContext } from '../components/UserContext';
 import "./styles/Home.css";
 
 export default function Home() {
-	const { user, logout} = useContext(UserContext);
+	//const { user, logout} = useContext(UserContext);
 
 	return (
 		<main>

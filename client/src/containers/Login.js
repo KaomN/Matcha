@@ -1,11 +1,11 @@
-import React, { useState, useContext } from "react";
-import { UserContext } from '../components/UserContext';
+import React, { useState, /*useContext*/ } from "react";
+//import { UserContext } from '../components/UserContext';
 import { useNavigate } from "react-router-dom";
 import { trackPromise} from 'react-promise-tracker';
 import "./styles/Login.css";
 
 export default function Login() {
-	const { user, login} = useContext(UserContext);
+	//const { user, login} = useContext(UserContext);
 	//Input states
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -16,11 +16,7 @@ export default function Login() {
 	//Other states
 	const [popupNotVerified, setPopupNotVerified] = useState("popup hide-popup");
 	const navigate = useNavigate();
-
-	function checkState() {
-		
-	}
-
+	
 	function fetchLogin() {
 		const promise = new Promise((resolve, reject) => {
 			setTimeout(() => {
@@ -40,12 +36,9 @@ export default function Login() {
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		if(username.trim() != "" && password != "") {
+		if(username.trim() !== "" && password !== "") {
 			var response = await trackPromise(fetchLogin());
-			console.log(response)
 			if(response.status) {
-				//localStorage.setItem('username', username);
-				//localStorage.setItem('auth', response.auth);
 				if(response.profile)
 					navigate("/home");
 				else
@@ -65,37 +58,6 @@ export default function Login() {
 				setErrorPassword("Password required!");
 			}
 		}
-		
-		//console.log(test)
-		// let response = await fetch('/request/login', {
-		// 	method: "POST",
-		// 	headers: { 'content-type': 'application/json' },
-		// 	body: JSON.stringify({
-		// 		username: username,
-		// 		password: password,
-		// 	})
-		// });
-		// response = await response.json();
-		// if(response.status) {
-		// 	login(username);
-		// 	//localStorage.setItem('username', username);
-		// 	//localStorage.setItem('auth', response.auth);
-		// 	if(response.profile)
-		// 		navigate("/home");
-		// 	else
-		// 		navigate("/completeprofile");
-		// } else {
-		// 	if("error" in response) {
-		// 		setError(response.error)
-		// 	} else if("verified" in response) {
-		// 		setPopupNotVerified("popup show-popup")
-		// 		// TODO add user not verified error
-		// 		console.log("not verified")
-		// 	} else {
-		// 		setErrorUsername(response.errorUsername);
-		// 		setErrorPassword(response.errorPassword);
-		// 	} 
-		// }
 	}
 
 	return (
@@ -122,7 +84,7 @@ export default function Login() {
 					<form className="form" id="resendVerifyForm">
 						<p>Your account has not been verified! If you did not receive a link when you registered, press the button below to re-send the link.</p>
 						<div className="form_message"></div>
-						<div className="button_container">
+						<div className="flex-center flex-row">
 							<button type="button" className="form_button_verify mr" onClick={() => {setPopupNotVerified("popup hide-popup")}}>Back to Login</button>
 							<button type="button" className="form_button_verify" id="resendVerificationBtn">Re-send verification link</button>
 						</div>
