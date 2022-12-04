@@ -1,25 +1,72 @@
 import React from "react";
 import "./App.css";
 import Routes from "./Routes";
+import { useLocation, useNavigate } from "react-router-dom";
+import { trackPromise} from 'react-promise-tracker';
 
-function navbar() {
+function Header() {
+	const { pathname } = useLocation();
+	const navigate = useNavigate();
+
+	function fetchLogout() {
+		const promise = new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve(fetch('/request/logout')
+				.then((response) => response.json()));
+			}, 500)
+		});
+		return promise
+	}
+
+	async function handleLogout(event) {
+		event.preventDefault();
+			var response = await trackPromise(fetchLogout());
+			if(response.status) {
+				navigate("/login");
+			}
+			//console.log(response)
+	}
+
+	if(pathname === "/completeprofile") {
+		return (<header>
+			<div className="flex-center">
+				<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
+			</div>
+			<nav>
+				<ul>
+					<li><a href="/login" draggable="false" className="signup" title="Logout">Logout</a></li>
+				</ul>
+			</nav>
+		</header>);
+	} else if(pathname === "/home") {
 	return (<header>
 				<div className="flex-center">
 					<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
 				</div>
 				<nav>
 					<ul>
-						<li><a href="/login" draggable="false" className="login" title="Login">Login</a></li>
-						<li><a href="/signup" draggable="false" className="signup" title="Signup">Signup</a></li>
+						<li><a href="#" draggable="false" className="login" title="Logout" onClick={handleLogout}>Logout</a></li>
 					</ul>
 				</nav>
 			</header>);
+	} else {
+		return (<header>
+			<div className="flex-center">
+				<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
+			</div>
+			<nav>
+				<ul>
+					<li><a href="/login" draggable="false" className="login" title="Login">Login</a></li>
+					<li><a href="/signup" draggable="false" className="signup" title="Signup">Signup</a></li>
+				</ul>
+			</nav>
+		</header>);
+	}
 };
 
-function footerTag() {
+function Footer() {
 	return <footer>© 2022 Matcha. conguyen</footer>;
 };
-
 function App() {
 	// const [data, setData] = React.useState(null);
 
@@ -31,9 +78,9 @@ function App() {
 	// console.log(data)
 	return (
 		<div className="App">
-			{navbar()}
+			<Header />
 			<Routes />
-			{footerTag()}
+			<Footer />
 		</div>
 	);
 }
