@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
@@ -16,8 +16,7 @@ const pool = mysql.createPool({
 	database: process.env.DB_DATABASE,
 	waitForConnections: true,
 	connectionLimit: 10,
-	queueLimit: 0,
-	multipleStatements: true,
+	queueLimit: 0
 });
 
 const emailTransporter = nodemailer.createTransport({
