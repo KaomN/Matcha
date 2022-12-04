@@ -136,7 +136,13 @@ router.post("/login", async (req, res) => {
 						Object.assign(status, {status: true, profile: true, auth: rows[0].token});
 					else
 						Object.assign(status, {status: true, profile: false, auth: rows[0].token});
-					res.send(status);
+					// res.cookie("sessionId", req.session.id, {
+					// 	secure: true,
+					// 	httpOnly: true,
+					// 	sameSite: "none",
+					// }).send(status);
+					res.send(status)
+					//res.send(status)
 				} else {
 					res.send({status: false, error: "Incorrect username/password"});
 				}
@@ -149,6 +155,21 @@ router.post("/login", async (req, res) => {
 	}
 });
 
+// Get login status
+router.get("/getloginstatus", async (req, res) => {
+	// Testing Session cookies
+	// Add maxAge to session cookies? to persists login even if browser is closed.
+	// How long should session cookies be kept? 1day 1week 1month?
+	console.log("Unsigned Cookies", req.cookies)
+	console.log(req.session.username)
+	if (req.session.username != undefined)
+		res.send({username:req.session.username, auth:true})
+	else
+		res.send({ auth:false })
+});
+
+
+// Logout
 router.get("/logout", (req, res) => {
 	try {
 		req.sessionStore.destroy(req.session.id, function(err) {
@@ -296,14 +317,6 @@ router.post("/getlocation", async (req, res) => {
 	}
 });
 
-// Get login status
-router.post("/getloginstatus", async (req, res) => {
-	if (req.session.username != undefined)
-		res.send({username:req.session.username, auth:true})
-	else
-		res.send({username:"", auth:false})
-});
-
 // Complete profile on First login.
 router.post("/completeprofile", async (req, res) => {
 	//console.log(__dirname.slice(0, -7) + "uploads")
@@ -343,7 +356,6 @@ router.post("/completeprofile", async (req, res) => {
 			}
 		}
 	}
-
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		if(!req.files) {
 			res.send({status:false, message:"empty"});
@@ -354,10 +366,9 @@ router.post("/completeprofile", async (req, res) => {
 					if (imageName === "profilePicture") {
 						// Uploads Profile picture to server.
 						if(uploadProfilePicture(req.files[imageName], uploadPath)) {
-							var id = 1; //change ID to session id
 							var profileId = 1;
 							var profileName = "profile.jpg"
-							var result = await con.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName])
+							var result = await con.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [req.session.userid, profileId, profileName])
 							//console.log(result)
 							if (!result) {
 								Object.assign(error, {error: "Something went wrong!"});
@@ -365,9 +376,8 @@ router.post("/completeprofile", async (req, res) => {
 						}
 					} else {
 						if(uploadPictures(req.files[imageName], uploadPath, imageName)) {
-								var id = 1; //change ID to session id
 								var profileName = imageName + ".jpg"
-								var result = await con.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName])
+								var result = await con.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [req.session.userid, profileName])
 								if (!result) {
 									Object.assign(error, {error: "Something went wrong!"});
 								}
@@ -380,13 +390,13 @@ router.post("/completeprofile", async (req, res) => {
 						var [rows, fields] = await con.execute('SELECT * FROM tag WHERE tag = ?', [interest])
 						if (!rows[0]) {
 							var result = await con.execute('INSERT INTO tag (tag) VALUES (?)', [interest])
-							var result = await con.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, result[0].insertId])
+							var result = await con.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [req.session.userid, result[0].insertId])
 							if (!result) {
 								Object.assign(error, {error: "Something went wrong!"});
 							}
 						} else {
 							var [rows, fields] = await con.execute('SELECT * FROM tag WHERE tag = ?', [interest])
-							var result = await con.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, rows[0].pk_tagid])
+							var result = await con.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [req.session.userid, rows[0].pk_tagid])
 							if (!result) {
 								Object.assign(error, {error: "Something went wrong!"});
 							}
@@ -396,8 +406,7 @@ router.post("/completeprofile", async (req, res) => {
 					res.send(error);
 				}
 				if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-					var id = 1; // change to session ID later
-					var result = await con.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, id])
+					var result = await con.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, req.session.userid])
 					if (!result) {
 						Object.assign(error, {error: "Something went wrong!"});
 					} else {
