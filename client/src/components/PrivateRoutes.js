@@ -15,7 +15,7 @@ const PrivateRoutes = () => {
 
 	// Get login status from server
 	useEffect(() => {
-		// REMOVE TIMEOUT FOR TESTING PURPOSES ONLY.
+		// TIMEOUT FOR TESTING PURPOSES ONLY.
 		setTimeout(() => {
 			(async function() {
 				try {
