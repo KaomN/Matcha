@@ -21,6 +21,7 @@ export default function Login() {
 		const promise = new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve(fetch('/request/login', {
+					credentials: "include",
 					method: 'POST',
 					headers: { 'content-type': 'application/json' },
 					body: JSON.stringify({
@@ -38,6 +39,7 @@ export default function Login() {
 		event.preventDefault();
 		if(username.trim() !== "" && password !== "") {
 			var response = await trackPromise(fetchLogin());
+			console.log(response)
 			if(response.status) {
 				if(response.profile)
 					navigate("/home");
