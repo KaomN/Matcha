@@ -11,7 +11,7 @@ const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 
 // Register request
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
 	function validateInput(error) {
 		const { firstname, surname, username, email, password, passwordConfirm} = req.body;
 		const rePassword = /\d|[A-Z]/;
@@ -69,167 +69,120 @@ router.post("/register", (req, res) => {
 	let status = {};
 	if(validateInput(status)) {
 		const { firstname, surname, username, email, password} = req.body;
-		con.getConnection(function(err, dbconn) {
-			dbconn.execute('SELECT * FROM users WHERE username = ?', [username], function(err, result) {
-				if(err) {
-					// TODO Log error message
-					console.log(err);
-				} else {
-					if (result.length == 0) {
-						dbconn.execute("SELECT * FROM users WHERE email = ?", [email], function(err, result) {
-							if (err) {
-								// TODO Log error message
-								console.log(err);
-							} else {
-								if (result.length === 0) {
-									bcrypt.hash(password, 10, function(err, password) {
-										if (err) {
-											// TODO Log error message
-											console.log(err);
-										} else {
-											// TODO create a token and insert it to database.
-											let token = crypto.createHash('md5').update(username).digest("hex") + crypto.createHash('md5').update(email).digest("hex")
-											dbconn.execute("INSERT INTO users (firstname, surname, username, email, password, token) VALUE (?, ?, ?, ?, ?, ?);", [firstname, surname, username, email, password, token], function(err, result) {
-												if (err) {
-													// TODO Log error message
-													console.log(err);
-												} else {
-													if(result) {
-														const mailOptions = {
-															from: 'kaom.n.92@gmail.com',
-															to: email,
-															subject: 'Matcha account confirmation',
-															text: 'Please follow the link below to verify your account.\n' + 'http://localhost:3000?verification=' + token
-														};
-														emailTransporter.sendMail(mailOptions, function(error, info){
-															if (error) {
-																// TODO Log error message
-																console.log(error);
-															} else {
-																res.send(status);
-															}
-														});
-													} else {
-														console.log("error");
-													}
-												}
-											});
-										}
-									});
-								} else {
-									res.send({"errorEmail": "Email taken!", "status": false});
-								}
-							}
-						});
+		try {
+			var result = await con.execute('SELECT * FROM users WHERE username = ?', [username])
+			if(result[0].length === 0) {
+				result = await con.execute("SELECT * FROM users WHERE email = ?", [email])
+				if (result[0].length === 0) {
+					const hash = await bcrypt.hash(password, 10);
+					let token = crypto.createHash('md5').update(username).digest("hex") + crypto.createHash('md5').update(email).digest("hex")
+					result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token) VALUE (?, ?, ?, ?, ?, ?);", [firstname, surname, username, email, hash, token])
+					if (result) {
+						const mailOptions = {
+							from: 'kaom.n.92@gmail.com',
+							to: email,
+							subject: 'Matcha account confirmation',
+							text: 'Please follow the link below to verify your account.\n' + 'http://localhost:3000?verification=' + token
+						};
+						result = await emailTransporter.sendMail(mailOptions);
+						if (result.messageId) {
+							res.send(status);
+						} else {
+							res.send({status: false, message: "Server connection error"});
+						}
 					} else {
-						res.send({"errorUsername": "Username taken!", "status": false});
+						res.send({status: false, message: "Server connection error"});
 					}
+				} else {
+					res.send({errorEmail: "Email taken!", "status": false});
 				}
-				con.releaseConnection(dbconn);
-			});
-		});
+			} else {
+				res.send({errorUsername: "Username taken!", "status": false});
+			}
+		} catch {
+			res.send({status: false, message: "Server connection error"});
+		}
 	} else {
 		res.send(status);
 	}
 });
 
 // Login request
-router.post("/login", (req, res) => {
-	// Get all Session variables
-	// req.sessionStore.all(function(error, session) {
-	// 	console.log(session)
-	// })
-
+router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 	let status = {};
-	con.getConnection(function(err, dbconn) {
-		if (err) {
-			// TODO Log error message
-			console.log(err);
-		} else {
-			dbconn.execute('SELECT * FROM users WHERE username = ?', [username], function(err, result) {
-				if (err) {
-					// TODO Log error message
-					console.log(err);
-				} else {
-					if(result.length === 0) {
-						res.send({"status": false, "error": "Incorrect username/password"});
-					} else {
-						if(result[0].verified === 0) {
-							res.send({"status": false, "verified": false});
-						} else {
-							bcrypt.compare(password, result[0].password, function(err, bool) {
-								if (err) {
-									// TODO Log error message
-									console.log(err);
-								} else {
-									if(bool) {
-										req.session.username = result[0].username;
-										req.session.id = result[0].pk_userid;
-										req.session.firstname = result[0].firstname;
-										req.session.surname = result[0].surname;
-										req.session.email = result[0].email;
-										req.session.rating = result[0].rating;
-										req.session.token = result[0].token;
-										req.session.verified = result[0].verified;
-										// Creating User folder
-										if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
-											fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
-										}
-										if(result[0].profile === 1)
-											Object.assign(status, {status: true, profile: true, auth: result[0].token});
-										else
-											Object.assign(status, {status: true, profile: false, auth: result[0].token});
-										res.send(status);
-									} else {
-										res.send({"status": false, "error": "Incorrect username/password"});
-									}
-								}
-							});
-						}
+
+	try {
+		var [rows, fields] = await con.execute('SELECT * FROM users WHERE username = ?', [username])
+		if(rows[0].length !== 0) {
+			if(rows[0].verified === 0) {
+				res.send({"status": false, "verified": false});
+			} else {
+				const match = await bcrypt.compare(password, rows[0].password)
+				if(match) {
+					req.session.username = rows[0].username;
+					req.session.userid = rows[0].pk_userid;
+					req.session.firstname = rows[0].firstname;
+					req.session.surname = rows[0].surname;
+					req.session.email = rows[0].email;
+					req.session.rating = rows[0].rating;
+					req.session.token = rows[0].token;
+					req.session.verified = rows[0].verified;
+					// Creating User folder
+					if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
+						fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
 					}
+					if(rows[0].profile === 1)
+						Object.assign(status, {status: true, profile: true, auth: rows[0].token});
+					else
+						Object.assign(status, {status: true, profile: false, auth: rows[0].token});
+					res.send(status);
+				} else {
+					res.send({status: false, error: "Incorrect username/password"});
 				}
-			});
+			}
+		} else {
+			res.send({status: false, error: "Incorrect username/password"});
 		}
-		con.releaseConnection(dbconn);
-	});
+	} catch {
+		res.send({status: false, message: "Server connection error"});
+	}
 });
 
-router.post("/verify", (req, res) => {
-	con.getConnection(function(err, dbconn) {
-		if (err) {
-			// TODO Log error message
-			console.log(err);
-		} else {
-			dbconn.execute('SELECT * FROM users WHERE token = ?', [req.body.token], function(err, result) {
-				if (err) {
-					// TODO Log error message
-					console.log(err);
+router.get("/logout", (req, res) => {
+	try {
+		req.sessionStore.destroy(req.session.id, function(err) {
+			res.send({status: true});
+		})
+	} catch {
+		res.send({status: false, message: "Server connection error"});
+	}
+});
+
+// Verify account request
+router.post("/verify", async (req, res) => {
+	try {
+		var [rows, fields] = await con.execute('SELECT * FROM users WHERE token = ?', [req.body.token])
+		console.log(rows)
+		if(rows[0].length === 0) {
+			res.send({"status": false});
+		} else if (rows[0].verified === 0) {
+			var result = await con.execute("UPDATE users SET users.VERIFIED = 1 WHERE token = ?;", [req.body.token])
+				if (result) {
+					res.send({"status": true, "verified": false});
 				} else {
-					if(result.length === 0) {
-						res.send({"status": false});
-					} else if (result[0].verified === 0) {
-						dbconn.execute("UPDATE users SET users.VERIFIED = 1 WHERE token = ?;", [req.body.token], function(err, result) {
-							if (err) {
-								// TODO Log error message
-								console.log(err);
-							} else {
-								res.send({"status": true, "verified": false});
-							}
-						});
-						
-					} else {
-						res.send({"status": true, "verified": true});
-					}
+					res.send({status: false, message: "Server connection error"});
 				}
-			});
+		} else {
+			res.send({"status": true, "verified": true});
 		}
-		con.releaseConnection(dbconn);
-	});
+	} catch {
+		res.send({status: false, message: "Server connection error"});
+	}
 });
 
 // Forgot password request
-router.post("/forgotpassword", (req, res) => {
+router.post("/forgotpassword", async (req, res) => {
 	let status = {};
 	let email = req.body.email;
 	if(email.trim().length === 0)
@@ -239,47 +192,33 @@ router.post("/forgotpassword", (req, res) => {
 	else if (!emailValidator.validate(email))
 		Object.assign(status, {"errorEmail": "Invalid Email address!"});
 	if(status && Object.keys(status).length === 0 && Object.getPrototypeOf(status) === Object.prototype) {
-		con.getConnection(function(err, dbconn) {
-			if (err) {
-				// TODO Log error message
-				console.log(err);
-			} else {
-				dbconn.execute('SELECT * FROM users WHERE email = ?', [email], function(err, result) {
-					if (err) {
-						// TODO Log error message
-						console.log(err);
-					} else {
-						if (result.length === 0) {
+		try {
+			var [rows, fields] = await con.execute('SELECT * FROM users WHERE email = ?', [email])
+			if (rows[0].length !== 0) {
+				const token = crypto.createHash('md5').update(rows[0].token).digest("hex") + crypto.createHash('md5').update(String(Date.now())).digest("hex")
+				var result = await con.execute('INSERT INTO usertokens (pk_userid, passwordresettoken, passwordresetexpr) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE passwordresettoken = VALUES(passwordresettoken), passwordresetexpr = VALUES(passwordresetexpr)', [rows[0].pk_userid, token, Math.floor(Date.now() / 1000)])
+				if (result) {
+					const mailOptions = {
+						from: 'kaom.n.92@gmail.com',
+						to: email,
+						subject: 'Matcha password reset request',
+						text: 'Please follow the link below to reset account password.\n' + 'http://localhost:3000/passwordreset?token=' + token
+					};
+					result = await emailTransporter.sendMail(mailOptions)
+						if (result.messageId) {
 							res.send({"status": true, "message": "An email has been sent to " + email + ". Please follow instructions on the email to reset your password!"});
 						} else {
-							var token = crypto.createHash('md5').update(result[0].token).digest("hex") + crypto.createHash('md5').update(String(Date.now())).digest("hex")
-							dbconn.execute('INSERT INTO usertokens (pk_userid, passwordresettoken, passwordresetexpr) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE passwordresettoken = VALUES(passwordresettoken), passwordresetexpr = VALUES(passwordresetexpr)', [result[0].pk_userid, token, Math.floor(Date.now() / 1000)], function(err, result) {
-								if (err) {
-									// TODO Log error message
-									console.log(err);
-								} else {
-									const mailOptions = {
-										from: 'kaom.n.92@gmail.com',
-										to: email,
-										subject: 'Matcha password reset request',
-										text: 'Please follow the link below to reset account password.\n' + 'http://localhost:3000/passwordreset?token=' + token
-									};
-									emailTransporter.sendMail(mailOptions, function(error, info){
-										if (error) {
-											// TODO Log error message
-											console.log(error);
-										} else {
-											res.send({"status": true, "message": "An email has been sent to " + email + ". Please follow instructions on the email to reset your password!"});
-										}
-									});
-								}
-							});
+							res.send({status: false, message: "Server connection error"});
 						}
-					}
-				});
+				} else {
+					res.send({status: false, message: "Server connection error"});
+				}
+			} else {
+				res.send({"status": true, "message": "An email has been sent to " + email + ". Please follow instructions on the email to reset your password!"});
 			}
-			con.releaseConnection(dbconn);
-		});
+		} catch {
+			res.send({status: false, message: "Server connection error"});
+		}
 	} else {
 		Object.assign(status, {"status": false});
 		res.send(status)
@@ -287,7 +226,7 @@ router.post("/forgotpassword", (req, res) => {
 });
 
 // Password reset request
-router.post("/passwordreset", (req, res) => {
+router.post("/passwordreset", async (req, res) => {
 	let status = {};
 	const {password, passwordConfirm, token} = req.body;
 	if(password.trim().length === 0)
@@ -311,48 +250,38 @@ router.post("/passwordreset", (req, res) => {
 	// 	Object.assign(status, {"errorPasswordConfirm": "Password did not match!"});
 	// }
 	if(status && Object.keys(status).length === 0 && Object.getPrototypeOf(status) === Object.prototype) {
-		con.getConnection(function(err, dbconn) {
-			if (err) {
-				// TODO Log error message
-				console.log(err);
-			} else {
-				dbconn.execute('SELECT * FROM usertokens WHERE passwordresettoken = ?', [token], function(err, result) {
-					if(result.length === 0) {
-						res.send({"status": false, "error": "Please follow the link you received on your email to reset your account password"})
-					} else {
-						if(result[0].passwordresetexpr + 86400 > Date.now() / 1000) {
-							var id = result[0].pk_userid
-							bcrypt.hash(password, 10, function(err, password) {
-								dbconn.execute('UPDATE users SET password = ? WHERE pk_userid = ?', [password, id], function(err, result) {
-									if (err) {
-										// TODO Log error message
-										console.log(err);
-									} else {
-										dbconn.execute('DELETE FROM usertokens WHERE pk_userid = ?', [id], function(err, result) {
-											if (err) {
-												// TODO Log error message
-												console.log(err);
-											} else {
-												res.send({"status": true, "message": "Password reset!"})
-											}
-										});
-									}
-								});
-							});
+		try {
+			var [rows, fields] = await con.execute('SELECT * FROM usertokens WHERE passwordresettoken = ?', [token])
+			if (rows[0].length !== 0) {
+				if(rows[0].passwordresetexpr + 86400 > Date.now() / 1000) {
+					const hash = await bcrypt.hash(password, 10);
+					var result = await con.execute('UPDATE users SET password = ? WHERE pk_userid = ?', [hash, rows[0].pk_userid])
+					if (result) {
+						result = await con.execute('DELETE FROM usertokens WHERE pk_userid = ?', [rows[0].pk_userid])
+						if (result) {
+							res.send({"status": true, "message": "Password reset!"})
 						} else {
-							res.send({"status": false, "error": "Password reset link expired!"})
+							res.send({status: false, message: "Server connection error"});
 						}
+					} else {
+						res.send({status: false, message: "Server connection error"});
 					}
-				});
+				} else {
+					res.send({"status": false, "error": "Password reset link expired!"})
+				}
+			} else {
+				res.send({"status": false, "error": "Please follow the link you received on your email to reset your account password"})
 			}
-			con.releaseConnection(dbconn);
-		});
+		} catch {
+			res.send({status: false, message: "Server connection error"});
+		}
 	} else {
 		Object.assign(status, {"status": false});
 		res.send(status)
 	}
 });
 
+// Google Location API
 router.post("/getlocation", async (req, res) => {
 	try {
 		const response = await axios({
@@ -367,6 +296,7 @@ router.post("/getlocation", async (req, res) => {
 	}
 });
 
+// Get login status
 router.post("/getloginstatus", async (req, res) => {
 	if (req.session.username != undefined)
 		res.send({username:req.session.username, auth:true})
@@ -374,9 +304,9 @@ router.post("/getloginstatus", async (req, res) => {
 		res.send({username:"", auth:false})
 });
 
+// Complete profile on First login.
 router.post("/completeprofile", async (req, res) => {
-	//console.log(req.files);
-	//console.log(req.body);
+	//console.log(__dirname.slice(0, -7) + "uploads")
 	const {age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
 	var error = {};
 	function uploadProfilePicture(profilePic, path) {
@@ -418,133 +348,68 @@ router.post("/completeprofile", async (req, res) => {
 		if(!req.files) {
 			res.send({status:false, message:"empty"});
 		} else {
-			var uploadPath = dir + "/kaom/"
-			for (let imageName in req.files) {
-				if (imageName === "profilePicture") {
-					if(uploadProfilePicture(req.files[imageName], uploadPath)) {
-						con.getConnection(function(err, dbconn) {
-							if (err) {
+			try {
+				var uploadPath = __dirname.slice(0, -7) + "uploads" + "/kaom/" // Change to username later
+				for (let imageName in req.files) {
+					if (imageName === "profilePicture") {
+						// Uploads Profile picture to server.
+						if(uploadProfilePicture(req.files[imageName], uploadPath)) {
+							var id = 1; //change ID to session id
+							var profileId = 1;
+							var profileName = "profile.jpg"
+							var result = await con.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName])
+							//console.log(result)
+							if (!result) {
 								Object.assign(error, {error: "Something went wrong!"});
-							} else {
-								// change ID to session id
-								var id = 1;
-								dbconn.execute('SELECT * FROM images WHERE images.imagename = "profile.jpg" AND images.fk_userid = ?', [id], function(err, result) {
-									if (err) {
-										Object.assign(error, {error: "Something went wrong!"});
-									} else if(!result[0]) {
-										var id = 1;
-										var profileId = 1;
-										var profileName = "profile.jpg"
-										dbconn.execute('INSERT INTO images (fk_userid, profilepic, imagename) VALUES (?, ?, ?)', [id, profileId, profileName], function(err, result) {
-											if (err) {
-												Object.assign(error, {error: "Something went wrong!"});
-											}
-										});
-									}
-								});
 							}
-							con.releaseConnection(dbconn);
-						});
-					}
-				} else {
-					if(uploadPictures(req.files[imageName], uploadPath, imageName)) {
-						con.getConnection(function(err, dbconn) {
-							if (err) {
-								Object.assign(error, {error: "Something went wrong!"});
-							} else {
-								dbconn.execute('SELECT * FROM images WHERE images.imagename = ? AND images.fk_userid = ?', [imageName, id], function(err, result) {
-									if (err) {
-										Object.assign(error, {error: "Something went wrong!"});
-									} else if(!result[0]) {
-										// change ID to session id
-										var id = 1;
-										var profileName = imageName + ".jpg"
-										dbconn.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName], function(err, result) {
-											if (err) {
-												Object.assign(error, {error: "Something went wrong!"});
-											}
-										});
-									}
-								});
-							}
-							con.releaseConnection(dbconn);
-						});
+						}
+					} else {
+						if(uploadPictures(req.files[imageName], uploadPath, imageName)) {
+								var id = 1; //change ID to session id
+								var profileName = imageName + ".jpg"
+								var result = await con.execute('INSERT INTO images (fk_userid, imagename) VALUES (?, ?)', [id, profileName])
+								if (!result) {
+									Object.assign(error, {error: "Something went wrong!"});
+								}
+						}
 					}
 				}
-			}
-		}
-
-		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			const interestArr = interest.split(' ')
-			for (const interest of interestArr) {
-				con.getConnection(function(err, dbconn) {
-					if (err) {
+				if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+					const interestArr = interest.split(' ')
+					for (const interest of interestArr) {
+						var [rows, fields] = await con.execute('SELECT * FROM tag WHERE tag = ?', [interest])
+						if (!rows[0]) {
+							var result = await con.execute('INSERT INTO tag (tag) VALUES (?)', [interest])
+							var result = await con.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, result[0].insertId])
+							if (!result) {
+								Object.assign(error, {error: "Something went wrong!"});
+							}
+						} else {
+							var [rows, fields] = await con.execute('SELECT * FROM tag WHERE tag = ?', [interest])
+							var result = await con.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, rows[0].pk_tagid])
+							if (!result) {
+								Object.assign(error, {error: "Something went wrong!"});
+							}
+						}
+					}
+				} else {
+					res.send(error);
+				}
+				if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+					var id = 1; // change to session ID later
+					var result = await con.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, id])
+					if (!result) {
 						Object.assign(error, {error: "Something went wrong!"});
 					} else {
-						dbconn.execute('SELECT * FROM tag WHERE tag = ?', [interest], function(err, result) {
-							if(err) {
-								Object.assign(error, {error: "Something went wrong!"});
-							} else if(!result[0]) {
-								dbconn.execute('INSERT INTO tag (tag) VALUES (?)', [interest], function(err, result) {
-										if(err) {
-											Object.assign(error, {error: "Something went wrong!"});
-										} else {
-											var tagId = result.insertId
-											dbconn.execute('SELECT * FROM tagitem WHERE fk_userid = ? AND fk_tagid = ?', [1, tagId], function(err, result) {
-												if (err) {
-													Object.assign(error, {error: "Something went wrong!"});
-												} else if(!result[0]) {
-													dbconn.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, tagId], function(err, result) {
-														if (err) {
-															Object.assign(error, {error: "Something went wrong!"});
-														}
-													});
-												}
-											});
-										}
-									});
-							} else {
-								var tagId = result[0].pk_tagid
-								dbconn.execute('SELECT * FROM tagitem WHERE fk_userid = ? AND fk_tagid = ?', [1, tagId], function(err, result) {
-									if (err) {
-										Object.assign(error, {error: "Something went wrong!"});
-									} else if(!result[0]) {
-										dbconn.execute('INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, ?) ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid', [1, tagId], function(err, result) {
-											if (err) {
-												Object.assign(error, {error: "Something went wrong!"});
-											}
-										});
-									}
-								});
-							}
-						});
+						res.send({status:true})
 					}
-					con.releaseConnection(dbconn);
-				});
-			}
-		} else {
-			res.send(error);
-		}
-
-		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			con.getConnection(function(err, dbconn) {
-				if (err) {
-					Object.assign(error, {error: "Something went wrong!"});
 				} else {
-					// TODO change ID to session id
-					var id = 1;
-					dbconn.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, id], function(err, result) {
-						if(err) {
-							Object.assign(error, {error: "Something went wrong!"});
-						} else {
-							res.send({"status":true});
-						}
-					});
+					res.send(error);
 				}
-				con.releaseConnection(dbconn);
-			});
-		} else {
-			res.send(error);
+			} catch (err) {
+				console.log(err)
+				res.send({status: false, message: "Server connection error"});
+			}
 		}
 	} else {
 		res.send(error);
