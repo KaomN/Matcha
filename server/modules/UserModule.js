@@ -111,7 +111,6 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 	let status = {};
-
 	try {
 		var [rows, fields] = await con.execute('SELECT * FROM users WHERE username = ?', [username])
 		if(rows[0].length !== 0) {
@@ -128,14 +127,16 @@ router.post("/login", async (req, res) => {
 					req.session.rating = rows[0].rating;
 					req.session.token = rows[0].token;
 					req.session.verified = rows[0].verified;
+					req.session.gender = rows[0].gender
+					req.session.preference = rows[0].genderpreference
 					// Creating User folder
 					if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
 						fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
 					}
 					if(rows[0].profile === 1)
-						Object.assign(status, {status: true, profile: true, auth: rows[0].token});
+						Object.assign(status, {status: true, profile: true});
 					else
-						Object.assign(status, {status: true, profile: false, auth: rows[0].token});
+						Object.assign(status, {status: true, profile: false});
 					// res.cookie("sessionId", req.session.id, {
 					// 	secure: true,
 					// 	httpOnly: true,
@@ -160,8 +161,8 @@ router.get("/getloginstatus", async (req, res) => {
 	// Testing Session cookies
 	// Add maxAge to session cookies? to persists login even if browser is closed.
 	// How long should session cookies be kept? 1day 1week 1month?
-	console.log("Unsigned Cookies", req.cookies)
-	console.log(req.session.username)
+	//console.log("Cookies", req.cookies)
+	//console.log(req.session.username)
 	if (req.session.username != undefined)
 		res.send({username:req.session.username, auth:true})
 	else
@@ -176,6 +177,28 @@ router.get("/logout", (req, res) => {
 			res.send({status: true});
 		})
 	} catch {
+		res.send({status: false, message: "Server connection error"});
+	}
+});
+
+router.get("/test", async (req, res) => {
+	//console.log(req.session.preference)
+
+	function distance(lat1, lng1, lat2, lng2) {
+		
+	}
+	try {
+		if (req.session.preference === "both") {
+			
+		} else {
+			// Get all users that match with users gender preference
+			var [rows, fields] = await con.execute('SELECT * FROM users WHERE NOT pk_userid = ? AND gender = ? AND genderpreference = ? OR genderpreference = "both" AND NOT gender = ?', [req.session.userid, req.session.preference, req.session.gender, req.session.gender])
+			//var [rows, fields] = await con.execute('SELECT * FROM users WHERE NOT pk_userid = ? AND gender = ?', [req.session.userid, req.session.preference])
+			console.log(rows)
+		}
+		res.send({status:true})
+	} catch (err) {
+		console.log(err)
 		res.send({status: false, message: "Server connection error"});
 	}
 });
