@@ -129,6 +129,8 @@ router.post("/login", async (req, res) => {
 					req.session.verified = rows[0].verified;
 					req.session.gender = rows[0].gender
 					req.session.preference = rows[0].genderpreference
+					req.session.latitude = rows[0].latitude
+					req.session.longitude = rows[0].longitude
 					// Creating User folder
 					if (!fs.existsSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username)){
 						fs.mkdirSync(__dirname.slice(0, -8) + "/uploads/" + req.session.username);
@@ -185,18 +187,42 @@ router.get("/test", async (req, res) => {
 	//console.log(req.session.preference)
 
 	function distance(lat1, lng1, lat2, lng2) {
-		
+		lng1 =  lng1 * Math.PI / 180;
+		lng2 = lng2 * Math.PI / 180;
+		lat1 = lat1 * Math.PI / 180;
+		lat2 = lat2 * Math.PI / 180;
+
+		let dlon = lng2 - lng1;
+		let dlat = lat2 - lat1;
+		 // Haversine formula
+		let a = Math.pow(Math.sin(dlat / 2), 2)
+				+ Math.cos(lat1) * Math.cos(lat2)
+				* Math.pow(Math.sin(dlon / 2),2);
+			
+		let c = 2 * Math.asin(Math.sqrt(a));
+
+		// Radius of earth in kilometers. Use 3956 for miles
+		let r = 6371;
+
+		// calculate the result
+		return(parseInt(c * r));
 	}
+
 	try {
 		if (req.session.preference === "both") {
 			
 		} else {
 			// Get all users that match with users gender preference
-			var [rows, fields] = await con.execute('SELECT * FROM users WHERE NOT pk_userid = ? AND gender = ? AND genderpreference = ? OR genderpreference = "both" AND NOT gender = ?', [req.session.userid, req.session.preference, req.session.gender, req.session.gender])
+			var [rows, fields] = await con.execute('SELECT username, age, firstname, surname, latitude, longitude FROM users WHERE NOT pk_userid = ? AND gender = ? AND genderpreference = ? OR genderpreference = "both" AND NOT gender = ?', [req.session.userid, req.session.preference, req.session.gender, req.session.gender])
 			//var [rows, fields] = await con.execute('SELECT * FROM users WHERE NOT pk_userid = ? AND gender = ?', [req.session.userid, req.session.preference])
+			// calculate distance between user1 and user2
+			for (const user of rows) {
+				user.distance = distance(req.session.latitude, req.session.longitude, user.latitude, user.longitude) + " km away"
+				console.log(distance(req.session.latitude, req.session.longitude, user.latitude, user.longitude))
+			}
 			console.log(rows)
 		}
-		res.send({status:true})
+		res.send(rows)
 	} catch (err) {
 		console.log(err)
 		res.send({status: false, message: "Server connection error"});
@@ -384,6 +410,7 @@ router.post("/completeprofile", async (req, res) => {
 			res.send({status:false, message:"empty"});
 		} else {
 			try {
+				// Pictures
 				var uploadPath = __dirname.slice(0, -7) + "uploads" + "/kaom/" // Change to username later
 				for (let imageName in req.files) {
 					if (imageName === "profilePicture") {
@@ -407,6 +434,7 @@ router.post("/completeprofile", async (req, res) => {
 						}
 					}
 				}
+				// Interest
 				if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 					const interestArr = interest.split(' ')
 					for (const interest of interestArr) {
@@ -428,11 +456,14 @@ router.post("/completeprofile", async (req, res) => {
 				} else {
 					res.send(error);
 				}
+				// User info
 				if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 					var result = await con.execute('UPDATE users SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1 WHERE users.pk_userid = ?', [gender, age, birthDate, preference, biography, locationLat, locationLng, req.session.userid])
 					if (!result) {
 						Object.assign(error, {error: "Something went wrong!"});
 					} else {
+						req.session.gender = gender
+						req.session.preference = preference
 						res.send({status:true})
 					}
 				} else {
