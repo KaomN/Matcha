@@ -5,15 +5,20 @@ export default class PikadayWrap extends React.Component {
 	constructor (params) {
 		super(params)
 		this.myRef = React.createRef()
+		// Min 18 years of age
+		this.maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+		// Max year range
+		this.maxYear = new Date().getFullYear() - 18
 	}
 
 	componentDidMount () {
 		new Pikaday({
+		defaultDate: this.maxDate,
 		field: this.myRef.current,
 		format: 'DD-MM-YYYY',
 		firstDay: 0,
-		maxDate: new Date(new Date()),
-		yearRange: [1900,2022]
+		maxDate: this.maxDate,
+		yearRange: [1900,this.maxYear]
 		})
 	}
 
