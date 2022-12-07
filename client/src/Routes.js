@@ -25,7 +25,7 @@ export default function Links() {
 					<Route path="home" element={<Home />} />
 					<Route path="completeprofile" element={<CompleteProfile />} />
 					<Route path="profile" element={<Profile />} >
-						{/* Add routes to userprofiles */}
+						<Route path=":profileUsername" element={<Profile />} />
 					</Route>
 					<Route path="settings" element={<Settings />} />
 					<Route path="chat" element={<Chat />} />
