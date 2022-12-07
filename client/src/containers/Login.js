@@ -37,29 +37,35 @@ export default function Login() {
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		if(username.trim() !== "" && password !== "") {
-			var response = await trackPromise(fetchLogin());
-			console.log(response)
-			if(response.status) {
-				if(response.profile)
-					navigate("/home");
-				else
-					navigate("/completeprofile");
-			} else {
-				if("error" in response) {
-					setError(response.error)
-				} else if("verified" in response) {
-					setPopupNotVerified("popup show-popup")
-				}
-			}
+		// if(username.trim() !== "" && password !== "") {
+		var response = await trackPromise(fetchLogin());
+		console.log(response)
+		if(response.status) {
+			if(response.profile)
+				navigate("/home");
+			else
+				navigate("/completeprofile");
 		} else {
-			if(username.trim() === "") {
+			if("errorUsername" in response) {
 				setErrorUsername("Username required!");
 			}
-			if (password === "") {
+			if("errorPassword" in response) {
 				setErrorPassword("Password required!");
 			}
+			if("error" in response) {
+				setError(response.error)
+			} else if("verified" in response) {
+				setPopupNotVerified("popup show-popup")
+			}
 		}
+		// } else {
+		// 	if(username.trim() === "") {
+		// 		setErrorUsername("Username required!");
+		// 	}
+		// 	if (password === "") {
+		// 		setErrorPassword("Password required!");
+		// 	}
+		// }
 	}
 
 	return (
