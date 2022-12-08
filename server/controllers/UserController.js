@@ -36,13 +36,16 @@ router.get("/getloginstatus", (req, res) => {
 
 // Logout
 router.get("/logout", (req, res) => {
-	try {
-		req.sessionStore.destroy(req.session.id, function(err) {
+	req.sessionStore.destroy(req.session.id, function(err) {
 			res.send({status: true});
-		})
-	} catch {
-		res.send({status: false, message: "Server connection error"});
-	}
+	})
+	// try {
+	// 	req.sessionStore.destroy(req.session.id, function(err) {
+	// 		res.send({status: true});
+	// 	})
+	// } catch {
+	// 	res.send({status: false, message: "Server connection error"});
+	// }
 });
 
 // Verify account request
