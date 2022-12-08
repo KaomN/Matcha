@@ -18,15 +18,7 @@ export default function FirstTimeProfile() {
 	const [picture, setPicture] = useState([]);
 	const [profilePicture, setProfilePicture] = useState({});
 	const [profilePictureSrc, setProfilePictureSrc] = useState("");
-
-	const [showAgeForm, setAgeForm] = useState(true);
-	const [showGenderForm, setGenderForm] = useState(false);
-	const [showPreferenceForm, setPreferenceForm] = useState(false);
-	const [showBiographyForm, setBiographyForm] = useState(false);
-	const [showInterestForm, setInterestForm] = useState(false);
-	const [showPictureForm, setPictureForm] = useState(false);
-	const [showProfileForm, setProfileForm] = useState(false);
-
+	const [showform, setShowForm] = useState("ageForm");
 	const [interestError, setInterestError] = useState("");
 	const [locationLat, setLocationLat] = useState("")
 	const [locationLng, setLocationLng] = useState("")
@@ -80,7 +72,7 @@ export default function FirstTimeProfile() {
 									<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Date of birth</label>
 									<div className="form_message_error"></div>
 								</div>
-								<div className="flex-column pb-2rem">
+								<div className="flex-column-completeprofile pb-2rem">
 									<PikadayWrap />
 								</div>
 								<div className="center-left">
@@ -97,8 +89,7 @@ export default function FirstTimeProfile() {
 												setBirthDate(document.getElementById("date").value);
 												setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)));
 												document.querySelector('.form_message_error').innerHTML = "";
-												setAgeForm(false);
-												setGenderForm(true);
+												setShowForm("genderForm");
 											}
 										}
 										}}>Next</button>
@@ -127,14 +118,13 @@ export default function FirstTimeProfile() {
 									<option value="female" >Female</option>
 								</select>
 								<div className="center-gap">
-									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setGenderForm(false); setAgeForm(true);}}>Previous</button>
+									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setShowForm("ageForm");}}>Previous</button>
 									<button className="complete-form-button" onClick={() => {
 											if(document.getElementById('genderSelect').value === "") {
 												document.querySelector('.form_message_error').innerHTML = "Empty field!"
 											} else {
 												document.querySelector('.form_message_error').innerHTML = ""
-												setGenderForm(false);
-												setPreferenceForm(true);
+												setShowForm("preferenceForm");
 											}
 										}}>Next</button>
 								</div>
@@ -156,7 +146,7 @@ export default function FirstTimeProfile() {
 										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Preference</label>
 										<div className="form_message_error"></div>
 									</div>
-									<div className="flex-column">
+									<div className="flex-column-completeprofile">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
 											<input type="radio" name="preference" style={{border: "0px", height: "1.5em", width: "1.5em"}} id="preferenceFemale" onClick={function(e) {setPreference("female")}}/>
 											<label style={{fontSize: "23px"}} htmlFor="preferenceFemale">Female</label>
@@ -171,14 +161,13 @@ export default function FirstTimeProfile() {
 										</div>
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setPreferenceForm(false);setGenderForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setShowForm("genderForm");}}>Previous</button>
 										<button className="complete-form-button" onClick={() => {
 												if(!document.getElementById('preferenceFemale').checked && !document.getElementById('preferenceMale').checked && !document.getElementById('preferenceBoth').checked) {
 													document.querySelector('.form_message_error').innerHTML = "Empty field!"
 												} else {
 													document.querySelector('.form_message_error').innerHTML = ""
-													setPreferenceForm(false);
-													setBiographyForm(true);
+													setShowForm("biographyForm");
 												}
 											}}>Next</button>
 									</div>
@@ -200,18 +189,17 @@ export default function FirstTimeProfile() {
 										<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Biography</label>
 										<div className="form_message_error"></div>
 									</div>
-									<div className="flex-column">
+									<div className="flex-column-completeprofile">
 										<textarea cols={35} rows={10} id="biographyText" onChange={function(e) {setBiography(e.target.value)}}></textarea>
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setBiographyForm(false);setPreferenceForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setShowForm("preferenceForm");;}}>Previous</button>
 										<button className="complete-form-button" onClick={() => {
 											if(document.getElementById('biographyText').value === "") {
 												document.querySelector('.form_message_error').innerHTML = "Empty field!"
 											} else {
 												document.querySelector('.form_message_error').innerHTML = ""
-												setBiographyForm(false);
-												setInterestForm(true);
+												setShowForm("interestForm");
 											}
 											}}>Next</button>
 									</div>
@@ -259,7 +247,7 @@ export default function FirstTimeProfile() {
 										<label style={{fontSize: "23px"}}>Interests</label>
 										<div className="form_message_error">{interestError}</div>
 									</div>
-									<div className="flex-column align-center p-1rem">
+									<div className="flex-column-completeprofile align-center p-1rem">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
 											<input type="text" id="interest" onKeyDown={interestKeydown} autoComplete="off" className="text-align-center"/>
 										</div>
@@ -272,13 +260,12 @@ export default function FirstTimeProfile() {
 										<button className="complete-form-button delete-btn" onClick={deleteInterest}>Delete Interest</button>
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setInterestForm(false);setBiographyForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setShowForm("biographyForm");;}}>Previous</button>
 										<button className="complete-form-button" onClick={() => {
 												if(document.getElementById('interestSelect').firstChild === null) {
 													document.querySelector('.form_message_error').innerHTML = "Empty field!"
 												} else {
-													setInterestForm(false);
-													setProfileForm(true);
+													setShowForm("profileForm");
 												}
 											}}>Next</button>
 									</div>
@@ -298,7 +285,7 @@ export default function FirstTimeProfile() {
 		var fileInput, btn
 		if (profilePicture && Object.keys(profilePicture).length === 0 && Object.getPrototypeOf(profilePicture) === Object.prototype) {
 			btn = ""
-			fileInput = <div className="flex-column">
+			fileInput = <div className="flex-column-completeprofile">
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
 									<input type="file" id="profilePic" accept="image/*" name="profile" onChange={saveProfilePicture}/>
 									<i className="material-icons profile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
@@ -330,14 +317,13 @@ export default function FirstTimeProfile() {
 										</div>
 								</div>
 								<div className="center-gap">
-									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setProfileForm(false);setInterestForm(true);
+									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setShowForm("interestForm");;
 										}}>Previous</button>
 									<button className="complete-form-button" onClick={() => {
 										if(document.getElementById('profilePic') != null) {
 											document.querySelector('.form_message_error').innerHTML = "Please choose a profile picture!"
 										} else {
-											setProfileForm(false);
-											setPictureForm(true);
+											setShowForm("pictureForm");
 										}
 										}}>Next</button>
 								</div>
@@ -379,7 +365,7 @@ export default function FirstTimeProfile() {
 											<p className="mt-0">Max 4 pictures!</p>
 										</div>
 									</div>
-									<div className="flex-column">
+									<div className="flex-column-completeprofile">
 										<div style={{border: "0px", marginBottom: "0.5rem"}}>
 											{input}
 										</div>
@@ -399,7 +385,7 @@ export default function FirstTimeProfile() {
 										))}
 									</div>
 									<div className="center-gap">
-										<button className="complete-form-button" onClick={() => {setPictureForm(false);setProfileForm(true);}}>Previous</button>
+										<button className="complete-form-button" onClick={() => {setShowForm("profileForm");}}>Previous</button>
 										<button className="complete-form-button" onClick={handleSubmit}>Submit</button>
 									</div>
 								</div>
@@ -438,18 +424,18 @@ export default function FirstTimeProfile() {
 		}
 	}
 
-	if(showAgeForm)
+	if(showform === "ageForm")
 		return AgeForm()
-	else if(showGenderForm)
+	else if(showform === "genderForm")
 		return GenderForm()
-	else if(showPreferenceForm)
+	else if(showform === "preferenceForm")
 		return PreferenceForm()
-	else if(showBiographyForm)
+	else if(showform === "biographyForm")
 		return BiographyForm()
-	else if(showInterestForm)
+	else if(showform === "interestForm")
 		return InterestForm()
-	else if(showProfileForm)
+	else if(showform === "profileForm")
 		return ProfileForm()
-	else if(showPictureForm)
+	else if(showform === "pictureForm")
 		return PictureForm()
 }
