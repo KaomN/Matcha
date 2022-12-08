@@ -37,7 +37,6 @@ export default function Login() {
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		// if(username.trim() !== "" && password !== "") {
 		var response = await trackPromise(fetchLogin());
 		console.log(response)
 		if(response.status) {
@@ -58,14 +57,6 @@ export default function Login() {
 				setPopupNotVerified("popup show-popup")
 			}
 		}
-		// } else {
-		// 	if(username.trim() === "") {
-		// 		setErrorUsername("Username required!");
-		// 	}
-		// 	if (password === "") {
-		// 		setErrorPassword("Password required!");
-		// 	}
-		// }
 	}
 
 	return (
