@@ -141,6 +141,11 @@ a {
 	justify-content: center;
 }
 
+.flex-column {
+	display: flex;
+	flex-direction: column;
+}
+
 .flex {
 	display: flex;
 }
@@ -168,3 +173,106 @@ a {
 .flex-justify-content-start {
 	justify-content: flex-start;
 }
+
+/* For Testing chat messages */
+
+.messages {
+	text-align: left;
+	width: calc(100% - 1.5rem);
+	padding: 0.75rem;
+	padding-bottom: 0.25rem;
+	padding-top: 0.25rem;
+	overflow-y: scroll;
+}
+
+.comments-container {
+	background-color: var(--color-primary-light);
+	border-radius: var(--border-radius);
+	display: flex;
+	align-items: center;
+	padding: .25rem;
+	margin-top: 2px;
+}
+
+.no-comments-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 0.75rem;
+}
+
+.message {
+	word-break: break-word;
+	background: #eeeeee;
+	width: 100%;
+	border-bottom-right-radius: var(--border-radius);
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
+	padding: 5px;
+	margin-left: 5px;
+}
+
+.message-container {
+	/* bottom: 48px; */
+	background-color: var(--color-primary-dark);
+	width: 50%;
+	height: 300px;
+	transition: height 0.4s;
+	display: flex;
+	flex-direction: column-reverse;
+	overflow: hidden;
+}
+
+.user-message-username {
+	padding: 5px 5px 5px 5px;
+	border-radius: var(--border-radius);
+	background-color: var(--color-primary-light);
+	text-align: center;
+}
+
+.user-message-input {
+	width: 100%;
+	margin-bottom: 0.5rem;
+	display: flex;
+	align-items: center;
+	align-content: flex-start;
+	justify-content: flex-start;
+	background-color: var(--color-primary-light);
+	border-radius: var(--border-radius);
+}
+.chat-input {
+	width: 100%;
+	height: 22px;
+	margin-left: 2px;
+	padding: 5px;
+	border-radius: var(--border-radius);
+	background: #eeeeee;
+	color: black;
+	font-family:inherit;
+	font-size: inherit;
+	outline: none;
+	border: none;
+}
+
+.messages::-webkit-scrollbar {
+	width: 14px;
+}
+
+.messages::-webkit-scrollbar-track {
+	box-shadow: inset 0 0 14px 14px transparent;
+	border: solid 4px transparent;
+}
+
+.messages::-webkit-scrollbar-corner {
+	background: rgba(0,0,0,0);
+}
+
+.messages::-webkit-scrollbar-thumb {
+	box-shadow: inset 0 0 14px 14px var(--color-primary-light);
+	border: solid 4px transparent;
+	border-radius: 14px;
+}
+
+.messages::-webkit-scrollbar-button {
+	display: none;
+} 
