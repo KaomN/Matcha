@@ -9,10 +9,9 @@ var fs = require('fs');
 
 // Register request
 const register = async (req) => {
-	const { firstname, surname, username, email, password} = req.body;
+	const { firstname, surname, username, email, password } = req.body;
 	try {
 		var [rows, fields] = await con.execute('SELECT * FROM users WHERE username = ?', [username])
-		console.log(rows[0])
 		if(rows[0] === undefined) {
 			var [rows, fields] = await con.execute("SELECT * FROM users WHERE email = ?", [email])
 			if (rows[0] === undefined) {
@@ -50,7 +49,7 @@ const register = async (req) => {
 }
 
 const login = async (req) => {
-	const { firstname, surname, username, email, password} = req.body;
+	const { username, password } = req.body;
 	try {
 		var [rows, fields] = await con.execute(`SELECT *
 												FROM users
@@ -161,7 +160,7 @@ const forgotPassword = async (req, res) => {
 
 // Password reset request
 const passwordReset = async (req) => {
-	const {password, passwordConfirm, token} = req.body;
+	const { password, token } = req.body;
 	try {
 		var [rows, fields] = await con.execute(`SELECT *
 												FROM usertokens
@@ -199,8 +198,7 @@ const passwordReset = async (req) => {
 
 // Complete profile on First login.
 const completeProfile = async (req, res) => {
-	//console.log(__dirname.slice(0, -7) + "uploads")
-	const {age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
+	const { age, birthDate, gender, preference, biography, locationLat, locationLng, interest } = req.body;
 	var error = {};
 	function uploadProfilePicture(profilePic, path) {
 		path += "profile.jpg"
@@ -219,6 +217,7 @@ const completeProfile = async (req, res) => {
 		});
 		return true;
 	}
+
 	try {
 		// Pictures
 		var uploadPath = __dirname.slice(0, -6) + "uploads/"  + req.session.username + "/" // Change to username later
