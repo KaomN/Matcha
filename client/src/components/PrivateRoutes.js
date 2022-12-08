@@ -21,7 +21,7 @@ const PrivateRoutes = () => {
 			(async function() {
 				try {
 					const isUserLogged = await userAuth();
-					console.log(isUserLogged)
+					//console.log(isUserLogged)
 					setState(isUserLogged ? true : false);
 				} catch {
 					setState(false);
