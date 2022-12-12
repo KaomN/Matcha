@@ -34,7 +34,7 @@ const PrivateRoutes = () => {
 	}
 
 	return (
-		state ?  <Outlet /> : <Navigate to="/login" />
+		state ? <Outlet /> : <Navigate to="/login" />
 	)
 }
 
