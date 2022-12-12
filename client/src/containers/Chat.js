@@ -5,6 +5,7 @@ import { trackPromise} from 'react-promise-tracker';
 
 export default function Chat() {
 	const [user, setUser] = useState("loading");
+	const [test, setTest] = useState("");
 
 	useEffect(() => {
 		function fetchUserinfo() {
@@ -40,28 +41,43 @@ export default function Chat() {
 // 			socket.off('disconnect');
 // 		};
 //  }, []);
-	if(user !== "loading") {
-		const socket = io({
-			auth: {
-				user
-			}
-		});
+	
 		//socket.emit('new-connection', {user});
+	useEffect(() => {
+		if(user !== "loading") {
+			const socket = io({
+				auth: {
+					user
+				}
+			});
+			socket.emit("connected", (response) => {
+				console.log("running")
+				console.log(response)
+			});
+		}
+	}, [user]);
+
+
+	function handleChatSubmit(event) {
+		if(event.key === "Enter") {
+			console.log("emit chat")
+		}
 	}
+
 	return (
 		<main className="flex-column flex-center">
 			<h3>Chat page. Show connected users on a panel to the left. clicking on the user brings up the Chat page in the middle with history of the chat</h3>
 			<div className="message-container">
 				<div className="user-message-input">
 					<span className="user-message-username">kaom</span>
-					<input type="text" className="chat-input" id="userMessage" placeholder="Write a comment..." autoComplete="off" />
-						</div>
-						<div className="messages">
-							<div>
-								<div className="comments-container">
-									<span>kaom</span><div className="message" title="0 seconds ago">asd</div>
-								</div>
-						</div>
+					<input type="text" className="chat-input" id="userMessage" placeholder="Write a comment..." autoComplete="off" onKeyDown={handleChatSubmit}/>
+				</div>
+				<div className="messages">
+					<div>
+						{/* <div className="comments-container">
+							<span>kaom</span><div className="message" title="0 seconds ago">asd</div>
+						</div> */}
+					</div>
 				</div>
 			</div>
 
