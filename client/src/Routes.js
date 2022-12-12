@@ -25,10 +25,12 @@ export default function Links() {
 					<Route path="home" element={<Home />} />
 					<Route path="completeprofile" element={<CompleteProfile />} />
 					<Route path="profile" element={<Profile />} >
-						<Route path=":profileUsername" element={<Profile />} />
+						<Route path=":profileID" element={<Profile />} />
 					</Route>
 					<Route path="settings" element={<Settings />} />
-					<Route path="chat" element={<Chat />} />
+					<Route path="chat" element={<Chat />} >
+						<Route path=":chatID" element={<Chat />} />
+					</Route>
 				</Route>
 				<Route path="*" element={<NotFound />} />
 			</Routes>
