@@ -1,16 +1,19 @@
 const app = require('express')();
 const server = require('http').createServer(app);
+const {sessionMiddleware} = require('./SessionMiddleware')
+const con = require("../setup").pool;
 const io = require('socket.io')(server, {
 	cors: {
 		origin: 'http://localhost:3000',
 		methods: ['GET', 'POST'],
+		credentials: true,
 	},
 });
-const con = require("../setup").pool;
-// const io = new Server(server, {
-	
-// });
 
+// Convert a connect middleware to a Socket.IO middleware
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+// Have Socket Io use the middleware
+io.use(wrap(sessionMiddleware));
 
 const userStatus = [];
 
@@ -34,31 +37,47 @@ function updateUserStatus(userId, socketId) {
 	//console.log(userStatus)
 }
 
+// Only allow authenticated users
 io.use((socket, next) => {
-	//console.log(socket.handshake.auth)
-	const userId = socket.handshake.auth.user.userid
-	const socketId = socket.id
-	if(!userId) {
-		return next(new Error("Unauthorized"));
+	const session = socket.request.session;
+	if (session && session.authenticated) {
+		updateUserStatus(session.userid, socket.id)
+		next();
+	} else {
+		next(new Error("unauthorized"));
 	}
-	updateUserStatus(userId, socketId)
-	next()
 });
 
 io.on('connection', (socket) => {
 	try {
+		socket.channel = ""
 		// Get all connected users and display them.
 		socket.on("connected", async (callback) => {
-			var [rows, fields] = await con.execute('SELECT * FROM connected WHERE userid1 = ? OR userid2 = ?', [socket.handshake.auth.user.userid, socket.handshake.auth.user.userid])
-			console.log(rows)
+			const session = socket.request.session;
+			//var [rows, fields] = await con.execute('SELECT * FROM connected WHERE userid1 = ? OR userid2 = ?', [session.userid, session.userid])
+			//console.log(rows)
 			callback({
 				status: "ok"
 			});
 		})
-	
-		// socket.on('disconnect', () => {
-		// 	//console.log('user disconnected', socket.id)
-		// })
+		socket.on("joinChannel", function (data) {
+			//console.log(data)
+			socket.channel = data.channel;
+			//console.log(data.channel)
+			socket.join(data.channel);
+			//console.log("socket.channel")
+		});
+		socket.on("message", function (data) {
+			// emit a "message" event to every other socket
+			//console.log(data)
+			//socket.to("channel").emit('receive_message', data);
+			socket.to(data.channel).emit("receive_message", {
+				message: data.message
+			});
+			// socket.broadcast.emit("receive_message", {
+			// 	message: data.message
+			// });
+		});
 	} catch (err) {
 		console.log(err)
 	}
