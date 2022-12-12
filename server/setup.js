@@ -27,6 +27,8 @@ const emailTransporter = nodemailer.createTransport({
 	}
 });
 
-module.exports.con = con;
-module.exports.pool = pool;
-module.exports.emailTransporter = emailTransporter;
+module.exports = {
+	con,
+	pool,
+	emailTransporter,
+}

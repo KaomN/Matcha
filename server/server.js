@@ -1,4 +1,3 @@
-const express = require("express");
 const session = require('express-session')
 const bodyParser = require('body-parser');
 const Database = require("./createDatabase");
@@ -10,16 +9,17 @@ const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 const PORT = process.env.PORT;
 const MySQLStore = require('express-mysql-session')(session);
-const app = express();
-const server = require('http').createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server, {
-	cors: {
-		origin: 'http://localhost:3000',
-		methods: ['GET', 'POST'],
-	},
-});
+const {app, server} = require('./modules/SocketIO');
 
+//const app = express();
+// const server = require('http').createServer(app);
+// const { Server } = require("socket.io");
+// const io = new Server(server, {
+// 	cors: {
+// 		origin: 'http://localhost:3000',
+// 		methods: ['GET', 'POST'],
+// 	},
+// });
 app.use(session({
 	name: "sessionId",
 	secret: process.env.SESSION_SECRET,
@@ -39,46 +39,7 @@ if (!fs.existsSync(__dirname + "/uploads")){
 }
 
 // Save Socket users in array;
-const userStatus = [];
 
-function updateUserStatus(userId, socketId) {
-	const index = userStatus.findIndex((user) => user.userId === userId)
-	if (index !== -1) {
-		console.log("-----userStatus array-----")
-		userStatus[index] = {
-			userId: userId,
-			socketId: socketId,
-			lastActive: parseInt(Date.now() / 1000),
-		};
-	} else {
-		console.log("-----userStatus array-----")
-		userStatus.push({
-			userId: userId,
-			socketId: socketId,
-			lastActive: parseInt(Date.now() / 1000),
-		});
-	}
-	console.log(userStatus)
-}
-
-io.use((socket , next) => {
-	//console.log(socket.handshake.auth)
-	const userId = socket.handshake.auth.user.userid
-	const socketId = socket.id
-	updateUserStatus(userId, socketId)
-	next()
-});
-
-io.on('connection', (socket) => {
-	socket.on('new-connection', (data) => {
-		//console.log(data.user.username, data.user.userid)
-		//console.log(userStatus)
-	})
-
-	socket.on('disconnect', () => {
-		//console.log('user disconnected', socket.id)
-	})
-});
 
 // io.on('disconnect', (socket) => {
 // 	console.log('a user disconnected');
@@ -90,9 +51,10 @@ app.use(bodyParser.json());
 app.use(fileUpload());
 app.use(cors({origin: "http://127.0.0.1:3001", credentials:true}));
 
-// UserModule
 //const userModule = require('./controllers/UserController');
+// UserModule
 app.use('/request', require('./controllers/UserController'));
+
 app.use('/chat', require('./controllers/ChatController'));
 
 server.listen(PORT, () => {
