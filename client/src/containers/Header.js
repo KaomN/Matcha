@@ -62,6 +62,19 @@ export default function Header() {
 				</ul>
 			</nav>
 		</header>);
+	 }else if(pathname.slice(0,5) === "/chat") {
+		return (<header>
+			<div className="flex-center">
+				<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
+			</div>
+			<nav>
+				<ul>
+					<li><button onClick={handleLogout}>Logout</button></li>
+					<li><button>Dropdown settings</button></li>
+					<li><button>Notifications</button></li>
+				</ul>
+			</nav>
+		</header>);
 	} else if(pathname.slice(0,8) === "/profile") {
 		return (<header>
 			<div className="flex-center">
