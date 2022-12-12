@@ -75,6 +75,7 @@ const login = async (req) => {
 					req.session.preference = rows[0].genderpreference
 					req.session.latitude = rows[0].latitude
 					req.session.longitude = rows[0].longitude
+					req.session.authenticated = true;
 					// Creating User folder
 					if (!fs.existsSync(__dirname.slice(0, -7) + "/uploads/" + req.session.username)){
 						fs.mkdirSync(__dirname.slice(0, -7) + "/uploads/" + req.session.username);
