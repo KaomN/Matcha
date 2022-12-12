@@ -1,10 +1,18 @@
-import { useState, useEffect } from "react";
-import io from 'socket.io-client';
+import { useState, useEffect, useContext } from "react";
 import { trackPromise} from 'react-promise-tracker';
+import { SocketContext } from '../context/socket';
+
+// import io from 'socket.io-client';
+// const socket = io({
+// 	transports: ["polling"],
+// });
 
 
 export default function Chat() {
+	const socket = useContext(SocketContext);
 	const [user, setUser] = useState("loading");
+	const [channel, setChannel] = useState("channel");
+	const [message, setMessage] = useState("");
 	const [test, setTest] = useState("");
 
 	useEffect(() => {
@@ -44,25 +52,42 @@ export default function Chat() {
 	
 		//socket.emit('new-connection', {user});
 	useEffect(() => {
-		if(user !== "loading") {
-			const socket = io({
-				auth: {
-					user
-				}
-			});
-			socket.emit("connected", (response) => {
-				console.log("running")
-				console.log(response)
-			});
-		}
-	}, [user]);
+		// if(user !== "loading") {
+			
+			// socket.emit("connected", (response) => {
+			// 	console.log("running")
+			// 	console.log(response)
+			// });
+			// socket.on("connect", function () {
+				// socket.emit("joinChannel", {
+				// 	channel: channel
+				// });
+				// console.log("joined channel:", channel)
+			// });
+		// }
+		socket.emit("joinChannel", {
+			channel: channel
+		});
+		console.log("joined channel:", channel)
+	}, []);
 
 
 	function handleChatSubmit(event) {
 		if(event.key === "Enter") {
-			console.log("emit chat")
+			//console.log("emit chat")
+			socket.emit("message", { message: event.target.value, channel: "channel" });
 		}
 	}
+	useEffect(() => {
+		socket.on("receive_message", function (data) {
+			if (data.channel == channel) {
+				console.log("test")
+			}
+			//setMessage(data)
+			console.log(data)
+		});
+	}, []);
+	
 
 	return (
 		<main className="flex-column flex-center">
