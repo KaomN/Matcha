@@ -246,3 +246,12 @@ select {
 .complete-form-button:active {
 	transform: scale(0.98);
 }
+
+.cropper-container {
+	position: relative;
+}
+
+.cropper-container-size {
+	width: 300px;
+	height: 300px;
+}

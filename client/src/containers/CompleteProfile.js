@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import PikadayWrap from "../components/PikadayWrap";
 import { useNavigate } from "react-router-dom";
+import Cropper from 'react-easy-crop'
 import "./styles/CompleteProfile.css";
 import '../../node_modules/pikaday/css/pikaday.css';
 
@@ -22,7 +23,13 @@ export default function FirstTimeProfile() {
 	const [interestError, setInterestError] = useState("");
 	const [locationLat, setLocationLat] = useState("")
 	const [locationLng, setLocationLng] = useState("")
-
+	const [crop, setCrop] = useState({ x: 0, y: 0 })
+	const [zoom, setZoom] = useState(1)
+	const [imageSize, setImageSize] = useState("")
+	const onCropComplete = useCallback((croppedArea) => {
+		console.log(croppedArea)
+		setImageSize(croppedArea)
+	})
 	const navigate = useNavigate();
 
 	function getLocation() {
@@ -61,7 +68,7 @@ export default function FirstTimeProfile() {
 		getLocation();
 
 	function AgeForm() {
-		return (<main className="form-container main-completeprofile">
+		return (<main className="form-container main-completeprofile ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -101,7 +108,7 @@ export default function FirstTimeProfile() {
 	}
 
 	function GenderForm() {
-		return (<main className="form-container">
+		return (<main className="form-container ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -135,7 +142,7 @@ export default function FirstTimeProfile() {
 	}
 
 	function PreferenceForm() {
-		return (<main className="form-container">
+		return (<main className="form-container ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -178,7 +185,7 @@ export default function FirstTimeProfile() {
 	}
 
 	function BiographyForm() {
-		return (<main className="form-container">
+		return (<main className="form-container ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -236,7 +243,7 @@ export default function FirstTimeProfile() {
 	}
 
 	function InterestForm() {
-		return (<main className="form-container">
+		return (<main className="form-container ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -285,7 +292,7 @@ export default function FirstTimeProfile() {
 		var fileInput, btn
 		if (profilePicture && Object.keys(profilePicture).length === 0 && Object.getPrototypeOf(profilePicture) === Object.prototype) {
 			btn = ""
-			fileInput = <div className="flex-column-completeprofile">
+			fileInput = <div className="flex-column-completeprofile ">
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
 									<input type="file" id="profilePic" accept="image/*" name="profile" onChange={saveProfilePicture}/>
 									<i className="material-icons profile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
@@ -298,7 +305,7 @@ export default function FirstTimeProfile() {
 			}}>Delete</button>
 			fileInput = ""
 		}
-		return (<main className="form-container">
+		return (<main className="form-container ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -312,7 +319,22 @@ export default function FirstTimeProfile() {
 								{fileInput}
 								<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container">
 										<div className="flex-center wh-100p flex-col flex-justify-content-start">
-											<img className="complete-form-img pt-1rem" src={profilePictureSrc} alt=""/>
+											<div className={profilePictureSrc !== "" ? "cropper-container cropper-container-size" : "cropper-container"}>
+												{(profilePictureSrc !== "") ? <Cropper
+												image={profilePictureSrc}
+												crop={crop}
+												zoom={zoom}
+												// cropShape={"round"}
+												aspect={4 / 3}
+												onCropChange={setCrop}
+												onCropComplete={onCropComplete}
+												onZoomChange={setZoom}
+												/>
+												:
+												null}
+												
+												</div>
+											{/* <img className="complete-form-img pt-1rem" src={profilePictureSrc} alt=""/> */}
 											{btn}
 										</div>
 								</div>
@@ -350,7 +372,7 @@ export default function FirstTimeProfile() {
 		} else {
 			input = "";
 		}
-		return (<main className="form-container">
+		return (<main className="form-container ma">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>
@@ -411,6 +433,10 @@ export default function FirstTimeProfile() {
 		interestString = interestString.trim();
 		formdata.append("interest", interestString);
 		formdata.append("profilePicture", profilePicture);
+		formdata.append("x", imageSize.x)
+		formdata.append("y", imageSize.y)
+		formdata.append("width", imageSize.width)
+		formdata.append("height", imageSize.height)
 		picture.map(pictureElem => (
 			formdata.append("pictureUpload" + pictureElem.id, pictureElem.name)
 		));
