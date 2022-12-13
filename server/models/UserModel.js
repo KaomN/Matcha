@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
+const sharp = require('sharp');
 // const axios = require('axios');
 // const dotenv = require('dotenv');
 // dotenv.config({path: __dirname + '/.env'});
@@ -199,10 +200,12 @@ const passwordReset = async (req) => {
 
 // Complete profile on First login.
 const completeProfile = async (req, res) => {
-	const { age, birthDate, gender, preference, biography, locationLat, locationLng, interest } = req.body;
+	const { age, birthDate, gender, preference, biography, locationLat, locationLng, interest, x, y, width, height } = req.body;
+	console.log(x, y, width, height)
 	var error = {};
 	function uploadProfilePicture(profilePic, path) {
 		path += "profile.jpg"
+
 		profilePic.mv(path, function(err) {
 			if (err)
 				return false;
@@ -248,62 +251,62 @@ const completeProfile = async (req, res) => {
 				}
 			}
 		}
-		// Interest
-		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			const interestArr = interest.split(' ')
-			for (const interest of interestArr) {
-				var [rows, fields] = await con.execute(`SELECT *
-														FROM tag
-														WHERE tag = ?`,
-														[interest])
-				if (!rows[0]) {
-					var result = await con.execute(`INSERT INTO tag (tag)
-													VALUES (?)`,
-													[interest])
-					var result = await con.execute(`INSERT INTO tagitem (fk_userid, fk_tagid)
-													VALUES (?, ?)
-													ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid`,
-													[req.session.userid, result[0].insertId])
-					if (!result) {
-						Object.assign(error, {error: "Something went wrong!"});
-					}
-				} else {
-					var [rows, fields] = await con.execute(`SELECT *
-															FROM tag
-															WHERE tag = ?`,
-															[interest])
-					var result = await con.execute(`INSERT INTO tagitem (fk_userid, fk_tagid)
-													VALUES (?, ?)
-													ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid`,
-													[req.session.userid, rows[0].pk_tagid])
-					if (!result) {
-						Object.assign(error, {error: "Something went wrong!"});
-					}
-				}
-			}
-		} else {
-			return (error);
-		}
-		// User info
-		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			var result = await con.execute(`UPDATE users
-											SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1
-											WHERE users.pk_userid = ?`,
-											[gender, age, birthDate, preference, biography, locationLat, locationLng, req.session.userid])
-			if (!result) {
-				Object.assign(error, {error: "Something went wrong!"});
-			} else {
-				req.session.gender = gender
-				req.session.preference = preference
-				req.session.latitude = locationLat
-				req.session.longitude = locationLng
-				req.session.age = age
-				req.session.interest = interest
-				return ({status:true})
-			}
-		} else {
-			return (error);
-		}
+		// // Interest
+		// if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		// 	const interestArr = interest.split(' ')
+		// 	for (const interest of interestArr) {
+		// 		var [rows, fields] = await con.execute(`SELECT *
+		// 												FROM tag
+		// 												WHERE tag = ?`,
+		// 												[interest])
+		// 		if (!rows[0]) {
+		// 			var result = await con.execute(`INSERT INTO tag (tag)
+		// 											VALUES (?)`,
+		// 											[interest])
+		// 			var result = await con.execute(`INSERT INTO tagitem (fk_userid, fk_tagid)
+		// 											VALUES (?, ?)
+		// 											ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid`,
+		// 											[req.session.userid, result[0].insertId])
+		// 			if (!result) {
+		// 				Object.assign(error, {error: "Something went wrong!"});
+		// 			}
+		// 		} else {
+		// 			var [rows, fields] = await con.execute(`SELECT *
+		// 													FROM tag
+		// 													WHERE tag = ?`,
+		// 													[interest])
+		// 			var result = await con.execute(`INSERT INTO tagitem (fk_userid, fk_tagid)
+		// 											VALUES (?, ?)
+		// 											ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid`,
+		// 											[req.session.userid, rows[0].pk_tagid])
+		// 			if (!result) {
+		// 				Object.assign(error, {error: "Something went wrong!"});
+		// 			}
+		// 		}
+		// 	}
+		// } else {
+		// 	return (error);
+		// }
+		// // User info
+		// if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		// 	var result = await con.execute(`UPDATE users
+		// 									SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1
+		// 									WHERE users.pk_userid = ?`,
+		// 									[gender, age, birthDate, preference, biography, locationLat, locationLng, req.session.userid])
+		// 	if (!result) {
+		// 		Object.assign(error, {error: "Something went wrong!"});
+		// 	} else {
+		// 		req.session.gender = gender
+		// 		req.session.preference = preference
+		// 		req.session.latitude = locationLat
+		// 		req.session.longitude = locationLng
+		// 		req.session.age = age
+		// 		req.session.interest = interest
+		// 		return ({status:true})
+		// 	}
+		// } else {
+		// 	return (error);
+		// }
 	} catch (err) {
 		return ({status: false, message: "Server connection error"});
 	}
