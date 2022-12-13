@@ -9,12 +9,12 @@
 	}
 }
 
-main {
+.main-signup {
 	width: 100%;
 	min-height: 452px;
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	/* align-items: center;
+	justify-content: center; */
 	/* margin-top: 2.5rem; */
 	/* padding-bottom: 3.5rem; */
 }
@@ -35,7 +35,7 @@ main {
 	display: none;
 }
 
-.flex-row {
+.flex-row-signup {
 	display: flex;
 	gap: 0.5rem;
 }
