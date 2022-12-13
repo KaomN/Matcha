@@ -60,7 +60,7 @@ export default function Login() {
 	}
 
 	return (
-		<main className="form-container" id="formLogin">
+		<main className="form-container ma main-login" id="formLogin">
 			<form onSubmit={handleSubmit}>
 				<h1 className="title-login">Matcha</h1>
 				<div className="form_message form_message_error">{error}</div>

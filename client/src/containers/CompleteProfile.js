@@ -61,7 +61,7 @@ export default function FirstTimeProfile() {
 		getLocation();
 
 	function AgeForm() {
-		return (<main className="form-container">
+		return (<main className="form-container main-completeprofile">
 					<div className="complete-profile-form">
 						<div style={{backgroundColor: ""}}>
 							<h1 className="title">Complete your profile</h1>

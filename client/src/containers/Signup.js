@@ -54,11 +54,11 @@ export default function Signup() {
 	}
 
 	return(
-		<main className="form-container">
+		<main className="form-container main-signup ma">
 			<form onSubmit={handleSubmit}>
 				<h1 className="title-signup">Signup</h1>
 				<div className="form_message form_message_error"></div>
-				<div className="flex-row">
+				<div className="flex-row-signup">
 					<div className="form_input_group">
 						<input autoFocus type="text" name="firstname" className="form_input" placeholder="Firstname" autoComplete="off" value={firstname} onChange={function(e) {setFirstname(e.target.value); setErrorFirstname("")}}/>
 						<div className="form_input_error_message">{errorFirstname}</div>

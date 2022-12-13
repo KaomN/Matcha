@@ -12,7 +12,7 @@ export default function Home() {
 	}
 
 	return (
-		<main className="flex-col flex-center">
+		<main className="flex-col flex-center ma">
 			<h3>Show profile of other interesting users. Be able to filter by age gap, fame rating gap, location and interest. Also able to sort by them.</h3>
 			<div>
 				<button className="form_button" onClick={handleTest}>test</button>
