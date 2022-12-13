@@ -24,4 +24,4 @@ async function createDatabase() {
 	}
 }
 
-module.exports = { createDatabase }; 
+module.exports = { createDatabase };
