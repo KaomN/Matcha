@@ -30,8 +30,9 @@ html, body {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	/* align-items: safe center;
+	justify-content: center; */
+	margin: auto;
 	flex-direction: column;
 }
 
@@ -159,10 +160,12 @@ a {
 }
 
 .flex-col {
+	display: flex;
 	flex-direction: column;
 }
 
 .flex-row {
+	display: flex;
 	flex-direction: row;
 }
 
@@ -276,3 +279,31 @@ a {
 .messages::-webkit-scrollbar-button {
 	display: none;
 } 
+
+.padding1 {
+	padding: 1rem;
+}
+
+.pl05 {
+	padding-left: .5rem;
+}
+
+.pr05 {
+	padding-right: .5rem;
+}
+
+.pt05 {
+	padding-top: .5rem;
+}
+
+.pb05 {
+	padding-bottom: .5rem;
+}
+
+.pb1 {
+	padding-bottom: 1rem;
+}
+
+.ma {
+	margin: auto;
+}
