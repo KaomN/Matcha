@@ -1,4 +1,5 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const server = require('http').createServer(app);
 const {sessionMiddleware} = require('./SessionMiddleware')
 const con = require("../setup").pool;
