@@ -41,7 +41,7 @@ export default function Index() {
 		
 	}, [searchParams]);
 	return (
-		<main>
+		<main className="ma">
 			<div>
 				<img src="images/logo.png" alt="logo"></img>
 			</div>
