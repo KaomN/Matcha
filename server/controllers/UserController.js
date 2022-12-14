@@ -28,9 +28,9 @@ router.post("/login", async (req, res) => {
 // Get login status
 router.get("/getloginstatus", (req, res) => {
 	if (req.session.username != undefined)
-		res.send({ auth:true })
+		res.send({ auth: true , username: req.session.username})
 	else
-		res.send({ auth:false })
+		res.send({ auth: false})
 });
 
 
