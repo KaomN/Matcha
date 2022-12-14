@@ -1,6 +1,5 @@
 .profile-view-image {
-	width: 200px;
-	border-radius: 20%;
+	border-radius: 50%;
 }
 
 .profile-view-font {
@@ -9,4 +8,19 @@
 
 .profile-view-font-small {
 	font-size: 14px;
+}
+
+.pos-relative {
+	position: relative;
+}
+
+.pos-absolute-top-right {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.profile-image-container {
+	width: 200px;
+	height: 200px;
 }
