@@ -30,34 +30,38 @@ export default function Profile() {
 		return (
 			<main className="flex-col padding1 ma">
 				<div className="flex-row ma">
-					<div className="pl05 pt05 pb05 pr05">
-						<img className="profile-view-image" src={"http://localhost:3001/images/" + profile.username + "/profile.jpg"}></img>
-						<div className="flex-center profile-view-font">{profile.firstname} {profile.surname}</div>
-						<div className="flex-center profile-view-font-small">@{profile.username}</div>
+					<div className="padding05">
+						<div className="pos-relative profile-image-container">
+							{(profile.isOwn === true) ? <i className="pos-absolute-top-right material-icons">edit</i> : null}
+							{(profile.profile === true) ? <img className="profile-view-image" src={profile.profileSrc}></img> : <img className="profile-view-image" src={"http://localhost:3001/images/defaultProfile.png"}></img>}
+							
+						</div>
+						<div className="padding05">
+							<div className="flex-center profile-view-font">{profile.firstname} {profile.surname}</div>
+							<div className="flex-center profile-view-font-small">@{profile.username}</div>
+						</div>
+						<div className="padding05 flex-center flex-col">
+							{/* <div>Date of birth: {profile.dateofbirth}</div> */}
+							<div>Age: {profile.age}</div>
+							<div>Gender: {profile.gender}</div>
+							{(profile.isOwn === true) ? null : <div>{profile.distance} km away</div>}
+							<div>Rating: {profile.rating}</div>
+						</div>
 					</div>
-					<div className="pl05 pt05 pb05 pr05">
-						<p>Date of birth: {profile.dateofbirth}</p>
-						<p>Age: {profile.age}</p>
-						<p>Gender: {profile.gender}</p>
-						{(profile.isOwn === true) ? null : <p>{profile.distance} km away</p>}
-						<p>Rating: {profile.rating}</p>
+					<div className="ma padding05">
+						other images
 					</div>
 				</div>
 				<div className="flex-col pb1 ma">
-					<div>About</div>
-					<div>About</div>
-					<div>About</div>
-					<div>About</div>
+					<div className="profile-view-font">About</div>
 					<div className="margin-auto">{profile.biography}</div>
 				</div>
-				<div className="ma">
-					other images
-				</div>
+				
 			</main>
 		);
 	} else {
 		return (
-			<main>
+			<main className="ma">
 				<h3>No Profile Found</h3>
 			</main>
 		);
