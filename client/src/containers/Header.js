@@ -2,8 +2,11 @@
 //import { UserContext } from '../components/UserContext';
 import { useLocation, useNavigate } from "react-router-dom";
 import { trackPromise} from 'react-promise-tracker';
+import { useContext } from "react";
+import { UserContext } from '../context/UserContext';
 
 export default function Header() {
+	const { user } = useContext(UserContext);
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 
@@ -35,62 +38,7 @@ export default function Header() {
 				</ul>
 			</nav>
 		</header>);
-	} else if(pathname === "/home") {
-	return (<header>
-				<div className="flex-center">
-					<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
-				</div>
-				<nav>
-					<ul>
-					<li><button onClick={handleLogout}>Logout</button></li>
-					<li><button>Profile icon, Dropdown settings</button></li>
-					<li><button>Notifications</button></li>
-					<li><button>Dropdown Chats</button></li>
-					</ul>
-				</nav>
-			</header>);
-	} else if(pathname === "/chat") {
-		return (<header>
-			<div className="flex-center">
-				<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
-			</div>
-			<nav>
-				<ul>
-					<li><button onClick={handleLogout}>Logout</button></li>
-					<li><button>Dropdown settings</button></li>
-					<li><button>Notifications</button></li>
-				</ul>
-			</nav>
-		</header>);
-	 }else if(pathname.slice(0,5) === "/chat") {
-		return (<header>
-			<div className="flex-center">
-				<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
-			</div>
-			<nav>
-				<ul>
-					<li><button onClick={handleLogout}>Logout</button></li>
-					<li><button>Dropdown settings</button></li>
-					<li><button>Notifications</button></li>
-				</ul>
-			</nav>
-		</header>);
-	} else if(pathname.slice(0,8) === "/profile") {
-		return (<header>
-			<div className="flex-center">
-				<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
-			</div>
-			<nav>
-				<ul>
-					<li><button onClick={handleLogout}>Logout</button></li>
-					<li><button>Dropdown settings</button></li>
-					<li><button>Notifications</button></li>
-					<li><button>Dropdown Chats</button></li>
-				</ul>
-			</nav>
-		</header>);
-	}
-	else {
+	} else if(pathname === "/login" || pathname === "/signup" || pathname === "/forgotpassword" || pathname === "/passwordreset" || pathname === "/") {
 		return (<header>
 			<div className="flex-center">
 				<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
@@ -99,6 +47,20 @@ export default function Header() {
 				<ul>
 					<li><a href="/login" draggable="false" className="login" title="Login">Login</a></li>
 					<li><a href="/signup" draggable="false" className="signup" title="Signup">Signup</a></li>
+				</ul>
+			</nav>
+		</header>);
+	} else {
+		return (<header>
+			<div className="flex-center">
+				<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
+			</div>
+			<nav>
+				<ul>
+					<li><i className="material-icons" onClick={handleLogout} title="Logout">logout</i></li>
+					<li><i className="material-icons">notifications</i></li>
+					<li><i className="material-icons">chat</i></li>
+					<li>{user.name === "" ? null : <img className="header-profile" src={"http://localhost:3001/images/" + user.name + "/profile.jpg"}></img>}</li>
 				</ul>
 			</nav>
 		</header>);
