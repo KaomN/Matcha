@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { trackPromise} from 'react-promise-tracker';
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../context/SocketContext';
 
 // import io from 'socket.io-client';
 // const socket = io({
