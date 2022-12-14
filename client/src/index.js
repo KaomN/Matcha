@@ -1,19 +1,19 @@
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrowserRouter as Router } from "react-router-dom";
-//import { UserProvider } from './components/UserContext';
+import { UserProvider } from './context/UserContext';
 import { LoadingSpinnerPromise } from './components/LoadingSpinnerPromise';
-import {SocketContext, socket} from './context/socket';
+import {SocketContext, socket} from './context/SocketContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<Router>
-		{/* <UserProvider> */}
+		<UserProvider>
 		<SocketContext.Provider value={socket}>
 			<App />
 			<LoadingSpinnerPromise />
 		</SocketContext.Provider>
-		{/* </UserProvider> */}
+		</UserProvider>
 	</Router>
 );
