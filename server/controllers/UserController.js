@@ -26,12 +26,12 @@ router.post("/login", async (req, res) => {
 });
 
 // Get login status
-router.get("/getloginstatus", async (req, res) => {
+router.get("/getuserinfo", async (req, res) => {
 	if (req.session.username != undefined) {
-		res.send(await UserModel.getLoginStatus(req))
+		res.send(await UserModel.getUserInfo(req))
 	}
 	else
-		res.send({ auth: false })
+		res.send({ auth: false, username: "", isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png"})
 });
 
 
