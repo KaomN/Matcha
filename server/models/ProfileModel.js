@@ -1,5 +1,6 @@
 const con = require("../setup").pool;
 const calculate = require('../modules/CalculateDistance');
+var fs = require('fs');
 
 // Get user profile
 const getProfile = async (userID, req) => {
@@ -23,7 +24,12 @@ const getProfile = async (userID, req) => {
 				for (const images of result[0]) {
 					if (images.profilepic === 1) {
 						Object.assign(rows[0], {profile: true})
-						Object.assign(rows[0], {profileSrc: "http://localhost:3001/images/" + req.session.username + "/profile.jpg"})
+						console.log(__dirname.slice(0, -6) + "uploads/" + rows[0].username + "/" + result[0][0].imagename)
+						if (fs.existsSync(__dirname.slice(0, -6) + "uploads/" + rows[0].username + "/" + result[0][0].imagename)) {
+							Object.assign(rows[0], {profileSrc: "http://localhost:3001/images/" + rows[0].username + "/" + result[0][0].imagename})
+						} else {
+							Object.assign(rows[0], {profileSrc: "http://localhost:3001/images/defaultProfile.png"})
+						}
 					} else {
 						imageCount++;
 					}
@@ -36,7 +42,6 @@ const getProfile = async (userID, req) => {
 			}
 			Object.assign(rows[0], {distance: calculate.distance(req.session.latitude, req.session.longitude, rows[0].latitude, rows[0].longitude)})
 			Object.assign(rows[0], {isOwn:false})
-			//console.log(rows[0])
 			Object.assign(rows[0], {status: true})
 			
 			return (rows[0]);
@@ -44,7 +49,7 @@ const getProfile = async (userID, req) => {
 			return ({status: false});
 		}
 	} catch (err) {
-
+		console.log(err)
 	}
 
 }
