@@ -42,7 +42,6 @@ const register = async (req) => {
 				return ({errorEmail: "Email taken!", "status": false});
 			}
 		} else {
-			console.log("this")
 			return {errorUsername: "Username taken!", "status": false};
 		}
 	} catch {
@@ -65,6 +64,13 @@ const login = async (req) => {
 			} else {
 				const match = await bcrypt.compare(password, rows[0].password)
 				if(match) {
+					// Check if there is already a session.
+					// if (req.session.username) {
+					// 	req.sessionStore.destroy(req.session.id, function(err) {
+					// 		if(err)
+					// 			console.log(err)
+					// 	})
+					// }
 					req.session.username = rows[0].username;
 					req.session.userid = rows[0].pk_userid;
 					req.session.firstname = rows[0].firstname;
@@ -92,7 +98,7 @@ const login = async (req) => {
 			}
 		}
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 }
@@ -104,7 +110,7 @@ const verify = async (req) => {
 												FROM users
 												WHERE token = ?`,
 												[req.body.token])
-		console.log(rows)
+		//console.log(rows)
 		if(rows[0] === undefined) {
 			return ({"status": false});
 		} else if (rows[0].verified === 0) {
@@ -118,7 +124,7 @@ const verify = async (req) => {
 			return ({"status": true, "verified": true});
 		}
 	} catch(err) {
-		console.log(err)
+		//console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 };
@@ -215,32 +221,47 @@ const completeProfile = async (req, res) => {
 
 	try {
 		// Pictures
-		var uploadPath = __dirname.slice(0, -6) + "uploads/"  + req.session.username + "/" 
-		for (let imageName in req.files) {
-			if (imageName === "profilePicture") {
-				// Uploads Profile picture to server.
-				var ProfileImageName =  uuidv4() + ".jpg"
-				if(ImageProcessing.uploadProfileImage(req.files[imageName], uploadPath + ProfileImageName, req)) {
-					var profileId = 1;
-					var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
-													VALUES (?, ?, ?)`,
-													[req.session.userid, profileId, ProfileImageName])
-					if (!result) {
-						Object.assign(error, {error: "Something went wrong!"});
-					}
+		var profileImageName = uuidv4() + ".jpg"
+		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + profileImageName
+		// Check if user has a profile image
+		var [rows, fields] = await con.execute(`SELECT imagename
+												FROM images
+												WHERE fk_userid = ?`,
+												[req.session.userid])
+		if (rows[0] !== undefined) {
+			// Get old profile image name
+			const targetFile = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
+			// Process image with Sharp and save it in the server
+			if(ImageProcessing.uploadProfileImage(req.files['profilePicture'].data, profileImagePath, req)) {
+				// Update profile image on database
+				result = await con.execute(`UPDATE images
+										SET imagename = ?
+										WHERE imagename = ?`,
+										[ profileImageName, rows[0].imagename ])
+				if (!result) {
+					// If database update fails delete new image
+					fs.unlinkSync(profileImageName)
+					Object.assign(error, {error: "Something went wrong!"});
+				}
+				// Delete old profile image from server
+				if (fs.existsSync(targetFile)) {
+					fs.unlinkSync(targetFile)
+				}
+			} else {
+				Object.assign(error, {error: "Something went wrong!"});
+			}
+		// User does not have a Profile iamge set on their profile
+		} else {
+			if(ImageProcessing.uploadProfileImage(req.files['profilePicture'].data, profileImagePath, req)) {
+				var profileId = 1;
+				var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
+												VALUES (?, ?, ?)`,
+												[req.session.userid, profileId, profileImageName])
+				if (!result) {
+					Object.assign(error, {error: "Something went wrong!"});
 				}
 			}
-			// else {
-			// 	if(uploadPictures(req.files[imageName], uploadPath, imageName)) {
-			// 			var profileName = imageName + ".jpg"
-			// 			var result = await con.execute(`INSERT INTO images (fk_userid, imagename)
-			// 											VALUES (?, ?)`,
-			// 											[req.session.userid, profileName])
-			// 			if (!result) {
-			// 				Object.assign(error, {error: "Something went wrong!"});
-			// 			}
-			// 	}
-			// }
+			Object.assign(error, {error: "Something went wrong!"});
 		}
 		//Interest
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
@@ -304,27 +325,40 @@ const completeProfile = async (req, res) => {
 	}
 };
 
-const getLoginStatus = async (req) => {
+const getUserInfo = async (req) => {
 	var [rows, fields] = await con.execute(`SELECT imagename
 											FROM images
 											WHERE fk_userid = ?`,
 											[req.session.userid])
 	if (rows[0] !== undefined) { // "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename
-		return ({ auth: true , username: req.session.username, profilePic: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename})
+		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
+			if (fs.existsSync(profileImagePath)) {
+				return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: profileImagePath})
+
+			}
+		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png" })
 	} else {
-		return ({ auth: true , username: req.session.username, profilePic: false})
+		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png" })
 	}
 }
 
 const getProfileImage = async (req) => {
-	var [rows, fields] = await con.execute(`SELECT imagename
-											FROM images
-											WHERE fk_userid = ?`,
-											[req.session.userid])
-	if (rows[0] !== undefined) {
-		return ({ imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename})
+	if(req.session.userid) {
+		var [rows, fields] = await con.execute(`SELECT imagename
+												FROM images
+												WHERE fk_userid = ?`,
+												[req.session.userid])
+		if (rows[0] !== undefined) {
+			var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
+			if (fs.existsSync(profileImagePath)) {
+				return ({ imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename})
+			}
+			return ({ imageSrc: "http://localhost:3001/images/defaultProfile.png" })
+		} else {
+			return ({ imageSrc: "http://localhost:3001/images/defaultProfile.png" })
+		}
 	} else {
-		return ({ imageSrc: false})
+		return ({ imageSrc: "http://localhost:3001/images/defaultProfile.png" })
 	}
 }
 
@@ -402,13 +436,15 @@ const uploadProfileImage = async (req) => {
 				if (!result) {
 					// If database update fails delete new image
 					fs.unlinkSync(profileImageName)
-					return ({ status: false, err: "Something went wrong!" })
+					return ({ status: false, err: "Something went wrong! 1" })
 				}
 				// Delete old profile image from server
-				fs.unlinkSync(targetFile)
-				return ({ status: true })
+				if (fs.existsSync(targetFile)) {
+					fs.unlinkSync(targetFile)
+				}
+				return ({ status: true, imageSrc: profileImageName})
 			} else {
-				return ({ status: false, err: "Something went wrong!" })
+				return ({ status: false, err: "Something went wrong! 2" })
 			}
 		// User does not have a Profile iamge set on their profile
 		} else {
@@ -422,11 +458,11 @@ const uploadProfileImage = async (req) => {
 				}
 				return ({ status: true })
 			}
-			return ({ status: false, err: "Something went wrong!3" })
+			return ({ status: false, err: "Something went wrong! 3" })
 		}
 	} catch(err) {
 		console.log(err)
-		return ({ status: false, err: "Something went wrong!" })
+		return ({ status: false, err: "Something went wrong! 4" })
 	}
 }
 
@@ -437,7 +473,7 @@ module.exports = {
 	forgotPassword,
 	passwordReset,
 	completeProfile,
-	getLoginStatus,
+	getUserInfo,
 	getProfileImage,
 	uploadProfileImage,
 	test,
