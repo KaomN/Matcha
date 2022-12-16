@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from '../context/UserContext';
 import { useParams } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import "./styles/Profile.css";
 
 export default function Profile() {
+	const { user, setUser } = useContext(UserContext);
 	const [profile, setProfile] = useState("loading");
 	const [profileSrc, setProfileSrc] = useState("");
 	let params = useParams()
@@ -18,17 +20,18 @@ export default function Profile() {
 					profileID: params.profileID,
 				})
 			})
+			//response = await response.json()
 			setProfile(await response.json())
 			})();
 
-	}, []);
+	}, [user]);
 
 	// console.log(profile)
 	if (profile === "loading") {
 		return <LoadingSpinner />
 	} else if (profile.status) {
 		return (
-			<main className="flex-col padding1 ma">
+			<main className="flex-col padding1 ma profile-background">
 				<div className="flex-row ma">
 					<div className="padding05">
 						<div className="pos-relative profile-image-container">

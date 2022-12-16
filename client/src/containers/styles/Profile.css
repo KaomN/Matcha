@@ -24,3 +24,9 @@
 	width: 200px;
 	height: 200px;
 }
+
+.profile-background {
+	background-color: #00a28499;
+	border-radius: var(--border-radius);
+	border: 2px solid var(--color-primary-darker);
+}

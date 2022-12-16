@@ -4,7 +4,6 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { UserContext } from '../context/UserContext';
 import "./styles/Header.css";
 
-
 function useProfileVisible(profileInitialIsVisible) {
 	const [isProfileVisible, setIsProfileVisible] = useState(
 		profileInitialIsVisible
@@ -77,10 +76,6 @@ export default function Header() {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 
-	const [profileDropdown, setProfileDropdown] = useState("");
-	const [chatDropdown, setChatDropdown] = useState("");
-	const [notificationDropdown, setNotificationDropdown] = useState("");
-
 	const { refProfile, isProfileVisible, setIsProfileVisible } = useProfileVisible(false);
 	const { refChat, isChatVisible, setIsChatVisible } = useChatVisible(false);
 	const { refNotification, isNotificationVisible, setIsNotificationVisible } = useNotificationVisible(false);
@@ -90,7 +85,7 @@ export default function Header() {
 			setTimeout(() => {
 				resolve(fetch('/request/logout')
 				.then((response) => response.json()));
-			}, 500)
+			}, 150)
 		});
 		return promise
 	}
@@ -109,7 +104,7 @@ export default function Header() {
 			response = await response.json()
 			setProfileImageSrc(response.imageSrc)
 		})()
-	}, [pathname]);
+	}, [pathname, user]);
 	//console.log(profileImageSrc)
 	if(pathname === "/login" || pathname === "/signup" || pathname === "/forgotpassword" || pathname === "/passwordreset" || pathname === "/") {
 		return (<header>
@@ -163,7 +158,7 @@ export default function Header() {
 										{!isProfileVisible ? null : 
 											<div className="header-profile-dropdown">
 											<div className="header-profile-dropdown-profile-container">
-												<div className="header-profile-dropdown-profile">Show own profile</div>
+												<div className="header-profile-dropdown-profile" onClick={() => {navigate("/profile"); setIsProfileVisible(false)}}>Show own profile</div>
 												<div className="header-profile-seperator"></div>
 												<div className="header-profile-dropdown-profile-history">Profile history</div>
 											</div>

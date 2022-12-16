@@ -1,10 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from '../context/UserContext';
 import { useSearchParams } from "react-router-dom";
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { useNavigate } from "react-router-dom";
 import "./styles/Index.css";
 
 export default function Index() {
+	const { user } = useContext(UserContext);
+	const [isLoading, setIsLoading] = useState(true);
 	const [popup, setPopup] = useState("");
+	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
+
 	useEffect(() => {
 		if(searchParams.get("verification") !== null){
 			async function verifyUser(token) {
@@ -38,14 +45,26 @@ export default function Index() {
 			}
 			verifyUser(searchParams.get("verification"));
 		}
-		
 	}, [searchParams]);
-	return (
-		<main className="ma">
-			<div>
-				<img src="images/logo.png" alt="logo"></img>
-			</div>
-			{popup}
-		</main>
-	);
+
+	useEffect(() => {
+		if(isLoading) {
+			if(user.auth) {
+				navigate("/home");
+			}
+		}
+	}, [user]);
+
+	if (user.isLoading === true) {
+		return <LoadingSpinner />
+	} else {
+		return (
+			<main className="ma">
+				<div>
+					<img src="images/logo.png" alt="logo"></img>
+				</div>
+				{popup}
+			</main>
+		);
+	}
 }

@@ -14,7 +14,9 @@ export default function Chat() {
 	const [channel, setChannel] = useState("channel");
 	const [message, setMessage] = useState("");
 	const [test, setTest] = useState("");
-
+	socket.on("connect_error", (err) => {
+		console.log(`connect_error due to ${err.message}`);
+	});
 	useEffect(() => {
 		function fetchUserinfo() {
 			const promise = new Promise((resolve, reject) => {
@@ -88,7 +90,7 @@ export default function Chat() {
 		});
 	}, []);
 	
-
+console.log(user)
 	return (
 		<main className="flex-column flex-center">
 			<h3>Chat page. Show connected users on a panel to the left. clicking on the user brings up the Chat page in the middle with history of the chat</h3>

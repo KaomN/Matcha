@@ -3,30 +3,10 @@ import { UserContext } from '../context/UserContext';
 import Cropper from 'react-easy-crop'
 import "./styles/Home.css";
 
-// export default function Home() {
-// 	const { user } = useContext(UserContext);
-// 	const [refresh, setRefresh] = useState("");
 
-// 	async function handleTest() {
-// 		var response = await fetch('/request/uploadProfileImage')
-// 		response = await response.json();
-// 		console.log(response)
-// 	}
-
-// 	useEffect(() => {
-// 		//window.location.reload();
-// 	}, [refresh]);
-// 	return (
-// 		<main className="flex-col flex-center ma">
-// 			<h3>Show profile of other interesting users. Be able to filter by age gap, fame rating gap, location and interest. Also able to sort by them.</h3>
-// 			<div>
-// 				<button className="form_button" onClick={handleTest}>test</button>
-// 			</div>
-// 		</main>
-// 	);
-// }
 
 export default function Home() {
+	const { user, setUser } = useContext(UserContext);
 	const [profilePicture, setProfilePicture] = useState({});
 	const [profilePictureSrc, setProfilePictureSrc] = useState("");
 	const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -78,7 +58,10 @@ export default function Home() {
 				body: formdata
 			});
 			response = await response.json();
-			console.log(response)
+			setUser(user => ( {
+				...user,
+				imageSrc: response.imageSrc
+			}))
 		}
 	}
 
@@ -101,17 +84,15 @@ export default function Home() {
 											image={profilePictureSrc}
 											crop={crop}
 											zoom={zoom}
-											aspect={4 / 4}
+											aspect={3 / 4}
 											onCropChange={setCrop}
 											onCropComplete={onCropComplete}
 											onZoomChange={setZoom}
-											cropShape = 'round'
 											/>
 											:
 											null}
 											
 											</div>
-										{/* <img className="complete-form-img pt-1rem" src={profilePictureSrc} alt=""/> */}
 										{btn}
 									</div>
 							</div>
