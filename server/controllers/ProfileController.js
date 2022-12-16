@@ -9,6 +9,7 @@ router.post("/getprofile", async (req, res) => {
 		profileID = req.body.profileID
 	}
 	//console.log(await ProfileModel.getProfile(profileID))
+	//console.log(await ProfileModel.getProfile(profileID, req))
 	res.send(await ProfileModel.getProfile(profileID, req))
 });
 
