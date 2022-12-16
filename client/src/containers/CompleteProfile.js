@@ -4,11 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Cropper from 'react-easy-crop'
 import "./styles/CompleteProfile.css";
 import '../../node_modules/pikaday/css/pikaday.css';
+import { useContext, useEffect } from "react";
+import { UserContext } from '../context/UserContext';
 
 var id = 0;
 var numImages = 0;
 
 export default function FirstTimeProfile() {
+	const { user, setUser } = useContext(UserContext);
 	const [age, setAge] = useState("");
 	const [birthDate, setBirthDate] = useState("");
 	const [gender, setGender] = useState("");
@@ -26,8 +29,8 @@ export default function FirstTimeProfile() {
 	const [crop, setCrop] = useState({ x: 0, y: 0 })
 	const [zoom, setZoom] = useState(1)
 	const [imageSize, setImageSize] = useState("")
+
 	const onCropComplete = useCallback((croppedArea) => {
-		console.log(croppedArea)
 		setImageSize(croppedArea)
 	})
 	const navigate = useNavigate();
@@ -324,7 +327,6 @@ export default function FirstTimeProfile() {
 												image={profilePictureSrc}
 												crop={crop}
 												zoom={zoom}
-												// cropShape={"round"}
 												aspect={4 / 4}
 												onCropChange={setCrop}
 												onCropComplete={onCropComplete}
@@ -342,13 +344,7 @@ export default function FirstTimeProfile() {
 								<div className="center-gap">
 									<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; setShowForm("interestForm");;
 										}}>Previous</button>
-									<button className="complete-form-button" onClick={() => {
-										if(document.getElementById('profilePic') != null) {
-											document.querySelector('.form_message_error').innerHTML = "Please choose a profile picture!"
-										} else {
-											handleSubmit();
-										}
-										}}>Submit</button>
+									<button className="complete-form-button" onClick={handleSubmit}>Submit</button>
 								</div>
 							</div>
 						</div>
@@ -418,35 +414,41 @@ export default function FirstTimeProfile() {
 	// }
 
 	async function handleSubmit() {
-		const formdata = new FormData();
-		formdata.append("age", age);
-		formdata.append("birthDate", birthDate);
-		formdata.append("gender", gender);
-		formdata.append("preference", preference);
-		formdata.append("biography", biography);
-		formdata.append("locationLat", locationLat);
-		formdata.append("locationLng", locationLng);
-		var interestString = "";
-		interest.map(interests => (
-			interestString += interests.name + " "
-		));
-		interestString = interestString.trim();
-		formdata.append("interest", interestString);
-		formdata.append("profilePicture", profilePicture);
-		formdata.append("x", imageSize.x)
-		formdata.append("y", imageSize.y)
-		formdata.append("cropWidth", imageSize.width)
-		formdata.append("cropHeight", imageSize.height)
-		// picture.map(pictureElem => (
-		// 	formdata.append("pictureUpload" + pictureElem.id, pictureElem.name)
-		// ));
-		let response = await fetch('/request/completeprofile', {
-			method: "POST",
-			body: formdata
-		});
-		response = await response.json();
-		if (response.status) {
-			navigate("/home");
+		if(document.getElementById('profilePic') != null) {
+			document.querySelector('.form_message_error').innerHTML = "Please choose a profile picture!"
+		} else {
+			const formdata = new FormData();
+			formdata.append("age", age);
+			formdata.append("birthDate", birthDate);
+			formdata.append("gender", gender);
+			formdata.append("preference", preference);
+			formdata.append("biography", biography);
+			formdata.append("locationLat", locationLat);
+			formdata.append("locationLng", locationLng);
+			var interestString = "";
+			interest.map(interests => (
+				interestString += interests.name + " "
+			));
+			interestString = interestString.trim();
+			formdata.append("interest", interestString);
+			formdata.append("profilePicture", profilePicture);
+			formdata.append("x", imageSize.x)
+			formdata.append("y", imageSize.y)
+			formdata.append("cropWidth", imageSize.width)
+			formdata.append("cropHeight", imageSize.height)
+			// picture.map(pictureElem => (
+			// 	formdata.append("pictureUpload" + pictureElem.id, pictureElem.name)
+			// ));
+			let response = await fetch('/request/completeprofile', {
+				method: "POST",
+				body: formdata
+			});
+			response = await response.json();
+			//console.log(response)
+			if (response.status) {
+				navigate("/home");
+				//window.location.reload(false);
+			}
 		}
 	}
 
