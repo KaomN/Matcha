@@ -43,9 +43,9 @@ async function insert() {
 		lastname = "South"
 		username = "Kens"
 		gender = "male"
-		age = 28
+		age = 58
 		biography = "Vaasa"
-		dateofbirth = "08-09-1994"
+		dateofbirth = "08-09-1964"
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
