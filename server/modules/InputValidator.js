@@ -110,7 +110,7 @@ const passwordReset = (req, error) => {
 	}
 }
 
-const completeProfile = (req, error) => {
+const checkImage = (req, error) => {
 	if(!req.files) {
 		return ({status:false, message:"empty"});
 	} else {
@@ -144,5 +144,5 @@ module.exports = {
 	login,
 	forgotPassword,
 	passwordReset,
-	completeProfile
+	checkImage
 }
