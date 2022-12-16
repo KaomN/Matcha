@@ -26,11 +26,12 @@ router.post("/login", async (req, res) => {
 });
 
 // Get login status
-router.get("/getloginstatus", (req, res) => {
-	if (req.session.username != undefined)
-		res.send({ auth: true , username: req.session.username})
+router.get("/getloginstatus", async (req, res) => {
+	if (req.session.username != undefined) {
+		res.send(await UserModel.getLoginStatus(req))
+	}
 	else
-		res.send({ auth: false})
+		res.send({ auth: false })
 });
 
 
@@ -91,11 +92,29 @@ router.post("/getlocation", async (req, res) => {
 // Complete profile on First login.
 router.post("/completeprofile", async (req, res) => {
 	var error = {}
-	if(Validator.completeProfile(req, error)) {
+	if(Validator.checkImage(req, error)) {
 		res.send(await UserModel.completeProfile(req))
 	} else {
 		res.send(error)
 	}
+});
+
+router.post("/uploadprofileimage", async (req, res) => {
+	var error = {}
+	if(Validator.checkImage(req, error)) {
+		res.send(await UserModel.uploadProfileImage(req))
+	} else {
+		res.send(error)
+	}
+});
+
+router.get("/getprofileimage", async (req, res) => {
+	res.send(await UserModel.getProfileImage(req))
+	// if (req.session.username != undefined) {
+	// 	res.send(await UserModel.getProfileImage(req))
+	// }
+	// else
+	// 	res.send({ auth: false })
 });
 
 router.get("/test", async (req, res) => {
