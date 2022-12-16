@@ -3,7 +3,7 @@ import { Outlet, Navigate } from 'react-router-dom'
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
 async function userAuth() {
-	var response = await fetch('/request/getloginstatus', {
+	var response = await fetch('/request/getuserinfo', {
 		credentials: "include",
 		method: "GET",
 	});
@@ -21,7 +21,6 @@ const PrivateRoutes = () => {
 			(async function() {
 				try {
 					const isUserLogged = await userAuth();
-					//console.log(isUserLogged)
 					setState(isUserLogged ? true : false);
 				} catch {
 					setState(false);
