@@ -3,7 +3,8 @@ const crypto = require('crypto')
 const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
-const sharp = require('sharp');
+const { v4: uuidv4 } = require('uuid');
+const ImageProcessing = require('../modules/ImageProcessing');
 // const axios = require('axios');
 // const dotenv = require('dotenv');
 // dotenv.config({path: __dirname + '/.env'});
@@ -200,24 +201,8 @@ const passwordReset = async (req) => {
 
 // Complete profile on First login.
 const completeProfile = async (req, res) => {
-	const { age, birthDate, gender, preference, biography, locationLat, locationLng, interest, x, y, cropWidth, cropHeight } = req.body;
+	const { age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
 	var error = {};
-	async function uploadProfilePicture(profilePic, path) {
-		path += "profile.jpg"
-		const metaData = await sharp(profilePic.data).metadata()
-		const left = (x / Math.pow(10, 2)) * metaData.height
-		const top = (y / Math.pow(10, 2)) * metaData.width
-		const width = (cropWidth / Math.pow(10, 2)) * metaData.height
-		const height = (cropHeight / Math.pow(10, 2)) * metaData.width
-		sharp(profilePic.data)
-			.rotate()
-			.extract({left: parseInt(left.toFixed(2)), top: parseInt(top.toFixed(2)), width: parseInt(width.toFixed(2)), height: parseInt(height.toFixed(2))})
-			.toFile(path, function (err) {
-					if (err)
-						console.log(err)
-			})
-		return true;
-	}
 	// Upload Other Pictures, Move to settings page
 	// function uploadPictures(picture, path, picturename) {
 	// 	path += picturename + ".jpg"
@@ -230,16 +215,16 @@ const completeProfile = async (req, res) => {
 
 	try {
 		// Pictures
-		var uploadPath = __dirname.slice(0, -6) + "uploads/"  + req.session.username + "/" // Change to username later
+		var uploadPath = __dirname.slice(0, -6) + "uploads/"  + req.session.username + "/" 
 		for (let imageName in req.files) {
 			if (imageName === "profilePicture") {
 				// Uploads Profile picture to server.
-				if(uploadProfilePicture(req.files[imageName], uploadPath)) {
+				var ProfileImageName =  uuidv4() + ".jpg"
+				if(ImageProcessing.uploadProfileImage(req.files[imageName], uploadPath + ProfileImageName, req)) {
 					var profileId = 1;
-					var profileName = "profile.jpg"
 					var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
 													VALUES (?, ?, ?)`,
-													[req.session.userid, profileId, profileName])
+													[req.session.userid, profileId, ProfileImageName])
 					if (!result) {
 						Object.assign(error, {error: "Something went wrong!"});
 					}
@@ -257,7 +242,7 @@ const completeProfile = async (req, res) => {
 			// 	}
 			// }
 		}
-		// Interest
+		//Interest
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 			const interestArr = interest.split(' ')
 			for (const interest of interestArr) {
@@ -314,9 +299,34 @@ const completeProfile = async (req, res) => {
 			return (error);
 		}
 	} catch (err) {
+		console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 };
+
+const getLoginStatus = async (req) => {
+	var [rows, fields] = await con.execute(`SELECT imagename
+											FROM images
+											WHERE fk_userid = ?`,
+											[req.session.userid])
+	if (rows[0] !== undefined) { // "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename
+		return ({ auth: true , username: req.session.username, profilePic: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename})
+	} else {
+		return ({ auth: true , username: req.session.username, profilePic: false})
+	}
+}
+
+const getProfileImage = async (req) => {
+	var [rows, fields] = await con.execute(`SELECT imagename
+											FROM images
+											WHERE fk_userid = ?`,
+											[req.session.userid])
+	if (rows[0] !== undefined) {
+		return ({ imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename})
+	} else {
+		return ({ imageSrc: false})
+	}
+}
 
 const test = async (req) => {
 	//console.log(req.session.preference)
@@ -367,6 +377,59 @@ const test = async (req) => {
 	}
 };
 
+
+// Updating/Inserting new Profile Picture
+const uploadProfileImage = async (req) => {
+	try {
+		// Create new Profile Image name with UUID
+		var profileImageName = uuidv4() + ".jpg"
+		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + profileImageName
+		// Check if user has a profile image
+		var [rows, fields] = await con.execute(`SELECT imagename
+												FROM images
+												WHERE fk_userid = ?`,
+												[req.session.userid])
+		if (rows[0] !== undefined) {
+			// Get old profile image name
+			const targetFile = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
+			// Process image with Sharp and save it in the server
+			if(ImageProcessing.uploadProfileImage(req.files['profilePicture'].data, profileImagePath, req)) {
+				// Update profile image on database
+				result = await con.execute(`UPDATE images
+										SET imagename = ?
+										WHERE imagename = ?`,
+										[ profileImageName, rows[0].imagename ])
+				if (!result) {
+					// If database update fails delete new image
+					fs.unlinkSync(profileImageName)
+					return ({ status: false, err: "Something went wrong!" })
+				}
+				// Delete old profile image from server
+				fs.unlinkSync(targetFile)
+				return ({ status: true })
+			} else {
+				return ({ status: false, err: "Something went wrong!" })
+			}
+		// User does not have a Profile iamge set on their profile
+		} else {
+			if(ImageProcessing.uploadProfileImage(req.files['profilePicture'].data, profileImagePath, req)) {
+				var profileId = 1;
+				var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
+												VALUES (?, ?, ?)`,
+												[req.session.userid, profileId, profileImageName])
+				if (!result) {
+					return ({ status: false, err: "Something went wrong!" });
+				}
+				return ({ status: true })
+			}
+			return ({ status: false, err: "Something went wrong!3" })
+		}
+	} catch(err) {
+		console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
 module.exports = {
 	register,
 	login,
@@ -374,5 +437,8 @@ module.exports = {
 	forgotPassword,
 	passwordReset,
 	completeProfile,
+	getLoginStatus,
+	getProfileImage,
+	uploadProfileImage,
 	test,
 }
