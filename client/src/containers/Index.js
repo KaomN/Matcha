@@ -6,8 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "./styles/Index.css";
 
 export default function Index() {
-	const { user } = useContext(UserContext);
-	const [isLoading, setIsLoading] = useState(true);
+	const { user, userContextLoading } = useContext(UserContext);
 	const [popup, setPopup] = useState("");
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
@@ -48,23 +47,20 @@ export default function Index() {
 	}, [searchParams]);
 
 	useEffect(() => {
-		if(isLoading) {
-			if(user.auth) {
-				navigate("/home");
-			}
+		if(user.auth) {
+			navigate("/home");
 		}
-	}, [user]);
+	}, [user, userContextLoading]);
 
-	if (user.isLoading === true) {
+	if(userContextLoading)
 		return <LoadingSpinner />
-	} else {
-		return (
-			<main className="ma">
-				<div>
-					<img src="images/logo.png" alt="logo"></img>
-				</div>
-				{popup}
-			</main>
-		);
-	}
+	return (
+		<main className="ma">
+			<div>
+				<img src="images/logo.png" alt="logo"></img>
+			</div>
+			{popup}
+		</main>
+	);
+	//}
 }

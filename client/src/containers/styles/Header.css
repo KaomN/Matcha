@@ -10,6 +10,7 @@ header {
 	color: white;
 	top: 0;
 	left: 0;
+	z-index: 55;
 
 }
 
@@ -32,7 +33,7 @@ header {
 	bottom: -218px;
 	right: 0px;
 	background-color: #878e94;
-	z-index: 1;
+	z-index: 45;
 	min-width: 150px;
 	max-width: 300px;
 	width: 50vw;
@@ -43,9 +44,10 @@ header {
 }
 
 .header-profile-dropdown-profile {
+	padding: 0.5rem;
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	width: 100%;
 	height: 75px;
 	border-radius: var(--border-radius);
@@ -79,4 +81,19 @@ header {
 	background-color: #acaeb1;
 	margin-top: 5px;
 	margin-bottom: 5px;
+}
+
+.header-profile-dropdown-profile-image {
+	height: 75px;
+	width: 75px;
+	border-radius: 100%;
+}
+
+.header-font-color {
+	color: black;
+	font-size: 18px;
+}
+
+.header-zindex {
+	z-index: 44;
 }

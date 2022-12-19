@@ -64,7 +64,6 @@ export default function Home() {
 			}))
 		}
 	}
-
 	return (<main className="form-container ma">
 				<div className="complete-profile-form">
 					<div style={{backgroundColor: ""}}>

@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from '../context/UserContext';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import "./styles/Signup.css";
 
 export default function Signup() {
+	const { user, userContextLoading } = useContext(UserContext);
 	//Input states
 	const [firstname, setFirstname] = useState("");
 	const [surname, setSurname] = useState("");
@@ -18,6 +22,8 @@ export default function Signup() {
 	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
 	// Other states
 	const [popup, setPopup] = useState("popup hide-popup");
+
+	const navigate = useNavigate();
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -53,6 +59,14 @@ export default function Signup() {
 		}
 	}
 
+	useEffect(() => {
+		if(user.auth) {
+			navigate("/home");
+		}
+	}, [user, userContextLoading]);
+
+	if(userContextLoading)
+		return <LoadingSpinner />
 	return(
 		<main className="form-container main-signup ma">
 			<form onSubmit={handleSubmit}>

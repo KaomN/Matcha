@@ -1,11 +1,12 @@
-import React, { useState, /*useContext*/ } from "react";
-//import { UserContext } from '../components/UserContext';
+import React, { useState, useContext, useEffect } from "react";
+import { UserContext } from '../context/UserContext';
 import { useNavigate } from "react-router-dom";
 import { trackPromise} from 'react-promise-tracker';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import "./styles/Login.css";
 
 export default function Login() {
-	//const { user, login} = useContext(UserContext);
+	const { user, userContextLoading } = useContext(UserContext);
 	//Input states
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -38,7 +39,6 @@ export default function Login() {
 	async function handleSubmit(event) {
 		event.preventDefault();
 		var response = await trackPromise(fetchLogin());
-		console.log(response)
 		if(response.status) {
 			if(response.profile)
 				navigate("/home");
@@ -59,6 +59,13 @@ export default function Login() {
 		}
 	}
 
+	useEffect(() => {
+		if(user.auth) {
+			navigate("/home");
+		}
+	}, [user, userContextLoading]);
+	if(userContextLoading === true)
+		return <LoadingSpinner />
 	return (
 		<main className="form-container ma main-login" id="formLogin">
 			<form onSubmit={handleSubmit}>

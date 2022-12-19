@@ -99,15 +99,6 @@ router.post("/completeprofile", async (req, res) => {
 	}
 });
 
-router.post("/uploadprofileimage", async (req, res) => {
-	var error = {}
-	if(Validator.checkImage(req, error)) {
-		res.send(await UserModel.uploadProfileImage(req))
-	} else {
-		res.send(error)
-	}
-});
-
 router.get("/getprofileimage", async (req, res) => {
 	res.send(await UserModel.getProfileImage(req))
 	// if (req.session.username != undefined) {

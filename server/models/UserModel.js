@@ -54,8 +54,11 @@ const login = async (req) => {
 	try {
 		var [rows, fields] = await con.execute(`SELECT *
 												FROM users
+												INNER JOIN tagitem ON tagitem.fk_userid = users.pk_userid
+												INNER JOIN tag ON tag.pk_tagid = tagitem.fk_tagid
 												WHERE username = ?`,
 												[username])
+		
 		if (rows[0] === undefined) {
 			return ({status: false, error: "Incorrect username/password"});
 		} else {
@@ -71,6 +74,11 @@ const login = async (req) => {
 					// 			console.log(err)
 					// 	})
 					// }
+					var [result, fields] = await con.execute(`SELECT tag
+															FROM tag
+															INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
+															WHERE tagitem.fk_userid = ?`,
+															[rows[0].pk_userid])
 					req.session.username = rows[0].username;
 					req.session.userid = rows[0].pk_userid;
 					req.session.firstname = rows[0].firstname;
@@ -80,18 +88,30 @@ const login = async (req) => {
 					req.session.token = rows[0].token;
 					req.session.verified = rows[0].verified;
 					req.session.gender = rows[0].gender
+					req.session.biography = rows[0].biography
+					req.session.birthdate = rows[0].dateofbirth
 					req.session.preference = rows[0].genderpreference
 					req.session.latitude = rows[0].latitude
 					req.session.longitude = rows[0].longitude
+					req.session.interest = result
+					if(rows[0].profile === 1) {
+						req.session.profile = true;
+					} else {
+						req.session.profile = false;
+					}
+					//req.session.profile = rows[0].profile
 					req.session.authenticated = true;
 					// Creating User folder
 					if (!fs.existsSync(__dirname.slice(0, -7) + "/uploads/" + req.session.username)){
 						fs.mkdirSync(__dirname.slice(0, -7) + "/uploads/" + req.session.username);
 					}
-					if(rows[0].profile === 1)
+					if(rows[0].profile === 1){
+						//return ({status: false, error: "Incorrect username/password"});
 						return ({status: true, profile: true});
-					else
-					return ({status: true, profile: false});
+					} else {
+						//return ({status: false, error: "Incorrect username/password"});
+						return ({status: true, profile: false});
+					}
 				} else {
 					return ({status: false, error: "Incorrect username/password"});
 				}
@@ -313,7 +333,9 @@ const completeProfile = async (req, res) => {
 				req.session.latitude = locationLat
 				req.session.longitude = locationLng
 				req.session.age = age
-				req.session.interest = interest
+				req.session.biography = biography
+				req.session.birthdate = birthDate
+				req.session.interest = interest.split(' ')
 				return ({status:true})
 			}
 		} else {
@@ -330,15 +352,15 @@ const getUserInfo = async (req) => {
 											FROM images
 											WHERE fk_userid = ?`,
 											[req.session.userid])
-	if (rows[0] !== undefined) { // "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename
+	if (rows[0] !== undefined) { 
 		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
 			if (fs.existsSync(profileImagePath)) {
-				return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: profileImagePath})
+				return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: profileImagePath, firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating })
 
 			}
-		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png" })
+		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating })
 	} else {
-		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png" })
+		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating })
 	}
 }
 
@@ -400,9 +422,7 @@ const test = async (req) => {
 			// calculate distance between user1 and user2
 			for (const user of rows) {
 				user.distance = distance(req.session.latitude, req.session.longitude, user.latitude, user.longitude) + "km away"
-				console.log(distance(req.session.latitude, req.session.longitude, user.latitude, user.longitude))
 			}
-			console.log(rows)
 		}
 		return (rows)
 	} catch (err) {
@@ -412,59 +432,6 @@ const test = async (req) => {
 };
 
 
-// Updating/Inserting new Profile Picture
-const uploadProfileImage = async (req) => {
-	try {
-		// Create new Profile Image name with UUID
-		var profileImageName = uuidv4() + ".jpg"
-		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + profileImageName
-		// Check if user has a profile image
-		var [rows, fields] = await con.execute(`SELECT imagename
-												FROM images
-												WHERE fk_userid = ?`,
-												[req.session.userid])
-		if (rows[0] !== undefined) {
-			// Get old profile image name
-			const targetFile = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
-			// Process image with Sharp and save it in the server
-			if(ImageProcessing.uploadProfileImage(req.files['profilePicture'].data, profileImagePath, req)) {
-				// Update profile image on database
-				result = await con.execute(`UPDATE images
-										SET imagename = ?
-										WHERE imagename = ?`,
-										[ profileImageName, rows[0].imagename ])
-				if (!result) {
-					// If database update fails delete new image
-					fs.unlinkSync(profileImageName)
-					return ({ status: false, err: "Something went wrong! 1" })
-				}
-				// Delete old profile image from server
-				if (fs.existsSync(targetFile)) {
-					fs.unlinkSync(targetFile)
-				}
-				return ({ status: true, imageSrc: profileImageName})
-			} else {
-				return ({ status: false, err: "Something went wrong! 2" })
-			}
-		// User does not have a Profile iamge set on their profile
-		} else {
-			if(ImageProcessing.uploadProfileImage(req.files['profilePicture'].data, profileImagePath, req)) {
-				var profileId = 1;
-				var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
-												VALUES (?, ?, ?)`,
-												[req.session.userid, profileId, profileImageName])
-				if (!result) {
-					return ({ status: false, err: "Something went wrong!" });
-				}
-				return ({ status: true })
-			}
-			return ({ status: false, err: "Something went wrong! 3" })
-		}
-	} catch(err) {
-		console.log(err)
-		return ({ status: false, err: "Something went wrong! 4" })
-	}
-}
 
 module.exports = {
 	register,
@@ -475,6 +442,5 @@ module.exports = {
 	completeProfile,
 	getUserInfo,
 	getProfileImage,
-	uploadProfileImage,
 	test,
 }

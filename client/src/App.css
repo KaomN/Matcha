@@ -11,7 +11,6 @@ body {
 	height: calc(100vh - 3rem - 1.5rem);
 	width: 100vw;
 	margin-top: 3rem;
-	/* margin-bottom: 1rem; */
 	font-family: 'Signika Negative', sans-serif;
 	background-color: #00a28499;
 }
@@ -24,6 +23,7 @@ html, body {
 	width: 100%;
 	height: calc(100% - 1.5rem);
 	padding-top: 1.5rem;
+
 }
 
 .App {
@@ -32,6 +32,7 @@ html, body {
 	display: flex;
 	margin: auto;
 	flex-direction: column;
+
 }
 
 footer {
@@ -113,6 +114,7 @@ a {
 .signup:hover,
 .login:hover, 
 .title:hover {
+	cursor: pointer;
 	transition: color 0.7s ease;
 	color: var(--color-primary);
 }
@@ -309,14 +311,24 @@ a {
 	margin: auto;
 }
 
+.ml05{
+	margin-left: 0.5rem;
+}
+
 .material-icons {
 	font-size: 30px;
 	cursor: pointer;
 	color: darkslategray;
 	transition: color 0.7s ease;
+	-moz-user-select: none; /* Firefox */
+	user-select: none; /* Standard */
 }
 
 .material-icons:hover {
 	transition: color 0.7s ease;
 	color: var(--color-primary);
+}
+
+.rounded-corners {
+	border-radius: var(--border-radius);
 }

@@ -16,10 +16,18 @@ function useProfileVisible(profileInitialIsVisible) {
 		}
 	};
 
+	const handleEscapeKey = event => {
+		if (event.key === "Escape") {
+			setIsProfileVisible(false);
+		}
+	}
+
 	useEffect(() => {
-		document.addEventListener("click", handleClickOutside, true);
+		document.addEventListener("mousedown", handleClickOutside, true);
+		document.addEventListener("keydown", handleEscapeKey, true);
 		return () => {
-			document.removeEventListener("click", handleClickOutside, true);
+			document.removeEventListener("mousedown", handleClickOutside, true);
+			document.removeEventListener("keydown", handleEscapeKey, true);
 		};
 	});
 
@@ -38,10 +46,18 @@ function useChatVisible(chatInitialIsVisible) {
 		}
 	};
 
+	const handleEscapeKey = event => {
+		if (event.key === "Escape") {
+			setIsChatVisible(false);
+		}
+	}
+
 	useEffect(() => {
-		document.addEventListener("click", handleClickOutside, true);
+		document.addEventListener("mousedown", handleClickOutside, true);
+		document.addEventListener("keydown", handleEscapeKey, true);
 		return () => {
-			document.removeEventListener("click", handleClickOutside, true);
+			document.removeEventListener("mousedown", handleClickOutside, true);
+			document.removeEventListener("keydown", handleEscapeKey, true);
 		};
 	});
 
@@ -54,6 +70,12 @@ function useNotificationVisible(notificationInitialIsVisible) {
 	);
 	const refNotification = useRef(null);
 
+	const handleEscapeKey = event => {
+		if (event.key === "Escape") {
+			setIsNotificationVisible(false);
+		}
+	}
+
 	const handleClickOutside = event => {
 		if (refNotification.current && !refNotification.current.contains(event.target)) {
 			setIsNotificationVisible(false);
@@ -61,9 +83,11 @@ function useNotificationVisible(notificationInitialIsVisible) {
 	};
 
 	useEffect(() => {
-		document.addEventListener("click", handleClickOutside, true);
+		document.addEventListener("mousedown", handleClickOutside, true);
+		document.addEventListener("keydown", handleEscapeKey, true);
 		return () => {
-			document.removeEventListener("click", handleClickOutside, true);
+			document.removeEventListener("mousedown", handleClickOutside, true);
+			document.removeEventListener("keydown", handleEscapeKey, true);
 		};
 	});
 
@@ -71,7 +95,7 @@ function useNotificationVisible(notificationInitialIsVisible) {
 }
 
 export default function Header() {
-	const { user } = useContext(UserContext);
+	const { user, setUser } = useContext(UserContext);
 	const [profileImageSrc, setProfileImageSrc] = useState(false);
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
@@ -93,7 +117,10 @@ export default function Header() {
 	async function handleLogout(event) {
 		event.preventDefault();
 			var response = await trackPromise(fetchLogout());
+			console.log(response)
+			
 			if(response.status) {
+				setUser({})
 				navigate("/login");
 			}
 	}
@@ -105,11 +132,11 @@ export default function Header() {
 			setProfileImageSrc(response.imageSrc)
 		})()
 	}, [pathname, user]);
-	//console.log(profileImageSrc)
+	//console.log(user)
 	if(pathname === "/login" || pathname === "/signup" || pathname === "/forgotpassword" || pathname === "/passwordreset" || pathname === "/") {
 		return (<header>
 			<div className="flex-center">
-				<a href="/" draggable="false" className="title"><h3>Matcha</h3></a>
+				<a draggable="false" className="title" onClick={() => {navigate('/')}}><h3>Matcha</h3></a>
 			</div>
 			<nav>
 				<ul>
@@ -121,7 +148,7 @@ export default function Header() {
 	} else {
 		return (<header>
 			<div className="flex-center">
-				<a href="/home" draggable="false" className="title"><h3>Matcha</h3></a>
+				<a draggable="false" className="title" onClick={() => {navigate('/home')}}><h3>Matcha</h3></a>
 			</div>
 			<nav className="pr05">
 				<ul className="header-overflow-visible">
@@ -131,7 +158,7 @@ export default function Header() {
 							<div ref={refNotification}>
 								<i className="material-icons" onClick={ () => isNotificationVisible ? setIsNotificationVisible(false) : setIsNotificationVisible(true) }>notifications</i>
 								{!isNotificationVisible ? null : 
-									<div className="header-profile-dropdown">
+									<div className="header-profile-dropdown header-zindex">
 										<div className="header-profile-dropdown-profile-container">
 											Show Notification
 										</div>
@@ -143,7 +170,7 @@ export default function Header() {
 							<div ref={refChat}>
 								<i className="material-icons" onClick={ () => isChatVisible ? setIsChatVisible(false) : setIsChatVisible(true) }>chat</i>
 								{!isChatVisible ? null : 
-									<div className="header-profile-dropdown">
+									<div className="header-profile-dropdown header-zindex">
 										<div className="header-profile-dropdown-profile-container">
 											Show connected persons
 										</div>
@@ -156,14 +183,17 @@ export default function Header() {
 								<div ref={refProfile}>
 									<img className="header-profile" src={profileImageSrc} onClick={ () => isProfileVisible ? setIsProfileVisible(false) : setIsProfileVisible(true) }></img>
 										{!isProfileVisible ? null : 
-											<div className="header-profile-dropdown">
-											<div className="header-profile-dropdown-profile-container">
-												<div className="header-profile-dropdown-profile" onClick={() => {navigate("/profile"); setIsProfileVisible(false)}}>Show own profile</div>
-												<div className="header-profile-seperator"></div>
-												<div className="header-profile-dropdown-profile-history">Profile history</div>
+											<div className="header-profile-dropdown header-zindex">
+												<div className="header-profile-dropdown-profile-container">
+													<div className="header-profile-dropdown-profile" onClick={() => {navigate("/profile"); setIsProfileVisible(false)}}>
+														<img className="header-profile-dropdown-profile-image" src={profileImageSrc} ></img>
+														<div className="ml05 header-font-color">@{user.username}</div>
+													</div>
+													<div className="header-profile-seperator"></div>
+													<div className="header-profile-dropdown-profile-history">Profile history</div>
+												</div>
+												<div className="header-profile-dropdown-profile">Settings? needed?</div>
 											</div>
-											<div className="header-profile-dropdown-profile">Settings? needed?</div>
-										</div>
 										}
 								</div>
 							}

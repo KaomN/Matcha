@@ -375,42 +375,42 @@ export default function FirstTimeProfile() {
 	// 						<h1 className="title">Complete your profile</h1>
 	// 						<div className="form_message form_message_error"></div>
 	// 					</div>
-	// 						<div className="complete-form-container">
-	// 							<div id="pictureForm">
-	// 								<div className="flex flex-col flex-align-center">
-	// 									<label style={{fontSize: "23px"}}>Pictures</label>
-	// 									<div className="flex flex-col flex-align-center">
-	// 										<p className="m-0">Choose pictures to upoad to your profile!</p>
-	// 										<p className="mt-0">Max 4 pictures!</p>
-	// 									</div>
-	// 								</div>
-	// 								<div className="flex-column-completeprofile">
-	// 									<div style={{border: "0px", marginBottom: "0.5rem"}}>
-	// 										{input}
-	// 									</div>
-	// 								</div>
-	// 								<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container flex-col flex-justify-content-start">
-	// 									{picture.map(pictureElem => (
-	// 										<div key={pictureElem.id} data-key={pictureElem.id} className="flex-center wh-100p flex-col flex-justify-content-start">
-	// 											<img className="complete-form-img pt-1rem" src={pictureElem.src} alt=""/>
-	// 											<button className="complete-form-button" onClick={() => {
-	// 												setPicture(
-	// 													picture.filter(a =>
-	// 													a.id !== parseInt(pictureElem.id)
-	// 													)
-	// 												);
-	// 											}}>Delete</button>
-	// 										</div>
-	// 									))}
-	// 								</div>
-	// 								<div className="center-gap">
-	// 									<button className="complete-form-button" onClick={() => {setShowForm("profileForm");}}>Previous</button>
-	// 									<button className="complete-form-button" onClick={handleSubmit}>Submit</button>
-	// 								</div>
-	// 							</div>
-	// 						</div>
-	// 					</div>
-	// 				</main>);
+// 						<div className="complete-form-container">
+// 							<div id="pictureForm">
+// 								<div className="flex flex-col flex-align-center">
+// 									<label style={{fontSize: "23px"}}>Pictures</label>
+// 									<div className="flex flex-col flex-align-center">
+// 										<p className="m-0">Choose pictures to upoad to your profile!</p>
+// 										<p className="mt-0">Max 4 pictures!</p>
+// 									</div>
+// 								</div>
+// 								<div className="flex-column-completeprofile">
+// 									<div style={{border: "0px", marginBottom: "0.5rem"}}>
+// 										{input}
+// 									</div>
+// 								</div>
+// 								<div className="flex-center pl-1rem pr-1rem pb-1rem complete-form-image-container flex-col flex-justify-content-start">
+// 									{picture.map(pictureElem => (
+// 										<div key={pictureElem.id} data-key={pictureElem.id} className="flex-center wh-100p flex-col flex-justify-content-start">
+// 											<img className="complete-form-img pt-1rem" src={pictureElem.src} alt=""/>
+// 											<button className="complete-form-button" onClick={() => {
+// 												setPicture(
+// 													picture.filter(a =>
+// 													a.id !== parseInt(pictureElem.id)
+// 													)
+// 												);
+// 											}}>Delete</button>
+// 										</div>
+// 									))}
+// 								</div>
+// 								<div className="center-gap">
+// 									<button className="complete-form-button" onClick={() => {setShowForm("profileForm");}}>Previous</button>
+// 									<button className="complete-form-button" onClick={handleSubmit}>Submit</button>
+// 								</div>
+// 							</div>
+// 						</div>
+// 					</div>
+// 				</main>);
 	// }
 
 	async function handleSubmit() {
