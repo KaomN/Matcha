@@ -9,7 +9,7 @@ const ImageProcessing = require('../modules/ImageProcessing');
 const getProfile = async (userID, req) => {
 	try {
 		// Fetch user info
-		var [rows, fields] = await con.execute(`SELECT username, firstname, surname, gender, age, dateofbirth, biography, latitude, longitude, pk_userid as 'userid', rating
+		var [rows, fields] = await con.execute(`SELECT username, firstname, surname, gender, age, dateofbirth, biography, latitude, longitude, pk_userid as 'userid', rating, genderpreference as 'preference', email
 												FROM users
 												WHERE pk_userid = ?`,
 												[userID])
@@ -57,6 +57,7 @@ const getProfile = async (userID, req) => {
 			Object.assign(rows[0], {distance: calculate.distance(req.session.latitude, req.session.longitude, rows[0].latitude, rows[0].longitude)})
 			Object.assign(rows[0], {isOwn:false})
 			Object.assign(rows[0], {status: true})
+			delete rows[0].email
 			return (rows[0]);
 		} else {
 			return ({status: false});
@@ -86,7 +87,7 @@ const uploadProfileImage = async (req) => {
 			imageSize.y = req.body.y
 			imageSize.width = req.body.cropWidth
 			imageSize.height = req.body.cropHeight
-			if(ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, imageSize)) {
+			if(await ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, imageSize)) {
 				// Update profile image on database
 				var result = await con.execute(`UPDATE images
 										SET imagename = ?
@@ -107,7 +108,7 @@ const uploadProfileImage = async (req) => {
 			}
 		// User does not have a Profile iamge set on their profile
 		} else {
-			if(ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req)) {
+			if(await ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req)) {
 				var profileId = 1;
 				var result = await con.execute(`INSERT
 												INTO images(fk_userid, profilepic, imagename)
@@ -128,39 +129,36 @@ const uploadProfileImage = async (req) => {
 
 const uploadProfileImages = async (req) => {
 	try {
-		for (let image in req.files) {
-			var imageName = uuidv4() + ".jpg"
-			var imagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + imageName
-			let imageSize = {};
-			imageSize.x = req.body['x' + image]
-			imageSize.y = req.body['y' + image]
-			imageSize.width = req.body['width' + image]
-			imageSize.height = req.body['height' + image]
-			//console.log(await ImageProcessing.uploadImage(req.files[image].data, imagePath, imageSize))
-			if(await ImageProcessing.uploadImage(req.files[image].data, imagePath, imageSize)) {
-				// Update profile image on database
-				var profileId = 0;
-				var result = await con.execute(`INSERT
-												INTO images(fk_userid, profilepic, imagename)
-												VALUES (?, ?, ?)`,
-												[req.session.userid, profileId, imageName])
-				if (!result) {
-					// If database update fails delete new image
-					fs.unlinkSync(imagePath)
-					return ({ status: false, err: "Something went wrong! 1" })
-				}
-				var fullImagePath = 'http://localhost:3001/images/' + req.session.username + '/' + imageName
-				return ({ status: true, image:{ imageSrc: fullImagePath, imageid:result[0].insertId }})
-			} else {
-				return ({ status: false, err: "Something went wrong! 2" })
+		var imageName = uuidv4() + ".jpg"
+		var imagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + imageName
+		let imageSize = {};
+		imageSize.x = req.body.x
+		imageSize.y = req.body.y
+		imageSize.width = req.body.width
+		imageSize.height = req.body.height
+		if(await ImageProcessing.uploadImage(req.files["imageFile"].data, imagePath, imageSize)) {
+			// Update profile image on database
+			var profileId = 0;
+			var result = await con.execute(`INSERT
+											INTO images(fk_userid, profilepic, imagename)
+											VALUES (?, ?, ?)`,
+											[req.session.userid, profileId, imageName])
+			if (!result) {
+				// If database insert fails delete new image
+				fs.unlinkSync(imagePath)
+				return ({ status: false, err: "Something went wrong!" })
 			}
-
+			var fullImagePath = 'http://localhost:3001/images/' + req.session.username + '/' + imageName
+			return ({ status: true, image:{ imageSrc: fullImagePath, imageid:result[0].insertId }})
+		} else {
+			return ({ status: false, err: "Invalid image file!" })
 		}
 	} catch(err) {
 		console.log(err)
-		return ({ status: false, err: "Something went wrong! 3" })
+		return ({ status: false, err: "Something went wrong!" })
 	}
 }
+
 const deleteImage = async (req) => {
 	try {
 		const split = req.body.imageSrc.split("/")
