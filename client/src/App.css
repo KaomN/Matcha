@@ -332,3 +332,11 @@ a {
 .rounded-corners {
 	border-radius: var(--border-radius);
 }
+
+.flex-gap-3rem {
+	gap: 3rem;
+}
+
+.mt-05rem {
+	margin-top: 0.5rem;
+}
