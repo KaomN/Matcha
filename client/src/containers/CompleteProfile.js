@@ -6,20 +6,20 @@ import "./styles/CompleteProfile.css";
 import '../../node_modules/pikaday/css/pikaday.css';
 import { useContext, useEffect } from "react";
 import { UserContext } from '../context/UserContext';
+import moment from "moment"
+
 
 var id = 0;
-var numImages = 0;
 
 export default function FirstTimeProfile() {
 	const { user, setUser } = useContext(UserContext);
 	const [age, setAge] = useState("");
-	const [birthDate, setBirthDate] = useState("");
+	const [dateOfBirth, setDateOfBirth] = useState("");
 	const [gender, setGender] = useState("");
 	const [preference, setPreference] = useState("");
 	const [biography, setBiography] = useState("");
 	const [interest, setInterest] = useState([]);
 	const [interestClicked, setInterestClicked] = useState("");
-	const [picture, setPicture] = useState([]);
 	const [profilePicture, setProfilePicture] = useState({});
 	const [profilePictureSrc, setProfilePictureSrc] = useState("");
 	const [showform, setShowForm] = useState("ageForm");
@@ -33,6 +33,16 @@ export default function FirstTimeProfile() {
 	const onCropComplete = useCallback((croppedArea) => {
 		setImageSize(croppedArea)
 	})
+
+	const onDateSelect = useCallback((date) => {
+		let newDate = moment(date).format('DD-MM-YYYY')
+		setDateOfBirth(newDate)
+		let parts = newDate.split('-')
+		let dateArr = new Date(parts[2], parts[1] - 1, parts[0])
+		let diff = Math.abs(new Date() - dateArr)
+		setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))
+	})
+
 	const navigate = useNavigate();
 
 	function getLocation() {
@@ -83,24 +93,17 @@ export default function FirstTimeProfile() {
 									<div className="form_message_error"></div>
 								</div>
 								<div className="flex-column-completeprofile pb-2rem">
-									<PikadayWrap />
+									<PikadayWrap
+									onSelect={onDateSelect}
+									/>
 								</div>
 								<div className="center-left">
 									<button className="complete-form-button" onClick={() => {
 										if(document.getElementById('date').value === "") {
 											document.querySelector('.form_message_error').innerHTML = "Empty field!"
 										} else {
-											let parts = document.getElementById("date").value.split('-');
-											let date = new Date(parts[2], parts[1] - 1, parts[0]);
-											let diff = Math.abs(new Date() - date);
-											if(isNaN(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))) {
-												document.querySelector('.form_message_error').innerHTML = "Input error!"
-											} else {
-												setBirthDate(document.getElementById("date").value);
-												setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)));
-												document.querySelector('.form_message_error').innerHTML = "";
-												setShowForm("genderForm");
-											}
+											setShowForm("genderForm");
+											console.log(age, dateOfBirth)
 										}
 										}}>Next</button>
 								</div>
@@ -419,7 +422,7 @@ export default function FirstTimeProfile() {
 		} else {
 			const formdata = new FormData();
 			formdata.append("age", age);
-			formdata.append("birthDate", birthDate);
+			formdata.append("birthDate", dateOfBirth);
 			formdata.append("gender", gender);
 			formdata.append("preference", preference);
 			formdata.append("biography", biography);

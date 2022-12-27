@@ -2,8 +2,10 @@ import React, { useState, useEffect, useContext, useRef, useCallback } from "rea
 import { UserContext } from '../context/UserContext';
 import { useParams } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { LoadingSpinnerPromiseComponent } from '../components/LoadingSpinnerPromiseComponent';
 import Cropper from 'react-easy-crop'
 import PikadayWrap from "../components/PikadayWrap";
+import moment from "moment"
 import "./styles/Profile.css";
 
 // Edit profile image popup
@@ -74,6 +76,7 @@ function capitalize(s) {
 }
 
 export default function Profile() {
+	//console.log(process.env.REACT_APP_API_KEY)
 	// Custom States for popups
 	const { refEditProfileImage, isEditProfileImageVisible, setIsEditProfileImageVisible } = useEditProfileImageVisible(false);
 	const { refEditImage, isEditImageVisible, setIsEditImageVisible } = useEditImageVisible(false);
@@ -98,26 +101,44 @@ export default function Profile() {
 	const [errorMessage, setErrorMessage] = useState("");
 	// Profile Settings States
 	const [firstname, setFirstname] = useState("");
+	const [errorFirstname, setErrorFirstname] = useState("");
 	const [surname, setSurname] = useState("");
+	const [errorSurname, setErrorSurname] = useState("");
+	const [nameSuccessMsg, setNameSuccessMsg] = useState("");
 	const [username, setUsername] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [passwordConfirm, setPasswordConfirm] = useState("");
+	const [errorUsername, setErrorUsername] = useState("");
+	const [usernameSuccessMsg, setUsernameSuccessMsg] = useState("");
+	const [dateOfBirth, setDateOfBirth] = useState("");
+	const [dateofbirthSuccessMsg, setDateOfBirthSuccessMsg] = useState("");
+	const [errorDate, setErrorDate] = useState("");
 	const [age, setAge] = useState("");
-	const [birthDate, setBirthDate] = useState("");
 	const [gender, setGender] = useState("");
+	const [errorGender, setErrorGender] = useState("");
+	const [genderSuccessMsg, setGenderSuccessMsg] = useState("");
 	const [preference, setPreference] = useState("");
-	
-	const [biography, setBiography] = useState("");
+	const [errorPreference, setErrorPreference] = useState("");
+	const [preferenceSuccessMsg, setPreferenceSuccessMsg] = useState("");
 	const [interest, setInterest] = useState([]);
 	const [interestClicked, setInterestClicked] = useState("");
-	const [interestError, setInterestError] = useState("");
-	const [errorFirstname, setErrorFirstname] = useState("");
-	const [errorSurname, setErrorSurname] = useState("");
-	const [errorUsername, setErrorUsername] = useState("");
+	const [errorPutInterest, setErrorPutInterest] = useState("");
+	const [errorDeleteInterest, setErrorDeleteInterest] = useState("");
+	const [biography, setBiography] = useState("");
+	const [newBiography, setNewBiography] = useState("");
+	const [biographySuccessMsg, setBiographySuccessMsg] = useState("");
+	const [errorBiography, setErrorBiography] = useState("");
+	const [interestSuccessMsg, setInterestSuccessMsg] = useState([]);
+	const [email, setEmail] = useState("");
+	const [emailSuccessMsg, setEmailSuccessMsg] = useState("");
 	const [errorEmail, setErrorEmail] = useState("");
+	const [emailChangeMsg, setEmailChangeMsg] = useState("");
+	const [password, setPassword] = useState("");
+	const [newPassword, setNewPassword] = useState("");
+	const [confirmNewPassword, setConfirmNewPassword] = useState("");
+	const [passwordSuccessMsg, setPasswordSuccessMsg] = useState([]);
 	const [errorPassword, setErrorPassword] = useState("");
-	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
+	const [errorNewPassword, setErrorNewPassword] = useState("");
+	const [errorConfirmNewPassword, setErrorConfirmNewPassword] = useState("");
+
 	// Visibility states
 	const [isPublicProfileSettingsVisible, setIsPublicProfileSettingsVisible] = useState(false);
 	const [isPrivateProfileSettingsVisible, setIsPrivateProfileSettingsVisible] = useState(false);
@@ -131,9 +152,21 @@ export default function Profile() {
 	const [isEmailVisible, setIsEmailVisible] = useState(false);
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 	const [isLocationVisible, setIsLocationVisible] = useState(false);
-	
+	// Tracking Promises
+	const [promiseTracker, setPromiseTracker] = useState(false);
+	const [promiseTracker2, setPromiseTracker2] = useState(false);
+
 	const onCropComplete = useCallback((croppedArea) => {
 		setImageSize(croppedArea)
+	})
+
+	const onDateSelect = useCallback((date) => {
+		let newDate = moment(date).format('DD-MM-YYYY')
+		setDateOfBirth(newDate)
+		let parts = newDate.split('-')
+		let dateArr = new Date(parts[2], parts[1] - 1, parts[0])
+		let diff = Math.abs(new Date() - dateArr)
+		setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))
 	})
 
 	const [cropImages, setCropImages] = useState({ x: 0, y: 0 })
@@ -145,35 +178,29 @@ export default function Profile() {
 	})
 
 	let params = useParams()
-
 	useEffect(() => {
-		const controller = new AbortController();
-		const signal = controller.signal;
-		
-		(async function() {
-			let response = await fetch('/profile/getprofile', {
-				signal,
-				credentials: "include",
-				method: "POST",
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({
-					profileID: params.profileID,
-				})
-			})
-			response = await response.json()
-			let interestId = 0;
-			const interestCopy = response.interest.slice()
-			interestCopy.map(interest => {
-				interest.id = interestId
-				interestId++
-			})
-			setProfile(response)
-			setBiography(response.biography)
-			setInterest(interestCopy)
-			console.log(response)
+		let mounted = true;
+		if(mounted) {
+			(async function() {
+				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
+				response = await response.json()
+				let interestId = 0;
+				if(response.interest !== undefined) {
+					const interestCopy = response.interest.slice()
+					interestCopy.map(interest => {
+						interest.id = interestId
+						interestId++
+					})
+					setInterest(interestCopy)
+				}
+				setProfile(response)
+				setGender(response.gender)
+				setPreference(response.preference)
+				setBiography(response.biography)
+				setNewBiography(response.biography)
 			})();
-
-			return () => controller.abort()
+		}
+		return () => mounted = false;
 	}, [user]);
 
 	function saveProfilePicture(event) {
@@ -303,33 +330,6 @@ export default function Profile() {
 		return response
 	}
 
-	function deleteInterest() {
-		setInterest(
-			interest.filter(a =>
-			a.id !== parseInt(interestClicked)
-			)
-		);
-	}
-
-	function interestKeydown(event) {
-		//console.log(event.key)
-		if(event.key === " ")
-			event.preventDefault()
-		else if(event.key === "Enter") {
-			if(event.target.value.length > 25) {
-				setInterestError("Error! Interest tags max length 25!")
-			} else if(event.target.value.trim().length === 0) {
-				setInterestError("Error! Interest tags cant be empty!")
-			} else {
-				let interestValue = event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1).toLowerCase().trim()
-				console.log()
-				setInterest([...interest, {id:interest.length, tag:interestValue} ]);
-				event.target.value = "";
-			}
-		}
-		//document.querySelector('.form_message_error').innerHTML = ""
-	}
-
 	function hidePublicItems(show) {
 		setIsNameVisible(false)
 		setIsUsernameVisible(false)
@@ -338,6 +338,8 @@ export default function Profile() {
 		setIsPreferenceVisible(false)
 		setIsInterestsVisible(false)
 		setIsBiographyVisible(false)
+		setInterestClicked("")
+		clearStates()
 		show(true)
 	}
 
@@ -345,15 +347,349 @@ export default function Profile() {
 		setIsEmailVisible(false)
 		setIsPasswordVisible(false)
 		setIsLocationVisible(false)
+		setInterestClicked("")
+		clearStates()
 		show(true)
 	}
 
 	function hideSettings(show) {
 		setIsPublicProfileSettingsVisible(false)
 		setIsPrivateProfileSettingsVisible(false)
+		setInterestClicked("")
+		clearStates()
 		show(true)
 	}
 
+	function clearStates() {
+		setFirstname("")
+		setSurname("")
+		setUsername("")
+		setDateOfBirth("")
+		setPassword("")
+		setNewPassword("")
+		setConfirmNewPassword("")
+		resetBiographyState()
+	}
+
+	function resetBiographyState() {
+		setBiography(newBiography)
+	}
+
+	async function handleSubmit(props, value, event) {
+		if (props === "name") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/name', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ firstname: capitalize(firstname), surname:capitalize(surname) })
+				});
+				response = await response.json();
+				if (response.status) {
+					setNameSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setNameSuccessMsg("")
+					}, 3000)
+					setUser(user => ( {
+						...user,
+						firstname: capitalize(firstname),
+						surname: capitalize(surname)
+					}))
+				} else {
+					setErrorFirstname(response.errorFirstname)
+					setErrorSurname(response.errorSurname)
+					setTimeout(() => {
+						setErrorFirstname("")
+						setErrorSurname("")
+					}, 3000)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "username") {
+			try {
+				setPromiseTracker(true)
+				
+				let response = await fetch('/profile/username', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ username: username })
+				});
+				response = await response.json()
+				if (response.status) {
+					setUsernameSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setUsernameSuccessMsg("")
+					}, 3000)
+					setUser(user => ( {
+						...user,
+						username: username
+					}))
+				} else {
+					setErrorUsername(response.err)
+					setTimeout(() => {
+						setErrorUsername("")
+					}, 3000)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "dateofbirth") {
+			try {
+				setPromiseTracker(true)
+				console.log(dateOfBirth, age)
+				let response = await fetch('/profile/dateofbirth', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ dateofbirth: dateOfBirth, age:age })
+				});
+				response = await response.json()
+				
+				if (response.status) {
+					setDateOfBirthSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setDateOfBirthSuccessMsg("")
+					}, 3000)
+					setUser(user => ( {
+						...user,
+						birthdate: dateOfBirth,
+						age: age
+					}))
+				} else {
+					setErrorDate(response.err)
+					setTimeout(() => {
+						setErrorDate("")
+					}, 3000)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "gender") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/gender', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ gender: value})
+				});
+				response = await response.json()
+				console.log(response)
+				if (response.status) {
+					setGenderSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setGenderSuccessMsg("")
+					}, 3000)
+					setGender(value)
+					setUser(user => ( {
+						...user,
+						gender: value
+					}))
+				} else {
+					setErrorGender(response.err)
+					setTimeout(() => {
+						setErrorGender("")
+					}, 3000)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "preference") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/preference', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ preference: value})
+				});
+				response = await response.json()
+				console.log(response)
+				if (response.status) {
+					setPreferenceSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setPreferenceSuccessMsg("")
+					}, 3000)
+					setPreference(value)
+					setUser(user => ( {
+						...user,
+						preference: value
+					}))
+				} else {
+					setErrorPreference(response.err)
+					setTimeout(() => {
+						setErrorPreference("")
+					}, 3000)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "interestPut") {
+			try {
+				if(event.key === " ")
+					event.preventDefault()
+				else if(event.key === "Enter") {
+					setPromiseTracker(true)
+					let response = await fetch('/profile/interest', {
+						headers: {'Content-Type': 'application/json'},
+						method: "PUT",
+						body: JSON.stringify({ interest: capitalize(value)})
+					});
+					response = await response.json()
+					console.log(response)
+					if(response.status) {
+						setInterestSuccessMsg("Updated successfully!")
+						setTimeout(() => {
+							setInterestSuccessMsg("")
+						}, 3000)
+						// Update Interest state
+						const interestCopy = interest.slice()
+						interestCopy.push({tag: capitalize(value), id: interest.length})
+						setInterest(interestCopy)
+						// Update User.interest state
+						const userInterestCopy = user.interest.slice()
+						userInterestCopy.push({tag: capitalize(value)})
+						setUser(user => ( {
+							...user,
+							interest: userInterestCopy
+						}))
+						event.target.value = "";
+					} else {
+						setErrorPutInterest(response.err)
+						setTimeout(() => {
+							setErrorPutInterest("")
+						}, 3000)
+					}
+					setPromiseTracker(false)
+				}
+			} catch (err) {
+
+			}
+		}
+		else if (props === "interestDelete") {
+			try {
+				setPromiseTracker2(true)
+				let response = await fetch('/profile/interest', {
+					headers: {'Content-Type': 'application/json'},
+					method: "DELETE",
+					body: JSON.stringify({ interest: interestClicked.tag})
+				});
+				response = await response.json()
+				if (response.status) {
+					setInterestSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setInterestSuccessMsg("")
+					}, 3000)
+					setInterest(
+						interest.filter(a =>
+						a.id !== parseInt(interestClicked.id)
+						)
+					);
+					const userInterestCopy =  user.interest.filter(a =>a.tag !== interestClicked.tag)
+					setUser(user => ( {
+						...user,
+						interest: userInterestCopy
+					}))
+				} else {
+					setErrorDeleteInterest(response.err)
+					setTimeout(() => {
+						setErrorDeleteInterest("")
+					}, 3000)
+				}
+				setPromiseTracker2(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "biography") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/biography', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ biography: biography})
+				});
+				response = await response.json()
+				if (response.status) {
+					setBiographySuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setBiographySuccessMsg("")
+					}, 3000)
+					setBiography(biography)
+					setNewBiography(biography)
+					setUser(user => ( {
+						...user,
+						biography: biography
+					}))
+				} else {
+					setErrorBiography(response.err)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "email") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/email', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ email: email})
+				});
+				response = await response.json()
+				if (response.status) {
+					setEmailSuccessMsg("Email change request sent!")
+					setEmailChangeMsg(response.msg)
+					setTimeout(() => {
+						setEmailSuccessMsg("")
+					}, 3000)
+					setTimeout(() => {
+						setEmailChangeMsg("")
+					}, 6000)
+				} else {
+					setErrorEmail(response.err)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+		else if (props === "password") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/password', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ currentPassword: password, newPassword: newPassword, confirmNewPassword: confirmNewPassword})
+				});
+				response = await response.json()
+				if (response.status) {
+					setPasswordSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setPasswordSuccessMsg("")
+					}, 3000)
+				} else {
+					setErrorPassword(response.errorPassword)
+					setErrorNewPassword(response.errorNewPassword)
+					setErrorConfirmNewPassword(response.errorConfirmNewPassword)
+					setErrorBiography(response.err)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
+
+			}
+		}
+
+	}
 
 	if (profile === "loading") {
 		return <LoadingSpinner />
@@ -479,24 +815,9 @@ export default function Profile() {
 																					crop={cropImages}
 																					zoom={zoomImages}
 																					aspect={3 / 4}
-																					// onCropChange={(crop) => {
-																					// 	const newCrop = cropImages.slice()
-																					// 	newCrop[pictures.id] = crop
-																					// 	setCropImages(newCrop)
-																					// }}
 																					onCropChange={setCropImages}
 																					onZoomChange={setZoomImages}
 																					onCropComplete={onCropCompleteImages}
-																					// onCropComplete={ (croppedArea) => {
-																					// 	const newCroppedArea = imageSizeImages.slice()
-																					// 	newCroppedArea[pictures.id] = croppedArea
-																					// 	setImageSizeImages(newCroppedArea)
-																					// }}
-																					// onZoomChange={(zoom) => {
-																					// 	const newZoom = zoomImages.slice()
-																					// 	newZoom[pictures.id] = zoom
-																					// 	setZoomImages(newZoom)
-																					// }}
 																					/>
 																					} 
 																				</div>
@@ -545,7 +866,6 @@ export default function Profile() {
 											<i className="material-icons profile-button-disabled" draggable="false">chevron_right</i>
 										}
 									</div>
-									{/* {profile.images.length} {imagePage} */}
 								</div>
 							:
 								<div>No images uploaded</div>
@@ -559,7 +879,7 @@ export default function Profile() {
 				{/* Edit Profile Popup */}
 				{(profile.isOwn === true)
 				?
-				<button className="form_button_verify mt-05rem" onClick={ () => setIsEditProfileVisible(true) }>Edit Profile</button>
+				<button className="form_button_verify mt-05rem" onClick={ () => {setIsEditProfileVisible(true); setInterestClicked("")} }>Edit Profile</button>
 				:
 				null
 				}
@@ -580,118 +900,167 @@ export default function Profile() {
 										</div>
 										{isPublicProfileSettingsVisible ?
 										<div className="profile-edit-container">
-											<div className="profile-edit-components" onClick={() => {
-												isNameVisible ? setIsNameVisible(false) : hidePublicItems(setIsNameVisible)
-												}}>Name
+											<div className="profile-edit-components" onClick={() => { isNameVisible ? setIsNameVisible(false) : hidePublicItems(setIsNameVisible) }}>
+												<div>Name</div>
+												<div className="profile-items-success-msg">{nameSuccessMsg}</div>
 											</div>
 											{isNameVisible ?
 											<div className="test">
 												<div className="flex-row">
-													<input className="profile-inputs" placeholder={profile.firstname}></input>
-													<input className="profile-inputs" placeholder={profile.surname}></input>
+													<div className="flex-col">
+														<input className="profile-inputs" placeholder={profile.firstname} defaultValue={firstname} onChange={function(e) {setFirstname(e.target.value); setErrorFirstname(""); }}></input>
+														<div className="profile-input-error">{errorFirstname}</div>
+													</div>
+													<div className="flex-col">
+														<input className="profile-inputs" placeholder={profile.surname} defaultValue={surname} onChange={function(e) {setSurname(e.target.value); setErrorSurname(""); }}></input>
+														<div className="profile-input-error">{errorSurname}</div>
+													</div>
 												</div>
-												<button className="profile-button mt-05rem">Save</button>
+												{promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												<button className="profile-button" onClick={ () => { handleSubmit("name") }}>Save</button>}
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isUsernameVisible ? setIsUsernameVisible(false) : hidePublicItems(setIsUsernameVisible)
-												}}>Username
+											<div className="profile-edit-components" onClick={() => {isUsernameVisible ? setIsUsernameVisible(false) : hidePublicItems(setIsUsernameVisible)}}>
+												<div>Username</div>
+												<div className="profile-items-success-msg">{usernameSuccessMsg}</div>
 											</div>
 											{isUsernameVisible ?
 											<div className="test">
-												<input className="profile-inputs" placeholder={profile.username}></input>
-												<button className="profile-button mt-05rem">Save</button>
+												<div>
+													<input className="profile-inputs" placeholder={profile.username} defaultValue={username} onChange={function(e) {setUsername(e.target.value); setErrorUsername(""); }}></input>
+													<div className="profile-input-error">{errorUsername}</div>
+												</div>
+												{promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												<button className="profile-button" onClick={ () => { handleSubmit("username") }}>Save</button>}
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isDateVisible ? setIsDateVisible(false) : hidePublicItems(setIsDateVisible)
-												}}>Date of birth
+											<div className="profile-edit-components" onClick={() => { isDateVisible ? setIsDateVisible(false) : hidePublicItems(setIsDateVisible) }}>
+												<div>Date of birth</div>
+												<div className="profile-items-success-msg">{dateofbirthSuccessMsg}</div>
 											</div>
 											{isDateVisible ?
 											<div className="test">
-												<PikadayWrap value={profile.dateofbirth} page="profile"/>
-												<button className="profile-button mt-05rem">Save</button>
+												<PikadayWrap
+												value={profile.dateofbirth}
+												page="profile"
+												onSelect={onDateSelect}
+												/>
+												<div className="profile-input-error">{errorDate}</div>
+												{promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												<button className="profile-button" onClick={ () => { handleSubmit("dateofbirth") }}>Save</button>}
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isGenderVisible ? setIsGenderVisible(false) : hidePublicItems(setIsGenderVisible)
-												}}>Gender
+											<div className="profile-edit-components" onClick={() => {isGenderVisible ? setIsGenderVisible(false) : hidePublicItems(setIsGenderVisible)}}>
+												<div>Gender</div>
+												<div className="profile-items-success-msg">{genderSuccessMsg}</div>
 											</div>
 											{isGenderVisible ?
 											<div className="test">
+												{promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
 												<div className="flex-col">
 													<div className="flex-row">
 														<label htmlFor ="genderMale" className="profile-gender-label">Male:</label>
-														<input name="gender" value="male" type="radio" id="genderMale" defaultChecked={profile.gender === "male" ? true : false} ></input>
+														<input name="gender" value="male" type="radio" id="genderMale" defaultChecked={gender === "male" ? true : false} onChange={(e) => {handleSubmit("gender", e.target.value)}}></input>
 													</div>
 													<div className="flex-row">
 														<label htmlFor="genderFemale" className="profile-gender-label" >Female:</label>
-														<input name="gender" value="female" type="radio" id="genderFemale" defaultChecked={profile.gender === "female" ? true : false} ></input>
+														<input name="gender" value="female" type="radio" id="genderFemale" defaultChecked={gender === "female" ? true : false} onChange={(e) => {handleSubmit("gender", e.target.value)}}></input>
 													</div>
+													<div className="profile-input-error">{errorGender}</div>
 												</div>
+												}
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isPreferenceVisible ? setIsPreferenceVisible(false) : hidePublicItems(setIsPreferenceVisible)
-												}}>Preference
+											<div className="profile-edit-components" onClick={() => {isPreferenceVisible ? setIsPreferenceVisible(false) : hidePublicItems(setIsPreferenceVisible)}}>
+												<div>Preference</div>
+												<div className="profile-items-success-msg">{preferenceSuccessMsg}</div>
 											</div>
 											{isPreferenceVisible ?
 											<div className="test">
+												{promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
 												<div className="flex-col">
 													<div className="flex-row">
 														<label htmlFor ="preferencerMale" className="profile-gender-label">Male:</label>
-														<input name="preference" value="male" type="radio" id="preferencerMale" defaultChecked={profile.preference === "male" ? true : false} ></input>
+														<input name="preference" value="male" type="radio" id="preferencerMale" defaultChecked={preference === "male" ? true : false} onChange={(e) => {handleSubmit("preference", e.target.value)}} ></input>
 													</div>
 													
 													<div className="flex-row">
 														<label htmlFor="preferenceFemale" className="profile-gender-label" >Female:</label>
-														<input name="preference" value="female" type="radio" id="preferenceFemale" defaultChecked={profile.preference === "female" ? true : false} ></input>
+														<input name="preference" value="female" type="radio" id="preferenceFemale" defaultChecked={preference === "female" ? true : false} onChange={(e) => {handleSubmit("preference", e.target.value)}} ></input>
 													</div>
 													<div className="flex-row">
 														<label htmlFor="preferenceBoth" className="profile-gender-label" >Both:</label>
-														<input name="preference" value="both" type="radio" id="preferenceBoth" defaultChecked={profile.preference === "both" ? true : false} ></input>
+														<input name="preference" value="both" type="radio" id="preferenceBoth" defaultChecked={preference === "both" ? true : false} onChange={(e) => {handleSubmit("preference", e.target.value)}} ></input>
 													</div>
+													<div className="profile-input-error">{errorPreference}</div>
 												</div>
+												}
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isInterestsVisible ? setIsInterestsVisible(false) : hidePublicItems(setIsInterestsVisible)
-												}}>Interests
+											<div className="profile-edit-components" onClick={() => {isInterestsVisible ? setIsInterestsVisible(false) : hidePublicItems(setIsInterestsVisible)}}>
+												<div>Interests</div>
+												<div className="profile-items-success-msg">{interestSuccessMsg}</div>
 											</div>
 											{isInterestsVisible ?
 											<div className="test">
 												<div style={{border: "0px", marginBottom: "0.5rem"}}>
-													<input type="text" id="interest" onKeyDown={interestKeydown} autoComplete="off" className="text-align-center"/>
+													<input type="text" onKeyDown={(e) => {handleSubmit("interestPut", e.target.value, e); setErrorPutInterest(""); setErrorDeleteInterest("")}} autoComplete="off" className="profile-interest-input"/>
 												</div>
 												<div>Interests added:</div>
 												<div style={{border: "0px", marginBottom: "0.5rem"}} >
-													<select multiple id="interestSelect" className="text-align-center">
-													{interest.map(interest => (<option key={interest.id} onClick={() => {setInterestClicked(interest.id)}}>{interest.tag}</option>))}
+													<select multiple id="interestSelect" className="text-align-center profile-interest-select">
+														{interest.map(interest => (
+														<option key={interest.id} onClick={() => { setInterestClicked({id:interest.id, tag:interest.tag})}}>{interest.tag}</option>
+														))}
 													</select>
 												</div>
-												<button className="complete-form-button delete-btn" onClick={deleteInterest}>Delete Interest</button>
+												<div className="profile-input-error">{errorPutInterest}</div>
+												<div className="profile-input-error">{errorDeleteInterest}</div>
+												{promiseTracker2 ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												interestClicked != "" ?
+												<button className="complete-form-button delete-btn" onClick={() => {handleSubmit("interestDelete")}}>Delete Interest</button>
+												:
+												null
+												}
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isBiographyVisible ? setIsBiographyVisible(false) : hidePublicItems(setIsBiographyVisible)
-												}}>Biography
+											<div className="profile-edit-components" onClick={() => {isBiographyVisible ? setIsBiographyVisible(false) : hidePublicItems(setIsBiographyVisible)}}>
+												<div>Biography</div>
+												<div className="profile-items-success-msg">{biographySuccessMsg}</div>
 											</div>
 											{isBiographyVisible ?
 											<div className="test">
 												<textarea className="profile-biography-textarea" onChange={function(e) {setBiography(e.target.value)}} defaultValue={biography}></textarea>
-												<button className="profile-button mt-05rem">Save</button>
+												<div className="profile-input-error">{errorBiography}</div>
+												{promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												<button className="profile-button" onClick={() => {handleSubmit("biography")}}>Save</button>
+												}
 											</div>
 											:
 											null
@@ -707,29 +1076,39 @@ export default function Profile() {
 										</div>
 										{isPrivateProfileSettingsVisible ?
 										<div className="profile-edit-container">
-											<div className="profile-edit-components" onClick={() => {
-												isEmailVisible ? setIsEmailVisible(false) : hidePrivateItems(setIsEmailVisible)
-												}}>Email
+											<div className="profile-edit-components" onClick={() => {isEmailVisible ? setIsEmailVisible(false) : hidePrivateItems(setIsEmailVisible)}}>
+												<div>Email</div>
+												<div className="profile-items-success-msg">{emailSuccessMsg}</div>
 											</div>
 											{isEmailVisible ?
 											<div className="test">
-												<div className="flex-row">
-													<input className="profile-inputs" placeholder={profile.email}></input>
+												<div className="flex-col">
+													<input className="profile-inputs" placeholder={profile.email} onChange={(e) => {setEmail(e.target.value); setErrorEmail("")}}></input>
+													<div className="profile-input-error">{errorEmail}</div>
+													<div className="profile-items-success-msg">{emailChangeMsg}</div>
 												</div>
-												<button className="profile-button mt-05rem">Save</button>
+												<button className="profile-button" onClick={() => {handleSubmit("email")}}>Submit</button>
 											</div>
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isPasswordVisible ? setIsPasswordVisible(false) : hidePrivateItems(setIsPasswordVisible)
-												}}>Password
+											<div className="profile-edit-components" onClick={() => {isPasswordVisible ? setIsPasswordVisible(false) : hidePrivateItems(setIsPasswordVisible)}}>
+												<div>Password</div>
+												<div className="profile-items-success-msg">{passwordSuccessMsg}</div>
 											</div>
 											{isPasswordVisible ?
 											<div className="test">
-												<input className="profile-inputs" placeholder="Password"></input>
-												<input className="profile-inputs" placeholder="Confirm Password"></input>
-												<button className="profile-button mt-05rem">Save</button>
+												<input className="profile-inputs" type="password" placeholder="Current Password" onChange={(e) => {setPassword(e.target.value); setErrorPassword("")}}></input>
+												<div className="profile-input-error">{errorPassword}</div>
+												<input className="profile-inputs" type="password" placeholder="New Password" onChange={(e) => {setNewPassword(e.target.value); setErrorNewPassword("")}}></input>
+												<div className="profile-input-error">{errorNewPassword}</div>
+												<input className="profile-inputs" type="password" placeholder="Confirm New Password" onChange={(e) => {setConfirmNewPassword(e.target.value); setErrorConfirmNewPassword("");}}></input>
+												<div className="profile-input-error">{errorConfirmNewPassword}</div>
+												{ promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												<button className="profile-button" onClick={() => {handleSubmit("password")}}>Save</button>
+												}
 											</div>
 											:
 											null

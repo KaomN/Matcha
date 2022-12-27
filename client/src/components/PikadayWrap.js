@@ -13,6 +13,11 @@ export default class PikadayWrap extends React.Component {
 		this.maxYear = new Date().getFullYear() - 18
 	}
 
+	test(date) {
+		this.props.onTest(date);
+		//this.test = this.getMoment().format('DD-MM-YYYY')
+	}
+
 	componentDidMount () {
 		new Pikaday({
 		defaultDate: this.props.value !== undefined ? this.maxDateValue : this.maxDate,
@@ -20,6 +25,7 @@ export default class PikadayWrap extends React.Component {
 		format: 'DD-MM-YYYY',
 		firstDay: 0,
 		maxDate: this.maxDate,
+		onSelect: this.props.onSelect,
 		yearRange: [1900,this.maxYear],
 		 position: "bottom right"
 		})
