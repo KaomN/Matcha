@@ -103,7 +103,6 @@ export default function FirstTimeProfile() {
 											document.querySelector('.form_message_error').innerHTML = "Empty field!"
 										} else {
 											setShowForm("genderForm");
-											console.log(age, dateOfBirth)
 										}
 										}}>Next</button>
 								</div>
@@ -223,7 +222,6 @@ export default function FirstTimeProfile() {
 	}
 
 	function interestKeydown(event) {
-		//console.log(event.key)
 		if(event.key === " ")
 			event.preventDefault()
 		else if(event.key === "Enter") {
@@ -301,7 +299,7 @@ export default function FirstTimeProfile() {
 			fileInput = <div className="flex-column-completeprofile ">
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
 									<input type="file" id="profilePic" accept="image/*" name="profile" onChange={saveProfilePicture}/>
-									<i className="material-icons profile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
+									<i className="material-icons completeprofile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
 								</div>
 							</div>
 		} else {
@@ -330,6 +328,7 @@ export default function FirstTimeProfile() {
 												image={profilePictureSrc}
 												crop={crop}
 												zoom={zoom}
+												zoomSpeed={0.1}
 												aspect={4 / 4}
 												onCropChange={setCrop}
 												onCropComplete={onCropComplete}
@@ -437,8 +436,8 @@ export default function FirstTimeProfile() {
 			formdata.append("profilePicture", profilePicture);
 			formdata.append("x", imageSize.x)
 			formdata.append("y", imageSize.y)
-			formdata.append("cropWidth", imageSize.width)
-			formdata.append("cropHeight", imageSize.height)
+			formdata.append("width", imageSize.width)
+			formdata.append("height", imageSize.height)
 			// picture.map(pictureElem => (
 			// 	formdata.append("pictureUpload" + pictureElem.id, pictureElem.name)
 			// ));
@@ -447,7 +446,6 @@ export default function FirstTimeProfile() {
 				body: formdata
 			});
 			response = await response.json();
-			//console.log(response)
 			if (response.status) {
 				navigate("/home");
 				//window.location.reload(false);

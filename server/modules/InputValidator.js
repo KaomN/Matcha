@@ -1,4 +1,5 @@
 const emailValidator = require('email-validator');
+const Moment = require('moment');
 
 const register = (req, error) => {
 	const { firstname, surname, username, email, password, passwordConfirm} = req.body;
@@ -82,7 +83,7 @@ const forgotPassword = (req, error) => {
 }
 
 const passwordReset = (req, error) => {
-	const {password, passwordConfirm, token} = req.body;
+	const { password, passwordConfirm } = req.body;
 	if(password.trim().length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
 	// else if (password.length > 50)
@@ -136,7 +137,179 @@ const checkImage = (req, error) => {
 			return false;
 		}
 	}
-	
+}
+
+const checkName = (req, error) => {
+	const { firstname, surname } = req.body;
+	if(firstname.trim().length === 0)
+		Object.assign(error, {"errorFirstname": "Firstname required!"});
+	else if (firstname.trim().length > 50)
+		Object.assign(error, {"errorFirstname": "Firstname too long! Max 50 characters!"});
+	if(surname.trim().length === 0)
+		Object.assign(error, {"errorSurname": "Surname required!"});
+	else if (surname.trim().length > 50)
+		Object.assign(error, {"errorSurname": "Surname too long! Max 50 characters!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkUsername = (req, error) => {
+	const { username } = req.body;
+	const reUsername = /^[a-zA-Z0-9\-\_]+$/;
+	if(username.trim().length === 0)
+		Object.assign(error, {"err": "Username required!"});
+	else if (username.trim().length > 20)
+		Object.assign(error, {"err": "Username too long! Max 20 characters!"});
+	else if(username.trim().length < 4)
+		Object.assign(error, {"err": "Username minimum length of 4!"});
+	else if(!reUsername.test(username))
+		Object.assign(error, {"err": "Username only 'a-z', '0-9', '-' and '_'"});
+	// else if(username.trim() === req.session.username)
+	// 	Object.assign(error, {"errorUsername": "Same as old username!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkDate = (req, error) => {
+	const { dateofbirth, age } = req.body;
+	if(!Moment(dateofbirth, "DD-MM-YYYY", true).isValid())
+		Object.assign(error, {"err": "Incorrect date format!"});
+	else if (typeof age !== "number")
+		Object.assign(error, {"err": "Incorrect date format!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkGender = (req, error) => {
+	const { gender } = req.body;
+	if(gender !== "male" && gender !== "female")
+		Object.assign(error, {"err": "Incorrect gender value!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkPreference = (req, error) => {
+	const { preference } = req.body;
+	if(preference !== "male" && preference !== "female" && preference !== "both")
+		Object.assign(error, {"err": "Incorrect preference value!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkInterest = (req, error) => {
+	const { interest } = req.body;
+	if(interest.trim().length > 25) {
+		Object.assign(error, {"err": "Interest tags max length 25!"});
+	}
+	if(interest.trim().length === 0) {
+		Object.assign(error, {"err": "Interest tags cant be empty!"});
+	}
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkBiography = (req, error) => {
+	const { biography } = req.body;
+	if(biography.length > 2000) {
+		Object.assign(error, {"err": "Biography max 2000 characters"});
+	}
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkEmail = (req, error) => {
+	const { email } = req.body;
+	if(email.trim().length === 0)
+		Object.assign(error, {"err": "Email required!"});
+	else if (email.trim().length > 100)
+		Object.assign(error, {"err": "Email too long! Max 100 characters!"});
+	else if (!emailValidator.validate(email))
+		Object.assign(error, {"err": "Invalid Email address!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkPassword = (req, error) => {
+	const { currentPassword, newPassword, confirmNewPassword } = req.body;
+	//const rePassword = /\d|[A-Z]/;
+
+	if(currentPassword.length === 0)
+		Object.assign(error, {"errorPassword": "Password required!"});
+	if(newPassword.length === 0)
+		Object.assign(error, {"errorNewPassword": "Password required!"});
+	// else if (newPassword.length > 50)
+	// 	Object.assign(error, {"errorNewPassword": "Password too long! Max 255 characters!"});
+	// else if (newPassword.length < 8)
+	// 	Object.assign(error, {"errorNewPassword": "Password minimum length of 8!"});
+	// else if(!rePassword.test(newPassword))
+	// 	Object.assign(error, {"errorNewPassword": "Password needs to include atleast an uppercase letter or number!"});
+	if(confirmNewPassword.length === 0)
+		Object.assign(error, {"errorConfirmNewPassword": "Password Confirm required!"});
+	// else if (confirmNewPassword.length > 50)
+	// 	Object.assign(error, {"errorConfirmNewPassword": "Password confirm too long! Max 255 characters!"});
+	// else if (confirmNewPassword.length < 8)
+	// 	Object.assign(error, {"errorConfirmNewPassword": "Password confirm minimum length of 8!"});
+	// else if(!rePassword.test(ConfirmNewPassword))
+	// 	Object.assign(error, {"errorConfirmNewPassword": "Password needs to include atleast an uppercase letter or number!"});
+	if(newPassword !== confirmNewPassword) {
+		Object.assign(error, {"errorNewPassword": "Password did not match!"});
+		Object.assign(error, {"errorConfirmNewPassword": "Password did not match!"});
+	}
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkPosition = (req, error) => {
+	const { lat, lng } = req.body;
+	if(lat === undefined || lng === undefined)
+		Object.assign(error, {"err": "Undefined Position!"});
+	else if(lat >= 85.05112874 || lat <= -85.05112874)
+		Object.assign(error, {"err": "Out of bounds!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const checkPin = (req, error) => {
+	console.log(req.body)
+	const pin = req.body.pin;
+	console.log(pin)
+	if(pin.length != 6)
+		Object.assign(error, {"err": "Pin needs to be 6 numbers!"});
+	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 module.exports = {
@@ -144,5 +317,16 @@ module.exports = {
 	login,
 	forgotPassword,
 	passwordReset,
-	checkImage
+	checkImage,
+	checkName,
+	checkUsername,
+	checkDate,
+	checkGender,
+	checkPreference,
+	checkInterest,
+	checkBiography,
+	checkEmail,
+	checkPassword,
+	checkPosition,
+	checkPin,
 }

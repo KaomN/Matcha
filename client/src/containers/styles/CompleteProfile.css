@@ -220,20 +220,20 @@ select {
 }
 
 
-.profile-file-btn {
+.completeprofile-file-btn {
 	font-size: 50px;
 	position: static;
 	color: darkslategray;
 	transition: color 0.7s ease;
 }
 
-.profile-file-btn:hover {
+.completeprofile-file-btn:hover {
 	transition: color 0.7s ease;
 	color: var(--color-primary);
 	cursor: pointer;
 }
 
-.profile-file-btn:active {
+.completeprofile-file-btn:active {
 	transform: scale(0.98);
 }
 

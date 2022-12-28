@@ -1,8 +1,10 @@
 const con = require("../setup").pool;
+const bcrypt = require('bcrypt');
 const calculate = require('../modules/CalculateDistance');
 var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
+const emailTransporter =  require("../setup").emailTransporter;
 
 
 // Get user profile
@@ -63,7 +65,8 @@ const getProfile = async (userID, req) => {
 			return ({status: false});
 		}
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
 	}
 }
 
@@ -122,7 +125,7 @@ const uploadProfileImage = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		console.log(err)
+		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -154,7 +157,7 @@ const uploadProfileImages = async (req) => {
 			return ({ status: false, err: "Invalid image file!" })
 		}
 	} catch(err) {
-		console.log(err)
+		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -177,14 +180,343 @@ const deleteImage = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updateName = async (req) => {
+	try {
+		const firstname= req.body.firstname.trim();
+		const surname= req.body.surname.trim();
+		var result = await con.execute(`UPDATE users
+										SET firstname = ?, surname = ?
+										WHERE pk_userid = ?`,
+										[ firstname, surname, req.session.userid ])
+		if(result) {
+			req.session.firstname = firstname;
+			req.session.surname = surname;
+			return ({ status: true })
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updateUsername = async (req) => {
+	try {
+		const username = req.body.username.trim();
+		const currentPath = __dirname.slice(0, -6) + "uploads/" + req.session.username
+		var [rows, fields] = await con.execute(`SELECT username
+												FROM users
+												WHERE username = ?`,
+												[username])
+		if(rows[0] === undefined) {
+			var result = await con.execute(`UPDATE users
+											SET username = ?
+											WHERE pk_userid = ?`,
+											[ username, req.session.userid ])
+			if(result) {
+				const newPath = __dirname.slice(0, -6) + "uploads/" + username
+				fs.renameSync(currentPath, newPath)
+				req.session.username = username;
+				return ({ status: true })
+			} else {
+				return ({ status: false, err: "Something went wrong!" })
+			}
+		} else {
+			return ({ status: false, err: "Username taken!" })
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updateDate = async (req) => {
+	try {
+		const { dateofbirth, age } = req.body;
+		var result = await con.execute(`UPDATE users
+										SET dateofbirth = ?, age = ?
+										WHERE pk_userid = ?`,
+										[ dateofbirth, age, req.session.userid ])
+		if(result) {
+			req.session.birthdate = dateofbirth
+			req.session.age = age
+			return ({ status: true })
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updateGender = async (req) => {
+	try {
+		const { gender } = req.body;
+		var result = await con.execute(`UPDATE users
+										SET gender = ?
+										WHERE pk_userid = ?`,
+										[ gender, req.session.userid ])
+		if(result) {
+			req.session.gender = gender
+			return ({ status: true })
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updatePreference = async (req) => {
+	try {
+		const { preference } = req.body;
+		var result = await con.execute(`UPDATE users
+										SET genderpreference = ?
+										WHERE pk_userid = ?`,
+										[ preference, req.session.userid ])
+		if(result) {
+			req.session.preference = preference
+			return ({ status: true })
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updateInterest = async (req) => {
+	try {
+		const { interest } = req.body;
+		var [result, fields] = await con.execute(`	SELECT tag, pk_tagid as 'id'
+													FROM tag
+													INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
+													WHERE tagitem.fk_userid = ?
+													AND tag.tag = ?`,
+													[req.session.userid, interest])
+		if(result[0]) {
+			return ({ status: false, err: "Interest already added" })
+		} else {
+			// Tag  exists in the database
+			var [result, fields] = await con.execute(`	SELECT tag, pk_tagid as 'id'
+														FROM tag
+														WHERE tag.tag = ?`,
+														[interest])
+			if(result[0]) {
+				res = await con.execute(`INSERT
+										INTO tagitem
+										VALUES (?, ?)`,
+										[req.session.userid, result[0].id])
+				if(res) {
+					req.session.interest.push({tag: interest})
+					return ({ status: true })
+				} else {
+					return ({ status: false, err: "Something went wrong!" })
+				}
+			} else {
+				// Tag does not exist in the database
+				result = await  con.execute(`	INSERT
+												INTO tag(tag)
+												VALUES (?)`,
+												[interest])
+				if(result) {
+					res = await con.execute(`	INSERT
+												INTO tagitem
+												VALUES (?, ?)`,
+										[req.session.userid, result[0].insertId])
+					if(res) {
+						req.session.interest.push({tag: interest})
+						return ({ status: true,  tagid: result[0].insertId})
+					} else {
+						return ({ status: false, err: "Something went wrong!" })
+					}
+				}
+			}
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const deleteInterest = async (req) => {
+	try {
+		const { interest } = req.body;
+		var [result, fields] = await con.execute(`	SELECT tag, pk_tagid as 'id'
+													FROM tag
+													INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
+													WHERE tagitem.fk_userid = ?
+													AND tag.tag = ?`,
+													[req.session.userid, interest])
+		if (result[0]) {
+			var res = await con.execute(`DELETE 
+										FROM tagitem
+										WHERE fk_userid = ?
+										AND fk_tagid = ?
+										LIMIT 1`,
+										[req.session.userid, result[0].id])
+			
+			if (res) {
+				req.session.interest.splice(req.session.interest.findIndex(item => item.tag === interest), 1)
+				return ({status: true})
+			} else {
+				return ({status: false, err: "Interest deletion failed!"})
+			}
+		} else {
+			return ({status: false, err: "Interest deletion failed!"})
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updateBiography = async (req) => {
+	try {
+		const { biography } = req.body;
+		var result = await con.execute(`UPDATE users
+										SET biography = ?
+										WHERE pk_userid = ?`,
+										[ biography, req.session.userid ])
+		if(result[0]) {
+			req.session.biography = biography
+			return({ status: true })
+		} else {
+			return ({status: false, err: "Interest deletion failed!"})
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const sendEmailChangeRequest = async (req) => {
+	try {
+		const { email } = req.body;
+		const [rows, fields] = await con.execute(`	SELECT email
+													FROM users
+													WHERE pk_userid = ?`,
+													[req.session.userid])
+		if(rows[0]) {
+			const [rows, fields] = await con.execute(`	SELECT email
+														FROM users
+														WHERE email = ?`,
+														[email])
+			if(!rows[0]) {
+				const token = uuidv4() + "-" + uuidv4() + "-" + uuidv4() + "-" + uuidv4()
+				const expiration = Math.floor(Date.now()/1000)
+				const pin = String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10))
+				const result = await con.execute(`	UPDATE usertokens
+													SET emailchangetoken = ?, emailexpr = ?, emailpin = ?, emailrequest = ?
+													WHERE pk_userid = ?`,
+													[token, expiration, pin, email, req.session.userid])
+				if(result) {
+					const mailOptions1 = {
+						from: 'kaom.n.92@gmail.com',
+						to: email,
+						subject: 'Matcha email address change request',
+						text: 'Please follow the link that was sent to your original email and type in the pin code below to change your email address.\n' + 'Pin: ' + pin
+					};
+					resultSend1 = await emailTransporter.sendMail(mailOptions1);
+					const mailOptions2 = {
+						from: 'kaom.n.92@gmail.com',
+						to: req.session.email,
+						subject: 'Matcha email address change request',
+						text: 'Please follow the link below to change the email address on your account.\n' + 'http://localhost:3000?emailchangerequest=' + token
+					};
+					resultSend2 = await emailTransporter.sendMail(mailOptions2);
+					if(resultSend1.messageId && resultSend2.messageId) {
+						return ({ status: true, msg: 'An email has been sent to ' + req.session.email + " and " + email + ". Please follow the link on the first email!"})
+					} else {
+						return ({ status: false, err: "Something went wrong!" })
+					}
+				} else {
+					return ({ status: false, err: "Something went wrong!" })
+				}
+			} else {
+				return ({ status: false, err: "Email address already in use" })
+			}
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
+		}
+	} catch(err) {
 		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
+
+const updatePassword = async (req) => {
+	try {
+		const { currentPassword, newPassword } = req.body;
+		const [rows, fields] = await con.execute(`	SELECT password
+													FROM users
+													WHERE pk_userid = ?`,
+													[req.session.userid ])
+		if(rows[0]) {
+			match = await bcrypt.compare(currentPassword, rows[0].password)
+			if(match) {
+				const hash = await bcrypt.hash(newPassword, 10);
+				result = await con.execute(`UPDATE users
+											SET users.password = ?
+											WHERE pk_userid = ?`,
+											[hash, req.session.userid])
+				return({ status: true })
+			} else {
+				return({status: false, errorPassword: "Incorrect password!"})
+			}
+		} else {
+			return ({status: false, err: "Something went wrong!"})
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const updatePosition = async (req) => {
+	try {
+		const lat = parseFloat(req.body.lat)
+		const lng = parseFloat(req.body.lng)
+		result = await con.execute(`UPDATE users
+									SET users.latitude = ?, users.longitude = ?
+									WHERE pk_userid = ?`,
+									[lat, lng, req.session.userid])
+		if(result) {
+			req.session.latitude = lat
+			req.session.longitude = lng
+			return ({status: true})
+		} else {
+			return ({status: false, err: "Something went wrong!"})
+		}
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+} 
 
 module.exports = {
 	getProfile,
 	uploadProfileImage,
 	uploadProfileImages,
 	deleteImage,
+	updateName,
+	updateUsername,
+	updateDate,
+	updateGender,
+	updatePreference,
+	updateInterest,
+	deleteInterest,
+	updateBiography,
+	sendEmailChangeRequest,
+	updatePassword,
+	updatePosition,
 }

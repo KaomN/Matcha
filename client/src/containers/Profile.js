@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
+import React, { useState, useEffect, useContext, useRef, useCallback, useMemo } from "react";
 import { UserContext } from '../context/UserContext';
 import { useParams } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { LoadingSpinnerPromiseComponent } from '../components/LoadingSpinnerPromiseComponent';
+import GoogleMaps from "./GoogleMaps";
 import Cropper from 'react-easy-crop'
 import PikadayWrap from "../components/PikadayWrap";
 import moment from "moment"
@@ -80,7 +81,7 @@ export default function Profile() {
 	// Custom States for popups
 	const { refEditProfileImage, isEditProfileImageVisible, setIsEditProfileImageVisible } = useEditProfileImageVisible(false);
 	const { refEditImage, isEditImageVisible, setIsEditImageVisible } = useEditImageVisible(false);
-	const { refEditProfile, isEditProfileVisible, setIsEditProfileVisible  } = useEditProfileVisible(true);
+	const { refEditProfile, isEditProfileVisible, setIsEditProfileVisible  } = useEditProfileVisible(false);
 	// User context
 	const { user, setUser } = useContext(UserContext);
 	// Profile states
@@ -138,7 +139,11 @@ export default function Profile() {
 	const [errorPassword, setErrorPassword] = useState("");
 	const [errorNewPassword, setErrorNewPassword] = useState("");
 	const [errorConfirmNewPassword, setErrorConfirmNewPassword] = useState("");
-
+	const [savedPosition, setSavedPosition] = useState({lat: parseFloat(user.latitude), lng: parseFloat(user.longitude)});
+	const [positionSuccessMsg, setPositionSuccessMsg] = useState("");
+	const [errorPosition, setErrorPosition] = useState("");
+	//const testMaps = useMemo( () => <Maps2 position={savedPosition} onClick={onClick} setSavedPosition={setSavedPosition}/>, [] );
+	const Maps = useMemo( () => <GoogleMaps position={savedPosition} setSavedPosition={setSavedPosition}/>, [] );
 	// Visibility states
 	const [isPublicProfileSettingsVisible, setIsPublicProfileSettingsVisible] = useState(false);
 	const [isPrivateProfileSettingsVisible, setIsPrivateProfileSettingsVisible] = useState(false);
@@ -202,7 +207,6 @@ export default function Profile() {
 		}
 		return () => mounted = false;
 	}, [user]);
-
 	function saveProfilePicture(event) {
 		setProfilePictureSrc(URL.createObjectURL(event.target.files[0]))
 		setProfilePicture(event.target.files[0])
@@ -681,15 +685,42 @@ export default function Profile() {
 					setErrorPassword(response.errorPassword)
 					setErrorNewPassword(response.errorNewPassword)
 					setErrorConfirmNewPassword(response.errorConfirmNewPassword)
-					setErrorBiography(response.err)
 				}
 				setPromiseTracker(false)
 			} catch (err) {
 
 			}
 		}
+		else if (props === "position") {
+			try {
+				setPromiseTracker(true)
+				let response = await fetch('/profile/position', {
+					headers: {'Content-Type': 'application/json'},
+					method: "PUT",
+					body: JSON.stringify({ lat: savedPosition.lat, lng: savedPosition.lng})
+				});
+				response = await response.json()
+				if (response.status) {
+					setPositionSuccessMsg("Updated successfully!")
+					setTimeout(() => {
+						setPositionSuccessMsg("")
+					}, 3000)
+				} else {
+					setErrorPosition(response.errorPassword)
+					setTimeout(() => {
+						setErrorPosition("")
+					}, 3000)
+				}
+				setPromiseTracker(false)
+			} catch (err) {
 
+			}
+		}
 	}
+
+	// function onClick(newPosition) {
+	// 	setSavedPosition(newPosition)
+	// }
 
 	if (profile === "loading") {
 		return <LoadingSpinner />
@@ -727,6 +758,7 @@ export default function Profile() {
 														crop={crop}
 														zoom={zoom}
 														aspect={4 / 4}
+														zoomSpeed={0.1}
 														cropShape = 'round'
 														onCropChange={setCrop}
 														onCropComplete={onCropComplete}
@@ -784,7 +816,7 @@ export default function Profile() {
 								null
 								:
 								<div className="popup-profile">
-									<div ref={refEditImage} className="popup-content-profile">
+									<div ref={refEditImage} className="popup-content-profile pos-relative">
 									<h1 className="profile-view-font profile-popup-title"> Upload Profile Pictures</h1>
 									<i className="material-icons pos-absolute-top-right" draggable="false" onClick={ () => setIsEditImageVisible(false)} >close</i>
 										<div className="wh-100p">
@@ -814,6 +846,7 @@ export default function Profile() {
 																					image={pictures.imageSrc}
 																					crop={cropImages}
 																					zoom={zoomImages}
+																					zoomSpeed={0.1}
 																					aspect={3 / 4}
 																					onCropChange={setCropImages}
 																					onZoomChange={setZoomImages}
@@ -1087,7 +1120,11 @@ export default function Profile() {
 													<div className="profile-input-error">{errorEmail}</div>
 													<div className="profile-items-success-msg">{emailChangeMsg}</div>
 												</div>
+												{ promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
 												<button className="profile-button" onClick={() => {handleSubmit("email")}}>Submit</button>
+												}
 											</div>
 											:
 											null
@@ -1113,14 +1150,23 @@ export default function Profile() {
 											:
 											null
 											}
-											<div className="profile-edit-components" onClick={() => {
-												isLocationVisible ? setIsLocationVisible(false) : hidePrivateItems(setIsLocationVisible)
-												}}>Location
+											<div className="profile-edit-components" onClick={() => {isLocationVisible ? setIsLocationVisible(false) : hidePrivateItems(setIsLocationVisible)}}>
+												<div>Location</div>
+												<div className="profile-items-success-msg">{positionSuccessMsg}</div>
 											</div>
 											{isLocationVisible ?
 											<div className="test">
-												<PikadayWrap value={profile.dateofbirth} page="profile"/>
-												<button className="profile-button mt-05rem">Save</button>
+												{/* <Maps2
+												position={savedPosition}
+												onClick={onClick}
+												/> */}
+												{Maps}
+												<div className="profile-input-error">{errorPosition}</div>
+												{ promiseTracker ?
+												<LoadingSpinnerPromiseComponent/>
+												:
+												<button className="profile-button" onClick={() => {handleSubmit("position")}}>Save</button>
+												}
 											</div>
 											:
 											null

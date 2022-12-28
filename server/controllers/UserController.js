@@ -108,8 +108,22 @@ router.get("/getprofileimage", async (req, res) => {
 	// 	res.send({ auth: false })
 });
 
+
+router.put("/email", async (req, res) => {
+	var error = {}
+	if(Validator.checkPin(req, error)) {
+		res.send(await UserModel.changeEmail(req))
+	} else {
+		res.send(error)
+	}
+	
+	//res.send({status:true})
+});
+
+
 router.get("/test", async (req, res) => {
 	res.send(await UserModel.test(req))
 });
+
 
 module.exports = router;
