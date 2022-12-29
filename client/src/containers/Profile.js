@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useCallback, useMemo } from "react";
 import { UserContext } from '../context/UserContext';
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { LoadingSpinnerPromiseComponent } from '../components/LoadingSpinnerPromiseComponent';
 import GoogleMaps from "./GoogleMaps";
@@ -77,13 +77,13 @@ function capitalize(s) {
 }
 
 export default function Profile() {
-	//console.log(process.env.REACT_APP_API_KEY)
+	const navigate = useNavigate();
 	// Custom States for popups
 	const { refEditProfileImage, isEditProfileImageVisible, setIsEditProfileImageVisible } = useEditProfileImageVisible(false);
 	const { refEditImage, isEditImageVisible, setIsEditImageVisible } = useEditImageVisible(false);
 	const { refEditProfile, isEditProfileVisible, setIsEditProfileVisible  } = useEditProfileVisible(false);
 	// User context
-	const { user, setUser } = useContext(UserContext);
+	const { user, setUser, userContextLoading } = useContext(UserContext);
 	// Profile states
 	const [profile, setProfile] = useState("loading");
 	const [profileImageFileInput, setProfileImageFileInput] = useState("");
@@ -139,7 +139,8 @@ export default function Profile() {
 	const [errorPassword, setErrorPassword] = useState("");
 	const [errorNewPassword, setErrorNewPassword] = useState("");
 	const [errorConfirmNewPassword, setErrorConfirmNewPassword] = useState("");
-	const [savedPosition, setSavedPosition] = useState({lat: parseFloat(user.latitude), lng: parseFloat(user.longitude)});
+	//isNaN(position) ? {lat: 60.167867048720026, lng: 24.945892132588806} : position 
+	const [savedPosition, setSavedPosition] = useState({lat: parseFloat((user.latitude === null) ? 60.167867048720026 : user.latitude), lng: parseFloat((user.longitude === null) ? 24.945892132588806 : user.longitude)});
 	const [positionSuccessMsg, setPositionSuccessMsg] = useState("");
 	const [errorPosition, setErrorPosition] = useState("");
 	//const testMaps = useMemo( () => <Maps2 position={savedPosition} onClick={onClick} setSavedPosition={setSavedPosition}/>, [] );
@@ -181,6 +182,12 @@ export default function Profile() {
 	const onCropCompleteImages = useCallback((croppedArea) => {
 		setImageSizeImages(croppedArea)
 	})
+
+	useEffect(() => {
+		if(!user.profile) {
+			navigate("/completeprofile");
+		}
+	}, [user, userContextLoading]);
 
 	let params = useParams()
 	useEffect(() => {
@@ -229,6 +236,7 @@ export default function Profile() {
 		if(document.getElementById('profilePic') != null) {
 			document.querySelector('.form_message_error').innerHTML = "Please choose a profile picture!"
 		} else {
+			setPromiseTracker(true)
 			const formdata = new FormData();
 			formdata.append("profilePicture", profilePicture);
 			formdata.append("x", imageSize.x)
@@ -241,20 +249,24 @@ export default function Profile() {
 			});
 			response = await response.json();
 			if(response.status) {
-				setUser(user => ( {
-					...user,
-					imageSrc: response.imageSrc
-				}))
-				setIsEditProfileImageVisible(false)
-				setSucessMessage("Profile updated successfully!")
 				setTimeout(() => {
-					setSucessMessage("")
-				}, 3000)
+					setUser(user => ( {
+						...user,
+						imageSrc: response.imageSrc
+					}))
+					setIsEditProfileImageVisible(false)
+					setSucessMessage("Profile updated successfully!")
+					setTimeout(() => {
+						setSucessMessage("")
+					}, 3000)
+					setPromiseTracker(false)
+				}, 1500)
 			} else {
 				setErrorMessage(response.err)
 				setTimeout(() => {
 					setErrorMessage("")
 				}, 3000)
+				setPromiseTracker(false)
 			}
 		}
 	}
@@ -445,7 +457,6 @@ export default function Profile() {
 		else if (props === "dateofbirth") {
 			try {
 				setPromiseTracker(true)
-				console.log(dateOfBirth, age)
 				let response = await fetch('/profile/dateofbirth', {
 					headers: {'Content-Type': 'application/json'},
 					method: "PUT",
@@ -769,6 +780,9 @@ export default function Profile() {
 												</div>
 													{(profileImageFileInput !== "") ?
 														null
+														:
+														promiseTracker ?
+														<LoadingSpinnerPromiseComponent/>
 														:
 														<button className="profile-upload-submit-profile-image" onClick={uploadProfileImage}>Save</button>
 													}

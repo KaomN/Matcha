@@ -29,8 +29,8 @@ export default function Login() {
 	}
 
 	return (
-		<main className="form-container" id="formLogin">
-			<form onSubmit={handleSubmit}>
+		<main className="form-container ma" id="formLogin">
+			<form className="forgotpassword-form" onSubmit={handleSubmit}>
 				<div className="lock-image-container">
 					<i className="material-icons lock">lock</i>
 				</div>

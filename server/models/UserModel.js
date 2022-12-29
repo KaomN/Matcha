@@ -316,7 +316,7 @@ const completeProfile = async (req, res) => {
 		} else {
 			return (error);
 		}
-		// User info
+		// User info 54144458-3fa5-4fe6-9fc6-0823e377bed2.jpg Old: 5604ef45-71c8-4bdc-81d5-da4b0eccfa76.jpg
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 			var result = await con.execute(`UPDATE users
 											SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1
@@ -332,8 +332,8 @@ const completeProfile = async (req, res) => {
 				req.session.age = age
 				req.session.biography = biography
 				req.session.birthdate = birthDate
-				//req.session.interest = interest.split(' ')
-				return ({status:true})
+				req.session.profile = true;
+				return ({status:true, imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + profileImageName})
 			}
 		} else {
 			return (error);
@@ -349,13 +349,13 @@ const getUserInfo = async (req) => {
 											FROM images
 											WHERE fk_userid = ?`,
 											[req.session.userid])
-	if (rows[0] !== undefined) { 
+	if (rows[0] !== undefined) {
 		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
 			if (fs.existsSync(profileImagePath)) {
-				return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: profileImagePath, firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid })
+				return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename, firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
 			}
 	}
-	return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid })
+	return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
 }
 
 const getProfileImage = async (req) => {

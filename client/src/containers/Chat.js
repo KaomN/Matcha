@@ -17,23 +17,23 @@ export default function Chat() {
 	socket.on("connect_error", (err) => {
 		console.log(`connect_error due to ${err.message}`);
 	});
-	useEffect(() => {
-		function fetchUserinfo() {
-			const promise = new Promise((resolve, reject) => {
-				setTimeout(() => {
-					resolve(fetch('/chat/getlogininfo', {
-						credentials: "include",
-						method: "GET",
-					})
-					.then((response) => response.json()));
-				}, 500)
-			});
-			return promise
-		}
-		(async function() {
-			setUser(await trackPromise(fetchUserinfo()))
-		})();
-	}, []);
+	// useEffect(() => {
+	// 	function fetchUserinfo() {
+	// 		const promise = new Promise((resolve, reject) => {
+	// 			setTimeout(() => {
+	// 				resolve(fetch('/chat/getlogininfo', {
+	// 					credentials: "include",
+	// 					method: "GET",
+	// 				})
+	// 				.then((response) => response.json()));
+	// 			}, 500)
+	// 		});
+	// 		return promise
+	// 	}
+	// 	(async function() {
+	// 		setUser(await trackPromise(fetchUserinfo()))
+	// 	})();
+	// }, []);
 	//console.log(user)
 // 	const [isConnected, setIsConnected] = useState(socket.connected);
 // 	useEffect(() => {

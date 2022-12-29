@@ -12,12 +12,6 @@ export default class PikadayWrap extends React.Component {
 		// Max year range
 		this.maxYear = new Date().getFullYear() - 18
 	}
-
-	test(date) {
-		this.props.onTest(date);
-		//this.test = this.getMoment().format('DD-MM-YYYY')
-	}
-
 	componentDidMount () {
 		new Pikaday({
 		defaultDate: this.props.value !== undefined ? this.maxDateValue : this.maxDate,
@@ -33,7 +27,7 @@ export default class PikadayWrap extends React.Component {
 
 	render () {
 		return	<div>
-					<input type='text' id={this.props.page === "profile" ? 'profile' : 'date'} className={this.props.page === "profile" ? 'text-align-center profile-pikaday' : 'text-align-center'} ref={this.myRef} autoComplete="off" placeholder={this.props.value}/>
+					<input type='text' id={this.props.page === "profile" ? 'profile' : 'date'} className={this.props.page === "profile" ? 'text-align-center profile-pikaday' : 'text-align-center'} ref={this.myRef} autoComplete="off" defaultValue={this.props.value}/>
 				</div>
 	}
 }

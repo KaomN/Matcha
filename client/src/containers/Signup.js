@@ -69,7 +69,7 @@ export default function Signup() {
 		return <LoadingSpinner />
 	return(
 		<main className="form-container main-signup ma">
-			<form onSubmit={handleSubmit}>
+			<form className="signup-form" onSubmit={handleSubmit}>
 				<h1 className="title-signup">Signup</h1>
 				<div className="form_message form_message_error"></div>
 				<div className="flex-row-signup">

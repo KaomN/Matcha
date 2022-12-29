@@ -1,15 +1,7 @@
 import React, { useEffect, useState} from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import { LoadingSpinner } from '../components/LoadingSpinner';
-
-async function userAuth() {
-	var response = await fetch('/request/getuserinfo', {
-		credentials: "include",
-		method: "GET",
-	});
-	response = await response.json()
-	return response.auth;
-}
+import { userAuth } from './UserAuth'; 
 
 const PrivateRoutes = () => {
 	const [state, setState] = useState("loading");
@@ -26,7 +18,7 @@ const PrivateRoutes = () => {
 					setState(false);
 				}
 			})();
-		}, 1000)
+		}, 500)
 	}, []);
 	if(state === "loading") {
 		return <LoadingSpinner />

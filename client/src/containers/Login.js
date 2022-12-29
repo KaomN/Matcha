@@ -68,7 +68,7 @@ export default function Login() {
 		return <LoadingSpinner />
 	return (
 		<main className="form-container ma main-login" id="formLogin">
-			<form onSubmit={handleSubmit}>
+			<form className="login-form" onSubmit={handleSubmit}>
 				<h1 className="title-login">Matcha</h1>
 				<div className="form_message form_message_error">{error}</div>
 				<div className="form_input_group">

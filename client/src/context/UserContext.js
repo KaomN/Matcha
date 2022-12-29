@@ -1,7 +1,7 @@
 import {useState, createContext, useEffect} from 'react';
 import { useLocation } from "react-router-dom";
 
-export const UserContext = createContext({ username: "", auth: false, isLoading: true, imageSrc: "", firstname: "", surname: "", gender: "", age: "", birthdate: "", interest: "", latitude: "", longitude: "", preference: "", biography: "", rating: "" });
+export const UserContext = createContext({ username: "", auth: false, isLoading: true, imageSrc: "", firstname: "", surname: "", gender: "", age: "", birthdate: "", interest: "", latitude: "", longitude: "", preference: "", biography: "", rating: "", profile: "" });
 
 export const UserProvider = ({ children }) => {
 	const [user, setUser] = useState(UserContext);

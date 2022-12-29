@@ -105,7 +105,7 @@ const uploadProfileImage = async (req) => {
 				if (fs.existsSync(targetFile)) {
 					fs.unlinkSync(targetFile)
 				}
-				return ({ status: true, imageSrc: profileImageName})
+				return ({ status: true, imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + profileImageName})
 			} else {
 				return ({ status: false, err: "Something went wrong!" })
 			}
