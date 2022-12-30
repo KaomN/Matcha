@@ -3,7 +3,7 @@ import { UserContext } from '../context/UserContext';
 import { useNavigate } from "react-router-dom";
 import Cropper from 'react-easy-crop'
 import "./styles/Home.css";
-import ProfileForm from "./CompleteProfileForms/ProfileForm";
+import ProfileForm from "./CompleteProfileComponents/ProfileForm";
 
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
 		if(!user.profile) {
 			navigate("/completeprofile");
 		}
-	}, [user, userContextLoading]);
+	}, []);
 
 	return (
 			<ProfileForm

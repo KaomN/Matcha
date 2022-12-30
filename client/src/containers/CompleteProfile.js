@@ -4,12 +4,12 @@ import "./styles/CompleteProfile.css";
 import '../../node_modules/pikaday/css/pikaday.css';
 import { useContext, useEffect } from "react";
 import { UserContext } from '../context/UserContext';
-import AgeForm from "./CompleteProfileForms/AgeForm";
-import GenderForm from "./CompleteProfileForms/GenderForm";
-import PreferenceForm from "./CompleteProfileForms/PreferenceForm";
-import BiographyForm from "./CompleteProfileForms/BiographyForm";
-import InterestForm from "./CompleteProfileForms/InterestForm";
-import ProfileForm from "./CompleteProfileForms/ProfileForm";
+import AgeForm from "./CompleteProfileComponents/AgeForm";
+import GenderForm from "./CompleteProfileComponents/GenderForm";
+import PreferenceForm from "./CompleteProfileComponents/PreferenceForm";
+import BiographyForm from "./CompleteProfileComponents/BiographyForm";
+import InterestForm from "./CompleteProfileComponents/InterestForm";
+import ProfileForm from "./CompleteProfileComponents/ProfileForm";
 
 export default function CompleteProfile() {
 	const { user, setUser, userContextLoading } = useContext(UserContext);
@@ -66,7 +66,7 @@ export default function CompleteProfile() {
 		if(user.profile) {
 			navigate("/home");
 		}
-	}, [user, userContextLoading]);
+	}, []);
 
 	if(showform === "ageForm")
 		return <AgeForm

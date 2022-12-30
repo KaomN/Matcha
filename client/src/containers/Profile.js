@@ -1189,40 +1189,6 @@ export default function Profile() {
 										:
 										null}
 									</div>
-									
-									{/* <div className="profile-public-edit-container">
-										<form >
-											<h1 className="title-signup">Public profile settings</h1>
-											<div className="form_message form_message_error"></div>
-											<div className="flex-row-signup">
-												<div className="form_input_group">
-													<input autoFocus type="text" name="firstname" className="form_input" placeholder="Firstname" autoComplete="off" value={firstname} onChange={function(e) {setFirstname(e.target.value); setErrorFirstname("")}}/>
-													<div className="form_input_error_message">{errorFirstname}</div>
-												</div>
-												<div className="form_input_group">
-													<input type="text" name="surname" className="form_input" placeholder="Surname" autoComplete="off" value={surname} onChange={function(e) {setSurname(e.target.value); setErrorSurname("")}}/>
-													<div className="form_input_error_message">{errorSurname}</div>
-												</div>
-											</div>
-											<div className="form_input_group">
-												<input type="text" name="username" className="form_input" placeholder="Username" autoComplete="off" value={username} onChange={function(e) {setUsername(e.target.value); setErrorUsername("")}}/>
-												<div className="form_input_error_message">{errorUsername}</div>
-											</div>
-											<div className="form_input_group">
-												<input type="text" name="email" className="form_input" placeholder="Email" autoComplete="off" value={email} onChange={function(e) {setEmail(e.target.value); setErrorEmail("")}}/>
-												<div className="form_input_error_message">{errorEmail}</div>
-											</div>
-											<div className="form_input_group">
-												<input type="password" name="password" className="form_input" placeholder="Password" autoComplete="off" value={password} onChange={function(e) {setPassword(e.target.value); setErrorPassword("")}}/>
-												<div className="form_input_error_message">{errorPassword}</div>
-											</div>
-											<div className="form_input_group">
-												<input type="password" name="passwordConfirm" className="form_input" placeholder="Confirm Password" autoComplete="off" value={passwordConfirm} onChange={function(e) {setPasswordConfirm(e.target.value); setErrorPasswordConfirm("")}}/>
-												<div className="form_input_error_message">{errorPasswordConfirm}</div>
-											</div>
-											<button className="form_button" name="request" type="submit">Save</button>
-										</form>
-									</div> */}
 								</div>
 							</div>
 						</div>
