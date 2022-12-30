@@ -288,6 +288,7 @@
 .profile-biography-container {
 	padding-top: 0.5rem;
 	width: calc(100% - 2px);
+	max-width: 411px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -402,10 +403,9 @@ h4.h4-username, h4.h4-email {
 	border: 1px solid #00a284;
 }
 
-.test {
+.profile-component-items {
 	background-color: #005f55;
 	width: calc(90% - 1rem);
-	/* height: 50px; */
 	padding: 0.5rem;
 	border-bottom-left-radius: var(--border-radius);
 	border-bottom-right-radius: var(--border-radius);
@@ -482,7 +482,9 @@ h4.h4-username, h4.h4-email {
 
 .profile-hover {
 	width: calc(100% - 2px);
+	height: calc(100% - 2px);
 	background-color: var(--color-primary);
+	border-radius: var(--border-radius);
 	transition: background 0.7s ease;
 }
 

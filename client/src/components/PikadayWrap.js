@@ -8,10 +8,12 @@ export default class PikadayWrap extends React.Component {
 		// Min 18 years of age
 		this.maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
 		// Get Max date from value props
-		this.maxDateValue =  new Date(this.props.value);
+		const dateParts = this.props.value.split('-')
+		this.maxDateValue =  new Date(dateParts[1] + '-' + dateParts[0] + '-' + dateParts[2]);
 		// Max year range
 		this.maxYear = new Date().getFullYear() - 18
 	}
+
 	componentDidMount () {
 		new Pikaday({
 		defaultDate: this.props.value !== undefined ? this.maxDateValue : this.maxDate,
