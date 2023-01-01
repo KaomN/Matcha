@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 export default function ProfileImages(props) {
-
 	const [imagePage, setImagePage] = useState(0);
 
 	function nextImage() {
@@ -22,8 +21,14 @@ export default function ProfileImages(props) {
 	}
 
 	return (
-		<div className="pt-1rem profile-images-container">
-			<div className="pos-relative">
+		<div className="profile-images-container">
+			<div className="pt-2rem pos-relative">
+			{(props.isOwn === true)
+				?
+				<i className="profile-edit-images-button material-icons" onClick={ () => props.setIsEditImageVisible(true) } title="Edit">edit</i>
+				:
+				null
+			}
 				<img src={props.profile.images[imagePage].imageSrc} className="rounded-corners"/>
 				<i className="material-icons pos-abs-bottom-middle" draggable="false" onClick={() => {
 					if(deleteImage(props.profile.images[imagePage])) {

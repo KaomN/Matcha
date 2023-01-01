@@ -73,8 +73,8 @@ export default function Profile() {
 					setUser={setUser}
 					/>
 				</div>
-				<div className="flex-center flex-col ma ">
-					<div className="flex-col ma profile-biography-container">
+				<div className="flex-center flex-col">
+					<div className="flex-col profile-biography-container">
 						<div className="profile-view-font">About</div>
 						<div className="margin-auto profile-biography">{profile.biography}</div>
 					</div>

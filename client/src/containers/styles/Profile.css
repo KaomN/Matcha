@@ -187,8 +187,9 @@
 
 .profile-edit-images-button {
 	position: absolute;
-	top: 8px;
-	right: 8px;
+	z-index: 2;
+	top: 0px;
+	right: 0px;
 }
 
 #pictureUploads {
@@ -581,6 +582,7 @@ h4.h4-username, h4.h4-email {
 }
 
 .profile-images-container img {
+	position: relative;
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
@@ -609,10 +611,6 @@ h4.h4-username, h4.h4-email {
 	.profile-right-container {
 		width: calc(100% - 1rem);
 		max-height: 360px;
-	}
-
-	.profile-images-container {
-		padding-top: 2rem;
 	}
 
 	.profile-images-container img {
