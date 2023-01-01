@@ -22,7 +22,7 @@ export default function ProfileImages(props) {
 	}
 
 	return (
-		<div className="pt-1rem">
+		<div className="pt-1rem profile-images-container">
 			<div className="pos-relative">
 				<img src={props.profile.images[imagePage].imageSrc} className="rounded-corners"/>
 				<i className="material-icons pos-abs-bottom-middle" draggable="false" onClick={() => {

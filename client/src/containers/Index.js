@@ -117,7 +117,7 @@ export default function Index() {
 	return (
 		<main className="ma">
 			<div>
-				<img src="images/logo.png" alt="logo"></img>
+				<img className="logo" src="images/logo.png" alt="logo"></img>
 			</div>
 			{popup}
 		</main>

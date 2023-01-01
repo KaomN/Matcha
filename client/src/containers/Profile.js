@@ -12,8 +12,8 @@ import ProfileNotFound from "./ProfileComponents/ProfileNotFound";
 import ProfileStatusFalse from "./ProfileComponents/ProfileStatusFalse";
 
 // Container Components
-import ProfileLeftContainer from "./ProfileComponents/ProfileLeftContainer/ProfileLeftContainer";
 import ProfileRightContainer from "./ProfileComponents/ProfileRightContainer/ProfileRightContainer";
+import ProfileLeftContainer from "./ProfileComponents/ProfileLeftContainer/ProfileLeftContainer";
 
 
 export default function Profile() {
@@ -43,6 +43,7 @@ export default function Profile() {
 				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
 				response = await response.json()
 				setProfile(response)
+				console.log(response)
 			})();
 		}
 		return () => mounted = false;
@@ -55,20 +56,21 @@ export default function Profile() {
 			<main className="flex-col padding1 ma profile-background">
 				<div className="profile-update-success flex-center">{successMessage}</div>
 				<div className="profile-update-error flex-center">{errorMessage}</div>
-				<div className="flex-row ma pb05">
+				<div className="profile-top-container pb05">
 					{/* ----------------------------------------- */}
+					<ProfileLeftContainer
+					profile={profile}
+					setProfile={setProfile}
+					setSucessMessage={setSucessMessage}
+					setErrorMessage={setErrorMessage}
+					/>
+
 					<ProfileRightContainer
 					profile={profile}
 					setErrorMessage={setErrorMessage}
 					setSucessMessage={setSucessMessage}
 					user={user}
 					setUser={setUser}
-					/>
-					<ProfileLeftContainer
-					profile={profile}
-					setProfile={setProfile}
-					setSucessMessage={setSucessMessage}
-					setErrorMessage={setErrorMessage}
 					/>
 				</div>
 				<div className="flex-center flex-col ma ">
@@ -99,13 +101,13 @@ export default function Profile() {
 				}
 			</main>
 		);
-	} else if (profile.status === false) {
+	} else if (profile.status === false && profile.msg === "usernotfound") {
 		return (
-			<ProfileStatusFalse />
+			<ProfileNotFound />
 		);
 	} else {
 		return (
-			<ProfileNotFound />
+			<ProfileStatusFalse />
 		);
 	}
 }

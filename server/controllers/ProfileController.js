@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const ProfileModel = require('../models/ProfileModel');
 const Validator = require('../modules/InputValidator');
-const Moment = require('moment');
 
 
 router.get("/profile", async (req, res) => {

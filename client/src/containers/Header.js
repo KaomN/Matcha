@@ -202,7 +202,7 @@ export default function Header() {
 												<div className="header-profile-seperator"></div>
 												<div className="header-profile-dropdown-profile-history">Profile history</div>
 											</div>
-											<div className="header-profile-dropdown-profile">Settings? needed?</div>
+											{/* <div className="header-profile-dropdown-profile">Settings? needed?</div> */}
 										</div>
 									}
 							</div>

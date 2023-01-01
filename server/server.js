@@ -118,6 +118,8 @@ app.use('/request', require('./controllers/UserController'));
 app.use('/chat', require('./controllers/ChatController'));
 // ProfileController
 app.use('/profile', require('./controllers/ProfileController'));
+// HomeController
+app.use('/home', require('./controllers/HomeController'));
 
 // server.listen(PORT, () => {
 // 	console.log(`Server listening on ${PORT}`);

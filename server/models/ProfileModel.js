@@ -62,10 +62,9 @@ const getProfile = async (userID, req) => {
 			delete rows[0].email
 			return (rows[0]);
 		} else {
-			return ({status: false});
+			return ({status: false, msg: "usernotfound"});
 		}
 	} catch (err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
