@@ -62,10 +62,9 @@ export default function EditProfilePopup(props) {
 		if(props.profile.interest !== undefined) {
 			let interestId = 0;
 			const interestCopy = props.profile.interest.slice()
-			interestCopy.map(interest => {
-				interest.id = interestId
-				interestId++
-			})
+			interestCopy.map(interest => (
+				interest.id = interestId++
+			))
 			setInterest(interestCopy)
 		}
 		setBiography(props.profile.biography)

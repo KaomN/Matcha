@@ -13,9 +13,10 @@ export const UserProvider = ({ children }) => {
 		if (mounted) {
 			(async () => {
 				setUserContextLoading(true)
-				var response = await fetch('/request/getuserinfo');
-				response = await response.json()
-				setUser({...user, ...response})
+				const response = await fetch('/request/getuserinfo');
+				const data = await response.json()
+				//console.log(data)
+				setUser(data)
 				setUserContextLoading(false)
 			})()
 		}

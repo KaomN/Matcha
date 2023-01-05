@@ -11,7 +11,7 @@ export default function GenderForm(props) {
 								<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Gender</label>
 								<div className="form_message_error"></div>
 							</div>
-							<select id="genderSelect" style={{border: "0px", marginBottom: "1.5rem"}} onChange={function(e) {props.setGender(e.target.value)}} defaultValue={props.gender}>
+							<select className="completeprofile_select" id="genderSelect" style={{border: "0px", marginBottom: "1.5rem"}} onChange={function(e) {props.setGender(e.target.value)}} defaultValue={props.gender}>
 								<option value="" >Gender</option>
 								<option value="male" >Male</option>
 								<option value="female">Female</option>

@@ -98,7 +98,6 @@ io.on('connection', (socket) => {
 	}
 });
 
-
 app.use('/images', express.static(__dirname + '/uploads'));
 
 if (!fs.existsSync(__dirname + "/uploads")){

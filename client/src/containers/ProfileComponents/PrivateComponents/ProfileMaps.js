@@ -9,7 +9,7 @@ export default function ProfileMaps(props) {
 	const [errorPosition, setErrorPosition] = useState("");
 	const [promiseTracker, setPromiseTracker] = useState(false);
 
-	const Maps = useMemo(() => <GoogleMaps position={savedPosition} setSavedPosition={setSavedPosition}/>, []);
+	const Maps = useMemo(() => <GoogleMaps position={savedPosition} setSavedPosition={setSavedPosition}/>, [savedPosition]);
 	return (
 		<div className="profile-component-items">
 			{Maps}

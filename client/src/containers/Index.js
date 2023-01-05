@@ -13,7 +13,9 @@ export default function Index() {
 	const [responseErrorMsg, setResponseErrorMsg] = useState("");
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
-	const [param, setParam] = useState("");
+
+	//const [param, setParam] = useState("");
+
 	useEffect(() => {
 		let mounted = true;
 		if(searchParams.get("verification") !== null){
@@ -104,13 +106,11 @@ export default function Index() {
 	}, [searchParams, responseErrorMsg, responseMsg, pin]);
 	console.log(pin)
 
-
-
 		useEffect(() => {
 		if(user.auth && searchParams.get("emailchangerequest") === null && searchParams.get("verification") === null) {
 			navigate("/home");
 		}
-	}, [user, userContextLoading]);
+	}, [user, userContextLoading, navigate, searchParams]);
 
 	if(userContextLoading)
 		return <LoadingSpinner />

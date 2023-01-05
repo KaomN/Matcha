@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 export default function ProfileForm(props) {
-	const { user, setUser, userContextLoading } = useContext(UserContext);
+	const { setUser } = useContext(UserContext);
 	const [isLoading, setIsLoading] = useState(false)
 	const [crop, setCrop] = useState({ x: 0, y: 0 })
 	const [zoom, setZoom] = useState(1)
@@ -14,7 +14,7 @@ export default function ProfileForm(props) {
 
 	const onCropComplete = useCallback((croppedArea) => {
 		setImageSize(croppedArea)
-	})
+	}, 	[setImageSize])
 
 	function saveProfilePicture(event) {
 		props.setProfilePictureSrc(URL.createObjectURL(event.target.files[0]))
@@ -71,14 +71,18 @@ export default function ProfileForm(props) {
 				setTimeout(() => {
 					setUser(user => ( {
 						...user,
-						imageSrc: response.imageSrc
+						imageSrc: response.imageSrc,
+						profile: true
 					}))
 					setIsLoading(false)
 					navigate("/home");
-				}, 1500)
+				}, 500)
 			}
 		}
 	}
+
+	//Helsinki. This is a test Biography.
+	//I dont know what to write here please help
 
 	return (<main className="form-container ma">
 				<div className="complete-profile-form">

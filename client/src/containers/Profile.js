@@ -33,9 +33,10 @@ export default function Profile() {
 		if(!user.profile) {
 			navigate("/completeprofile");
 		}
-	}, [user, userContextLoading]);
+	}, [user, userContextLoading, navigate]);
 
 	let params = useParams()
+
 	useEffect(() => {
 		let mounted = true;
 		if(mounted) {
@@ -43,11 +44,10 @@ export default function Profile() {
 				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
 				response = await response.json()
 				setProfile(response)
-				console.log(response)
 			})();
 		}
 		return () => mounted = false;
-	}, [user]);
+	}, [user, params]);
 
 	if (profile === "loading") {
 		return <LoadingSpinner />
@@ -67,6 +67,7 @@ export default function Profile() {
 
 					<ProfileRightContainer
 					profile={profile}
+					setProfile={setProfile}
 					setErrorMessage={setErrorMessage}
 					setSucessMessage={setSucessMessage}
 					user={user}

@@ -97,3 +97,27 @@ header {
 .header-zindex {
 	z-index: 44;
 }
+
+.header-material-icons {
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.7s ease;
+	-moz-user-select: none; /* Firefox */
+	user-select: none; /* Standard */
+}
+
+.header-material-icons:hover {
+	transition: color 0.7s ease;
+	color: var(--color-primary);
+}
+
+.header_title_disabled {
+	color: darkslategray;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	margin-left: 10px;
+}

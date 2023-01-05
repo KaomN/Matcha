@@ -165,11 +165,15 @@
 
 .profile-left-container {
 	/* max-width: 200px; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 100%;
 	max-height: 380px;
 	border-radius: var(--border-radius);
 	background-color: #05e7c16e;
 	border: 1px solid var(--color-primary-darker);
+	box-shadow: rgba(0, 0, 0, 0.70) 0px 3px 8px;
 }
 
 .profile-right-container {
@@ -183,6 +187,7 @@
 	background-color: #05e7c16e;
 	border-radius: var(--border-radius);
 	border: 1px solid var(--color-primary-darker);
+	box-shadow: rgba(0, 0, 0, 0.70) 0px 3px 8px;
 }
 
 .profile-edit-images-button {
@@ -190,6 +195,18 @@
 	z-index: 2;
 	top: 0px;
 	right: 0px;
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.7s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile-edit-images-button:hover {
+	color: darkslategray;
+	transition: color 0.7s ease;
+	color: var(--color-primary);
 }
 
 #pictureUploads {
@@ -205,13 +222,36 @@
 }
 
 .profile-file-btn {
-	font-size: 35px;
+	font-size: 30px;
 	position: absolute;
 	top: 0;
 	right: 0;
 	color: darkslategray;
 	transition: color 0.7s ease;
+	-webkit-user-select: none;
+	user-select: none;
+	cursor: pointer;
 }
+
+.profile-file-btn:hover {
+	color: var(--color-primary);
+	transition: color 0.7s ease;
+}
+
+.profile_image_delete_btn {
+	font-size: 30px;
+	color: darkslategray;
+	transition: color 0.7s ease;
+	-webkit-user-select: none;
+	user-select: none;
+	cursor: pointer;
+}
+
+.profile_image_delete_btn:hover {
+	color: var(--color-primary);
+	transition: color 0.7s ease;
+}
+
 
 .reactEasyCrop_Container  {
 	border-radius: var(--border-radius);
@@ -264,11 +304,21 @@
 }
 
 .profile-button-disabled {
+	font-size: 30px;
 	color: gray;
+	transition: color 0.7s ease;
 }
 .profile-button-disabled:hover {
 	color: gray;
 	cursor: default;
+	transition: color 0.7s ease;
+}
+
+.profile-button-nofade{
+	font-size: 30px;
+	color: darkslategray;
+	transition: color 0.7s ease;
+	cursor: pointer;
 }
 
 .profile-button-nofade:hover{
@@ -295,6 +345,7 @@
 	background-color: #05e7c16e;
 	border: 1px solid var(--color-primary-darker);
 	border-radius: var(--border-radius);
+	box-shadow: rgba(0, 0, 0, 0.70) 0px 3px 8px;
 }
 
 .profile-biography {

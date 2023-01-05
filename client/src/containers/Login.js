@@ -63,7 +63,8 @@ export default function Login() {
 		if(user.auth) {
 			navigate("/home");
 		}
-	}, [user, userContextLoading]);
+	}, [user, userContextLoading, navigate]);
+	
 	if(userContextLoading === true)
 		return <LoadingSpinner />
 	return (

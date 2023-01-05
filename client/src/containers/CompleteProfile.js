@@ -12,7 +12,7 @@ import InterestForm from "./CompleteProfileComponents/InterestForm";
 import ProfileForm from "./CompleteProfileComponents/ProfileForm";
 
 export default function CompleteProfile() {
-	const { user, setUser, userContextLoading } = useContext(UserContext);
+	const { user } = useContext(UserContext);
 	const [age, setAge] = useState("");
 	const [dateOfBirth, setDateOfBirth] = useState(undefined);
 	const [gender, setGender] = useState("");
@@ -66,7 +66,7 @@ export default function CompleteProfile() {
 		if(user.profile) {
 			navigate("/home");
 		}
-	}, []);
+	}, [navigate, user]);
 
 	if(showform === "ageForm")
 		return <AgeForm

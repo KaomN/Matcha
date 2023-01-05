@@ -16,7 +16,7 @@ export default function ProfileDate(props) {
 		let dateArr = new Date(parts[2], parts[1] - 1, parts[0])
 		let diff = Math.abs(new Date() - dateArr)
 		props.setAge(Math.floor(diff / (1000 * 60 * 60 * 24 * 365)))
-	})
+	}, [props])
 
 	return (
 		<div className="profile-component-items">

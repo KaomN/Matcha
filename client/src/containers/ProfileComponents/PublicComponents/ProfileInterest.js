@@ -44,7 +44,7 @@ export default function ProfileInterest(props) {
 			{promiseTracker2 ?
 			<LoadingSpinnerPromiseComponent/>
 			:
-			interestClicked != "" ?
+			interestClicked !== "" ?
 			<button className="complete-form-button delete-btn" onClick={() => {
 				HandleSubmit({
 					...props,

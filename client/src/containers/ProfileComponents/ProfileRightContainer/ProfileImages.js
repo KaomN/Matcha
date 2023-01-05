@@ -19,7 +19,6 @@ export default function ProfileImages(props) {
 		response = await response.json();
 		return response
 	}
-
 	return (
 		<div className="profile-images-container">
 			<div className="pt-2rem pos-relative">
@@ -29,33 +28,33 @@ export default function ProfileImages(props) {
 				:
 				null
 			}
-				<img src={props.profile.images[imagePage].imageSrc} className="rounded-corners"/>
-				<i className="material-icons pos-abs-bottom-middle" draggable="false" onClick={() => {
-					if(deleteImage(props.profile.images[imagePage])) {
-						const profileCopy = JSON.parse(JSON.stringify(props.profile));
-						profileCopy.images.splice(imagePage, 1)
-						if(imagePage != 0) {
-							setImagePage(imagePage - 1);
-						}
-						props.setProfile(profileCopy)
-						props.setSucessMessage("Profile updated successfully!")
-						setTimeout(() => {
-							props.setSucessMessage("")
-						}, 2000)
+			<img src={props.profile.images[imagePage].imageSrc} className="rounded-corners" alt="images"/>
+			<i className="material-icons pos-abs-bottom-middle profile_image_delete_btn" draggable="false" onClick={() => {
+				if(deleteImage(props.profile.images[imagePage])) {
+					const profileCopy = JSON.parse(JSON.stringify(props.profile));
+					profileCopy.images.splice(imagePage, 1)
+					if(imagePage !== 0) {
+						setImagePage(imagePage - 1);
 					}
-				}} title="Delete">close</i>
+					props.setProfile(profileCopy)
+					props.setSucessMessage("Profile updated successfully!")
+					setTimeout(() => {
+						props.setSucessMessage("")
+					}, 2000)
+				}
+			}} title="Delete">close</i>
 			</div>
 			<div className="flex-center flex-gap-3rem">
-				{imagePage != 0 ?
-					<i className="material-icons profile-button-nofade" draggable="false" onClick={previousImage}>chevron_left</i>
-				:
-					<i className="material-icons profile-button-disabled" draggable="false">chevron_left</i>
-				}
-				{props.profile.images.length > imagePage + 1 ?
-					<i className="material-icons profile-button-nofade" draggable="false" onClick={nextImage}>chevron_right</i>
-				:
-					<i className="material-icons profile-button-disabled" draggable="false">chevron_right</i>
-				}
+			{imagePage !== 0 ?
+				<i className="material-icons profile-button-nofade" draggable="false" onClick={previousImage}>chevron_left</i>
+			:
+				<i className="material-icons profile-button-disabled" draggable="false">chevron_left</i>
+			}
+			{props.profile.images.length > imagePage + 1 ?
+				<i className="material-icons profile-button-nofade" draggable="false" onClick={nextImage}>chevron_right</i>
+			:
+				<i className="material-icons profile-button-disabled" draggable="false">chevron_right</i>
+			}
 			</div>
 		</div>
 	);

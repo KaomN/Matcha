@@ -8,12 +8,12 @@ const sessionMiddleware = session({
 	secret: process.env.SESSION_SECRET,
 	store: new MySQLStore({}, require("../setup").pool),
 	resave: false,
-	saveUninitialized: true,
+	saveUninitialized: false,
 	clearExpired: true,
-	checkExpirationInterval: 900000, // Clears expired sessions every 15minutes
+	checkExpirationInterval: 86400000, // Clears expired sessions every day
 	expiration: 604800000 , // Set session expiration 1 week
 	cookie: {
-		maxAge: 604800000  // Session cookie persists for 1 week.
+		maxAge: 604800000 // Session cookie persists for 1 week.
 	}
 });
 

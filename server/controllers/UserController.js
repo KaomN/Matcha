@@ -27,7 +27,7 @@ router.post("/login", async (req, res) => {
 
 // Get login status
 router.get("/getuserinfo", async (req, res) => {
-	if (req.session.username != undefined) {
+	if (req.session.username !== undefined) {
 		res.send(await UserModel.getUserInfo(req))
 	}
 	else
@@ -40,13 +40,6 @@ router.get("/logout", (req, res) => {
 	req.sessionStore.destroy(req.session.id, function(err) {
 			res.send({status: true});
 	})
-	// try {
-	// 	req.sessionStore.destroy(req.session.id, function(err) {
-	// 		res.send({status: true});
-	// 	})
-	// } catch {
-	// 	res.send({status: false, message: "Server connection error"});
-	// }
 });
 
 // Verify account request
@@ -101,11 +94,6 @@ router.post("/completeprofile", async (req, res) => {
 
 router.get("/getprofileimage", async (req, res) => {
 	res.send(await UserModel.getProfileImage(req))
-	// if (req.session.username != undefined) {
-	// 	res.send(await UserModel.getProfileImage(req))
-	// }
-	// else
-	// 	res.send({ auth: false })
 });
 
 

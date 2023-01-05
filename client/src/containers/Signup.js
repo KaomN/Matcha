@@ -41,7 +41,6 @@ export default function Signup() {
 		});
 		if(response.status === 200) {
 			response = await response.json();
-			console.log(response)
 			if (response.status) {
 				// Successful signup
 				setPopup("popup show-popup")
@@ -63,7 +62,7 @@ export default function Signup() {
 		if(user.auth) {
 			navigate("/home");
 		}
-	}, [user, userContextLoading]);
+	}, [user, userContextLoading, navigate]);
 
 	if(userContextLoading)
 		return <LoadingSpinner />

@@ -47,7 +47,7 @@ export default function InterestForm(props) {
 								</div>
 								<div>Interests added:</div>
 								<div style={{border: "0px", marginBottom: "0.5rem"}} >
-									<select multiple id="interestSelect" className="text-align-center">
+									<select multiple id="interestSelect" className="text-align-center completeprofile_select">
 									{props.interest.map(interest => (<option key={interest.id} onClick={() => {setInterestClicked(interest.id)}}>{interest.name}</option>))} 
 									</select>
 								</div>

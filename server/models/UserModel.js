@@ -244,7 +244,7 @@ const completeProfile = async (req, res) => {
 			// Get old profile image name
 			const targetFile = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
 			// Process image with Sharp and save it in the server
-			if(ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req.body)) {
+			if(await ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req.body)) {
 				// Update profile image on database
 				result = await con.execute(`UPDATE images
 										SET imagename = ?
@@ -264,7 +264,7 @@ const completeProfile = async (req, res) => {
 			}
 		// User does not have a Profile iamge set on their profile
 		} else {
-			if(ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req.body)) {
+			if(await ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req.body)) {
 				var profileId = 1;
 				var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
 												VALUES (?, ?, ?)`,
@@ -316,7 +316,6 @@ const completeProfile = async (req, res) => {
 		} else {
 			return (error);
 		}
-		// User info 54144458-3fa5-4fe6-9fc6-0823e377bed2.jpg Old: 5604ef45-71c8-4bdc-81d5-da4b0eccfa76.jpg
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 			var result = await con.execute(`UPDATE users
 											SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1
@@ -339,7 +338,7 @@ const completeProfile = async (req, res) => {
 			return (error);
 		}
 	} catch (err) {
-		//console.log(err)
+		console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 };

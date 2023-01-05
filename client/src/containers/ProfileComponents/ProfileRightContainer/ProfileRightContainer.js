@@ -4,7 +4,7 @@ import { useEditImageVisible } from "../UsePopupVisibility";
 
 export default function ProfileRightContainer(props) {
 	const { refEditImage, isEditImageVisible, setIsEditImageVisible } = useEditImageVisible(false);
-
+	//console.log(props)
 	return (
 		<div className="padding05 profile-right-container pos-relative">
 			{!isEditImageVisible ?
@@ -29,7 +29,15 @@ export default function ProfileRightContainer(props) {
 			setSucessMessage={props.setSucessMessage}
 			/>
 			:
-			<div>No images uploaded</div>
+			<div>
+			{(props.profile.isOwn === true)
+			?
+			<i className="profile-edit-images-button material-icons" onClick={ () => setIsEditImageVisible(true) } title="Edit">edit</i>
+			:
+			null
+			}
+			No images uploaded
+			</div>
 			}
 		</div>
 	);

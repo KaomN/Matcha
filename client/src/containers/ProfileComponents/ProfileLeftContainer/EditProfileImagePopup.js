@@ -14,7 +14,7 @@ export default function EditProfileImagePopup(props) {
 	const [promiseTracker, setPromiseTracker] = useState(false);
 	const onCropComplete = useCallback((croppedArea) => {
 		setImageSize(croppedArea)
-	})
+	}, [setImageSize])
 
 	function saveProfilePicture(event) {
 		setProfilePictureSrc(URL.createObjectURL(event.target.files[0]))

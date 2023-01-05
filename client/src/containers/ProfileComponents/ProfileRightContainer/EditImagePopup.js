@@ -14,10 +14,10 @@ export default function EditImagePopup(props) {
 	const [imageSizeImages, setImageSizeImages] = useState("")
 	const onCropCompleteImages = useCallback((croppedArea) => {
 		setImageSizeImages(croppedArea)
-	})
+	}, [setImageSizeImages])
 
 	useEffect(() => {
-		if (props.profile.images != undefined && props.profile.images.length < 4) {
+		if (props.profile.images !== undefined && props.profile.images.length < 4) {
 			setImageFileInput(	<div className="flex-center">
 									<div>
 										<input type="file" accept="image/*" id="pictureUploads" onChange={saveChosenPicture}/>

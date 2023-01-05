@@ -196,7 +196,6 @@ export async function HandleSubmit(props) {
 		}
 	}
 	else if (props.type === "interestDelete") {
-		console.log(props.interestClicked)
 		try {
 			props.setPromiseTracker2(true)
 			let response = await fetch('/profile/interest', {
