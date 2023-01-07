@@ -59,7 +59,7 @@ async function checkConnectRequest(user, userid) {
 			SELECT *
 			FROM connect
 			WHERE fk_userid = ? AND targetuserid= ?`,
-			[user.userid, userid])
+			[user, userid])
 		if (connectRequest.length > 0)
 			return (true)
 		return (false)
@@ -70,9 +70,82 @@ async function checkConnectRequest(user, userid) {
 	
 }
 
+async function checkConnected(user, userid) {
+	// Check if user has sent a connect request to userid
+	try {
+		const [connected, fields] = await con.execute(`
+			SELECT *
+			FROM connected
+			WHERE userid1 = ? AND userid2= ?
+			OR userid2 = ? AND userid1= ?`,
+			[user, userid, userid, user])
+		if (connected.length > 0)
+			return (true)
+		return (false)
+	} catch (err) {
+		//console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+	
+}
+
+async function updateHistory(user, userid) {
+	try {
+		// Check if user has visited userid before
+		const [history, fieldsHistory] = await con.execute(
+			` SELECT * FROM history WHERE fk_userid = ? AND targetuserid = ?`,
+			[user, userid])
+		if (history.length > 0) {
+			// If so, update date
+			const [updateHistory, fields] = await con.execute(
+				`UPDATE history SET date = NOW() WHERE fk_userid = ? AND targetuserid = ?`,
+				[user, userid])
+			return (true)
+		}
+		// If not, insert into history
+		const [insertHistory, fieldsInsertHistory] = await con.execute(
+			`INSERT INTO history (fk_userid, targetuserid) VALUES (?, ?)`,
+			[user, userid])
+		return (true)
+	} catch (err) {
+		console.log(err)
+		return(false);
+	}
+}
+
+async function updateLastActive(userid) {
+	try {
+		// Update last active time
+		const [updateLastactive, fields] = await con.execute(
+			`UPDATE users SET lastactive = NOW() WHERE pk_userid = ?`,
+			[userid])
+		return (true)
+	} catch (err) {
+		console.log(err)
+		return(false);
+	}
+}
+
+async function getUserToken(userid) {
+	try {
+		// Update last active time
+		const [token, fields] = await con.execute(
+			`SELECT token FROM users WHERE pk_userid = ?`,
+			[userid])
+		return (token[0].token)
+	} catch (err) {
+		console.log(err)
+		return(false);
+	}
+}
+
 module.exports = {
 	getUserInterests,
 	getProfilePic,
 	getUserImages,
 	checkConnectRequest,
+	checkConnected,
+	updateHistory,
+	updateLastActive,
+	getUserToken,
 };

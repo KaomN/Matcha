@@ -8,10 +8,12 @@ import UseGetUserProfiles from "./HomeComponents/UseGetUserProfiles";
 import UserProfile from "./HomeComponents/UserProfile";
 import SearchProfile from "./HomeComponents/SeachProfile";
 import UserProfileSortFilter from "./HomeComponents/UserProfileSortFilter";
+import { SocketContext } from "../context/SocketContext";
 import toast from 'react-simple-toasts';
 
 export default function Home() {
 	const { user } = useContext(UserContext);
+	const socket = useContext(SocketContext);
 	const [profileLimit, setProfileLimit] = useState({min: 0, max: 5});
 	const [userProfiles, setUserProfiles] = useState([]);
 	const [sort, setSort] = useState("distanceAsc");
@@ -54,6 +56,11 @@ export default function Home() {
 			navigate("/completeprofile");
 		}
 	}, [navigate, user]);
+
+	useEffect(() => {
+		socket.emit("update_last_active", { queryId: user.userid});
+	}, []);
+
 	function userSort(sort) {
 		if(sort === "ageAsc") {
 			return function(a, b) {

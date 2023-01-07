@@ -2,8 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from '../context/UserContext';
 import { useParams, useNavigate } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import toast from 'react-simple-toasts';
 import "./styles/Profile.css";
 import { useEditProfileVisible } from "./ProfileComponents/UsePopupVisibility";
+import ProfileButtons from "./ProfileComponents/ProfileButtons";
+import { SocketContext } from "../context/SocketContext";
+import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
+
 
 // Popups Components
 import EditProfilePopup from "./ProfileComponents/Popups/EditProfilePopup";
@@ -17,7 +22,7 @@ import ProfileLeftContainer from "./ProfileComponents/ProfileLeftContainer/Profi
 
 
 export default function Profile() {
-
+	const socket = useContext(SocketContext);
 	const navigate = useNavigate();
 	// Custom States for popups
 	const { refEditProfile, isEditProfileVisible, setIsEditProfileVisible } = useEditProfileVisible(false);
@@ -28,6 +33,8 @@ export default function Profile() {
 	// states for Uploading images
 	const [successMessage, setSucessMessage] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [onlineStatus, setOnlineStatus] = useState(false);
 
 	useEffect(() => {
 		if(!user.profile) {
@@ -43,28 +50,53 @@ export default function Profile() {
 			(async function() {
 				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
 				response = await response.json()
-				setProfile(response)
+				if(response.status) {
+					socket.emit("online_query", { queryId: response.userid });
+					if(params.profileID) {
+						socket.emit("join_profile_room", { room: params.profileID });
+					}
+					setProfile(response);
+				}
 			})();
 		}
-		return () => mounted = false;
-	}, [user, params]);
+		return () => {mounted = false};
+	}, [user, params, socket]);
+
+	useEffect(() => {
+		socket.on("online_response", data => {
+			setOnlineStatus(data.onlineStatus)
+		});
+		return () => {socket.off("online_response");};
+	}, []);
 
 	if (profile === "loading") {
 		return <LoadingSpinner />
 	} else if (profile.status) {
 		return (
-			<main className="flex-col padding1 ma profile-background">
-				<div className="profile-update-success flex-center">{successMessage}</div>
-				<div className="profile-update-error flex-center">{errorMessage}</div>
+			<main className={!profile.isOwn ? "flex-col padding1 padding_top2rem ma profile-background" : "flex-col padding1 ma profile-background"}>
+				{loading ?
+				<LoadingSpinnerComponent
+				class="profile_loader_component"
+				size={100}
+				/>
+				: null}
+				{profile.isOwn ?
+				null
+				:
+				<ProfileButtons
+				profile={profile}
+				setProfile={setProfile}
+				setLoading={setLoading}
+				/>
+				}
 				<div className="profile-top-container pb05">
-					{/* ----------------------------------------- */}
 					<ProfileLeftContainer
 					profile={profile}
 					setProfile={setProfile}
 					setSucessMessage={setSucessMessage}
 					setErrorMessage={setErrorMessage}
+					onlineStatus={onlineStatus}
 					/>
-
 					<ProfileRightContainer
 					profile={profile}
 					setProfile={setProfile}
@@ -86,19 +118,18 @@ export default function Profile() {
 					null
 					}
 				</div>
-				{/* EditProfile Popup */}
 				{!isEditProfileVisible ?
-					null
-					:
-					<EditProfilePopup
-						profile={profile}
-						setProfile={setProfile}
-						user={user}
-						setUser={setUser}
-						setIsEditProfileVisible={setIsEditProfileVisible}
-						isEditProfileVisible={isEditProfileVisible}
-						refEditProfile={refEditProfile}
-					/>
+				null
+				:
+				<EditProfilePopup
+					profile={profile}
+					setProfile={setProfile}
+					user={user}
+					setUser={setUser}
+					setIsEditProfileVisible={setIsEditProfileVisible}
+					isEditProfileVisible={isEditProfileVisible}
+					refEditProfile={refEditProfile}
+				/>
 				}
 			</main>
 		);

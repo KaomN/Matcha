@@ -1,19 +1,20 @@
 import { Oval } from 'react-loader-spinner'
+import ProfilePassword from '../containers/ProfileComponents/PrivateComponents/ProfilePassword';
 
-export const LoadingSpinnerHome = () => {
+export const LoadingSpinnerComponent = (props) => {
 	return (
 			<div>
 				{
 					<Oval
-					height={28}
-					width={28}
+					height={props.size}
+					width={props.size}
 					color="var(--color-primary)"
 					secondaryColor="darkslategray"
 					visible={true}
 					ariaLabel='oval-loading'
 					strokeWidth={6}
 					strokeWidthSecondary={2}
-					wrapperClass="home_loader_component"
+					wrapperClass={props.class}
 					/>
 				}
 			</div>

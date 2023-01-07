@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from 'react-simple-toasts';
-import { LoadingSpinnerHome } from "../../components/LoadingSpinnerHome";
+import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 
 export default function UserProfile(props) {
 	const [imagePage, setImagePage] = useState(0);
@@ -88,7 +88,7 @@ export default function UserProfile(props) {
 						},
 						body: JSON.stringify({
 							userid: props.profile.userid,
-							connected: props.profile.connectRequest
+							username: props.profile.username
 						})
 					})
 					const data = await response.json()
@@ -110,7 +110,7 @@ export default function UserProfile(props) {
 
 	return (
 		<>
-		{loading ? <LoadingSpinnerHome/> : null}
+		{loading ? <LoadingSpinnerComponent class="home_loader_component" size={100}/> : null}
 		<i className="material-icons home_material_icons home_connect_btn" title="Connect" onClick={handleConnect}>star</i>
 		<i className="material-icons home_material_icons home_block_btn" title="Block" onClick={handleBlock}>block</i>
 		<i className="material-icons home_material_icons home_report_btn" title="Report" onClick={handleReport}>report</i>

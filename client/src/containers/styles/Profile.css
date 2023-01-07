@@ -35,6 +35,7 @@
 }
 
 .profile-background {
+	position: relative;
 	width: calc(100vw - 4rem);
 	max-width: 449px;
 	background-color: #00b997;
@@ -165,6 +166,7 @@
 
 .profile-left-container {
 	/* max-width: 200px; */
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -180,10 +182,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding-top: 0px;
 	width: 100%;
-	/* width: calc(200px - 1rem); */
-	height: calc(100% - 1rem - 2px);
-	/* max-height: 380px; */
+	height: calc(100% - 0.5rem - 2px);
 	background-color: #05e7c16e;
 	border-radius: var(--border-radius);
 	border: 1px solid var(--color-primary-darker);
@@ -642,6 +643,180 @@ h4.h4-username, h4.h4-email {
 .profile-image-container img {
 	width: 100%;
 	object-fit: contain;
+}
+
+.profile_connect_btn {
+	position: absolute;
+	top: 2px;
+	right: 10px;
+	font-size: 30px;
+	cursor: pointer;
+	color: gray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_disconnect_btn {
+	position: absolute;
+	top: 2px;
+	right: 10px;
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_block_btn {
+	position: absolute;
+	top: 2px;
+	right: 58px;
+	font-size: 30px;
+	cursor: pointer;
+	color: gray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_block_btn_no_connect {
+	position: absolute;
+	top: 2px;
+	right: 12px;
+	font-size: 30px;
+	cursor: pointer;
+	color: gray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_unblock_btn {
+	position: absolute;
+	top: 2px;
+	right: 58px;
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_unblock_btn_no_connect {
+	position: absolute;
+	top: 2px;
+	right: 12px;
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_report_btn {
+	position: absolute;
+	top: 2px;
+	right: 110px;
+	font-size: 30px;
+	cursor: pointer;
+	color: gray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_report_btn_no_connect {
+	position: absolute;
+	top: 2px;
+	right: 58px;
+	font-size: 30px;
+	cursor: pointer;
+	color: gray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_unreport_btn {
+	position: absolute;
+	top: 2px;
+	right: 110px;
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_unreport_btn_no_connect {
+	position: absolute;
+	top: 2px;
+	right: 58px;
+	font-size: 30px;
+	cursor: pointer;
+	color: darkslategray;
+	transition: color 0.3s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_connect_request {
+	position: absolute;
+	font-size: 30px;
+	color: darkslategray;
+	-webkit-user-select: none;
+	user-select: none;
+	top: 0px;
+	left: 10px;
+}
+
+.profile_connected {
+	position: absolute;
+	font-size: 30px;
+	color: darkslategray;
+	-webkit-user-select: none;
+	user-select: none;
+	top: 0px;
+	left: 10px;
+}
+
+.profile_online {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	font-size: 24px;
+	color: lime;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_offline {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	font-size: 24px;
+	color: darkgrey;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.profile_loader_component {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	top: -1px;
+	left: -1px;
+	z-index: 5;
+	background-color: rgba(0,0,0,0.4);
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border-radius: 4px;
 }
 
 @media screen and (orientation: portrait) and (max-width: 500px){

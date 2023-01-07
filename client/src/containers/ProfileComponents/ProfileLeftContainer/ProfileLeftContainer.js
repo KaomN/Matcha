@@ -9,14 +9,32 @@ export default function ProfileLeftContainer(props) {
 	const { refEditProfileImage, isEditProfileImageVisible, setIsEditProfileImageVisible } = useEditProfileImageVisible(false);
 
 
+	function parseDate(date) {
+		if(!date) return "Offline";
+		let dateArray = date.split("T")[0].split("-");
+		let time = 	date.split("T")[1].split(":");
+		return(`Offline last active: ${dateArray[2]}-${dateArray[1]}-${dateArray[0]} ${parseInt(time[0]) + 2}:${time[1]}:${time[2].split(".")[0]}`)
+	}
+	if(props.profile.lastactive) {
+		parseDate(props.profile.lastactive)
+	}
+
 	return (
 		<div className="padding05 profile-left-container flex-col">
+			{!props.profile.isOwn ? props.onlineStatus ?
+			<i className="material-icons profile_online" title={"Online"}>radio_button_checked</i>
+			:
+			<i className="material-icons profile_offline" title={parseDate(props.profile.lastactive)}>radio_button_checked</i>
+			:
+			null
+			}
+			
 			<div className="pos-relative profile-image-container">
-				{(props.profile.isOwn === true)
-					?
-					<i className="pos-absolute-top-right material-icons profile-file-btn" onClick={ () => setIsEditProfileImageVisible(true) } title="Edit" >edit</i>
-					:
-					null
+				{props.profile.isOwn
+				?
+				<i className="pos-absolute-top-right material-icons profile-file-btn" onClick={ () => setIsEditProfileImageVisible(true) } title="Edit" >edit</i>
+				:
+				null
 				}
 				{/* Edit Profile Image Popup */}
 				{!isEditProfileImageVisible ?

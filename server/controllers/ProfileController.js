@@ -137,5 +137,53 @@ router.put("/position", async (req, res) => {
 	}
 });
 
+router.post("/connect", async (req, res) => {
+	try {
+		res.send(await ProfileModel.connect(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.delete("/disconnect", async (req, res) => {
+	try {
+		res.send(await ProfileModel.disconnect(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.post("/report", async (req, res) => {
+	try {
+		res.send(await ProfileModel.report(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.delete("/report", async (req, res) => {
+	try {
+		res.send(await ProfileModel.unreport(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.post("/block", async (req, res) => {
+	try {
+		res.send(await ProfileModel.block(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.delete("/block", async (req, res) => {
+	try {
+		res.send(await ProfileModel.unblock(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
 module.exports = router;
 

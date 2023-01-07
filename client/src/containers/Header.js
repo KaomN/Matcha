@@ -4,6 +4,8 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { UserContext } from '../context/UserContext';
 import "./styles/Header.css";
 import { userAuth } from "../components/UserAuth";
+import { SocketContext } from "../context/SocketContext";
+
 
 function useProfileVisible(profileInitialIsVisible) {
 	const [isProfileVisible, setIsProfileVisible] = useState(
@@ -96,6 +98,7 @@ function useNotificationVisible(notificationInitialIsVisible) {
 }
 
 export default function Header() {
+	const socket = useContext(SocketContext);
 	const { user, setUser } = useContext(UserContext);
 	const { pathname } = useLocation();
 	const [path, setPath] = useState(pathname.split("/"));
@@ -119,6 +122,7 @@ export default function Header() {
 		event.preventDefault();
 			var response = await trackPromise(fetchLogout());
 			if(response.status) {
+				socket.emit("logout", { userId: user.userid });
 				setUser({})
 				navigate("/login");
 			}

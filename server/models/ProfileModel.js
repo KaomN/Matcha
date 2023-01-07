@@ -6,18 +6,24 @@ const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
 const emailTransporter =  require("../setup").emailTransporter;
 var NodeGeocoder = require('node-geocoder');
-const { calcDistance }  = require("../modules/HomeModules");
+const { checkConnectRequest, checkConnected, updateHistory } = require("../modules/HelperModules");
+
 
 
 // Get user profile
 const getProfile = async (userID, req) => {
 	try {
 		var [rows, fields] = await con.execute(
-			`SELECT username, firstname, surname, gender, age, dateofbirth, biography, latitude, longitude, pk_userid as 'userid', rating, genderpreference as 'preference', email,
-			( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) ) + sin( radians(?) ) * sin( radians(latitude) ) ) ) AS distance
+			`SELECT username, firstname, surname, gender, age, dateofbirth, biography, latitude, longitude, pk_userid as 'userid', rating, genderpreference as 'preference', email, lastactive,
+				(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance,
+				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = pk_userid) AS connectRequest,
+				(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = pk_userid) AS connectRequestSent,
+				(SELECT COUNT(*) FROM blocked WHERE fk_userid = ? AND targetuserid = pk_userid) AS blocked,
+				(SELECT COUNT(*) FROM report WHERE fk_userid = ? AND targetuserid = pk_userid) AS reported,
+				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = pk_userid) OR (userid2 = ? AND userid1 = pk_userid)) AS connected
 			FROM users
 			WHERE pk_userid = ?`,
-			[req.session.latitude, req.session.longitude, req.session.latitude, userID])
+			[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, userID])
 		if(rows[0] !== undefined) {
 			// Fetch images
 			var result = await con.execute(
@@ -64,7 +70,26 @@ const getProfile = async (userID, req) => {
 			rows[0].distance = Math.ceil(rows[0].distance)
 			Object.assign(rows[0], {isOwn:false})
 			Object.assign(rows[0], {status: true})
+			if (req.session.preference === "both" && rows[0].preference === "both") {
+				Object.assign(rows[0], {canConnect: true})
+			} else if (req.session.preference === "both" && rows[0].preference === "male" && req.session.gender === "male") {
+				Object.assign(rows[0], {canConnect: true})
+			} else if (req.session.preference === "both" && rows[0].preference === "female" && req.session.gender === "female") {
+				Object.assign(rows[0], {canConnect: true})
+			} else if (req.session.preference === "male" && rows[0].preference === "male" && req.session.gender === "male") {
+				Object.assign(rows[0], {canConnect: true})
+			}  else if (req.session.preference === "female" && rows[0].preference === "female" && req.session.gender === "female") {
+				Object.assign(rows[0], {canConnect: true})
+			} else if (req.session.preference === rows[0].gender) {
+				Object.assign(rows[0], {canConnect: true})
+			} else {
+				Object.assign(rows[0], {canConnect: false})
+			}
 			delete rows[0].email
+			delete rows[0].latitude
+			delete rows[0].longitude
+			// Update History
+			await updateHistory(req.session.userid, rows[0].userid)
 			return (rows[0]);
 		} else {
 			return ({status: false, msg: "usernotfound"});
@@ -387,7 +412,6 @@ const deleteInterest = async (req) => {
 				AND fk_tagid = ?
 				LIMIT 1`,
 				[req.session.userid, result[0].id])
-			
 			if (res) {
 				req.session.interest.splice(req.session.interest.findIndex(item => item.tag === interest), 1)
 				return ({status: true})
@@ -532,7 +556,113 @@ const updatePosition = async (req) => {
 		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
-} 
+}
+
+const connect = async (req) => {
+	try {
+		// Create a new connect row with the two users
+		const [connect, fields] = await con.execute(`
+			INSERT INTO connect (fk_userid, targetuserid)
+			VALUES (?, ?)`,
+			[req.session.userid, req.body.userid])
+			// Check if the target user has already sent a connect request to the current user
+		if(await checkConnectRequest(req.body.userid, req.session.userid)) {
+			// If so, create a new connected row with the two users
+			const pk_id =  uuidv4() + "-" + uuidv4()
+			const [connect, fields] = await con.execute(`
+				INSERT INTO connected (pk_id, userid1, userid2)
+				VALUES (?, ?, ?)`,
+				[pk_id, req.session.userid, req.body.userid])
+			return ({status: true, message: "You are now connected with " + req.body.username + "!"})
+		}
+		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const disconnect = async (req) => {
+	try {
+		// Create a new connect row with the two users
+		const res = await con.execute(
+				`DELETE 
+				FROM connect
+				WHERE fk_userid = ?
+				AND targetuserid = ?`,
+				[req.session.userid, req.body.userid])
+		if(res && checkConnected(req.session.userid, req.body.userid)) {
+			const res = await con.execute(
+				`DELETE 
+				FROM connected
+				WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
+				[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
+		}
+		return ({status: true, message: "You are now disconnected with " + req.body.username + "!"})
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const report = async (req) => {
+	try {
+		// Create a new connect row with the two users
+		const [report, fields] = await con.execute(`
+				INSERT INTO report (fk_userid, targetuserid)
+				VALUES (?, ?)`,
+				[req.session.userid, req.body.userid])
+		return ({status: true, message: req.body.username + " reported!"})
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const unreport = async (req) => {
+	try {
+		// Create a new connect row with the two users
+		const res = await con.execute(
+			`DELETE 
+			FROM report
+			WHERE fk_userid = ?
+			AND targetuserid = ?`,
+			[req.session.userid, req.body.userid])
+		return ({status: true, message: req.body.username + " report deleted!"})
+	} catch(err) {
+		console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const block = async (req) => {
+	try {
+		const [block, fields] = await con.execute(`
+			INSERT INTO blocked (fk_userid, targetuserid)
+			VALUES (?, ?)`,
+			[req.session.userid, req.body.userid])
+		return ({status: true, message: req.body.username + " blocked"})
+	} catch (err) {
+		console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
+
+const unblock = async (req) => {
+	try {
+		// Create a new connect row with the two users
+		const res = await con.execute(
+			`DELETE 
+			FROM blocked
+			WHERE fk_userid = ?
+			AND targetuserid = ?`,
+			[req.session.userid, req.body.userid])
+		return ({status: true, message: req.body.username + " unblocked!"})
+	} catch(err) {
+		console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
 
 module.exports = {
 	getProfile,
@@ -550,4 +680,10 @@ module.exports = {
 	sendEmailChangeRequest,
 	updatePassword,
 	updatePosition,
+	connect,
+	disconnect,
+	report,
+	unreport,
+	block,
+	unblock
 }

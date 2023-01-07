@@ -37,8 +37,9 @@ router.get("/getuserinfo", async (req, res) => {
 
 // Logout
 router.get("/logout", (req, res) => {
+
 	req.sessionStore.destroy(req.session.id, function(err) {
-			res.send({status: true});
+		res.send({status: true});
 	})
 });
 

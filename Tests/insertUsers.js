@@ -32,7 +32,7 @@ async function insert() {
 		var biography = "Im a test user, area Turku"
 		var latitude = 60.4533006
 		var longitude = 22.3078571
-		var rating = 0
+		var rating = 10
 		var profile = 1
 		var verified = 1
 
@@ -80,7 +80,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 2
+		rating = 22
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -103,7 +103,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 3
+		rating = 43
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -126,7 +126,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 4
+		rating = 74
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -149,7 +149,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 5
+		rating = 25
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -172,7 +172,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 6
+		rating = 66
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -195,7 +195,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 7
+		rating = 37
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -218,7 +218,7 @@ async function insert() {
 		biography = "Im a test user, area Turku"
 		latitude = 60.4533006
 		longitude = 22.3078571
-		rating = 8
+		rating = 18
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -261,7 +261,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 1
+		rating = 21
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -282,7 +282,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 2
+		rating = 42
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -303,7 +303,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 3
+		rating = 83
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -324,7 +324,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 4
+		rating = 54
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -345,7 +345,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 5
+		rating = 45
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -366,7 +366,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 6
+		rating = 36
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -387,7 +387,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 7
+		rating = 87
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -408,7 +408,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0870864
 		longitude = 21.6567978
-		rating = 8
+		rating = 28
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
@@ -430,7 +430,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 0
+		rating = 10
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -451,7 +451,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 1
+		rating = 21
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -472,7 +472,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 2
+		rating = 23
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -493,7 +493,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 3
+		rating = 34
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -514,7 +514,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 4
+		rating = 24
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -535,7 +535,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 5
+		rating = 55
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -556,7 +556,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 6
+		rating = 66
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -577,7 +577,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 7
+		rating = 72
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -598,7 +598,7 @@ async function insert() {
 		preference = "both"
 		latitude = 65.0223372
 		longitude = 25.6647897
-		rating = 8
+		rating = 81
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cars'))", [result[0].insertId])
@@ -619,7 +619,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.23849536447701
 		longitude = 25.02208645948336
-		rating = 0
+		rating = 10
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -640,7 +640,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.247672879979994
 		longitude = 24.849669656229732
-		rating = 1
+		rating = 12
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -661,7 +661,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.21024187211006
 		longitude = 25.059320488531963
-		rating = 2
+		rating = 32
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -682,7 +682,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.27867249536114
 		longitude = 24.992162692290012
-		rating = 3
+		rating = 43
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -703,7 +703,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.16025642221952
 		longitude = 24.935382251087557
-		rating = 4
+		rating = 74
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -724,7 +724,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.25359693599148
 		longitude = 24.922954049072953
-		rating = 5
+		rating = 85
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -745,7 +745,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.23412924285116
 		longitude = 25.015073150112805
-		rating = 6
+		rating = 36
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -766,7 +766,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.2235056237006
 		longitude = 24.9354347014719
-		rating = 7
+		rating = 27
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -787,7 +787,7 @@ async function insert() {
 		preference = "both"
 		latitude = 60.216779065916874
 		longitude = 25.135238239461046
-		rating = 8
+		rating = 18
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Music'))", [result[0].insertId])
@@ -809,7 +809,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 0
+		rating = 10
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -830,7 +830,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 1
+		rating = 21
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -851,7 +851,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 2
+		rating = 12
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -872,7 +872,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 3
+		rating = 73
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -893,7 +893,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 4
+		rating = 44
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -914,7 +914,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 5
+		rating = 25
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -935,7 +935,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 6
+		rating = 76
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -956,7 +956,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 7
+		rating = 67
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -977,7 +977,7 @@ async function insert() {
 		preference = "female"
 		latitude = 63.0922380
 		longitude = 21.6499684
-		rating = 8
+		rating = 48
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Movies'))", [result[0].insertId])
@@ -1019,7 +1019,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 1
+		rating = 17
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1040,7 +1040,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 2
+		rating = 22
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1061,7 +1061,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 3
+		rating = 33
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1082,7 +1082,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 4
+		rating = 46
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1103,7 +1103,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 5
+		rating = 35
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1124,7 +1124,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 6
+		rating = 26
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1145,7 +1145,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 7
+		rating = 17
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
@@ -1166,7 +1166,7 @@ async function insert() {
 		preference = "male"
 		latitude = 62.2375066
 		longitude = 25.8375627
-		rating = 8
+		rating = 58
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])

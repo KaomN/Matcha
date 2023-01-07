@@ -426,6 +426,9 @@
 }
 
 .home_loader_component {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	position: absolute;
 	top: -1px;
 	left: -1px;
@@ -478,7 +481,7 @@
 	justify-content: space-evenly;
 }
 
-@media screen and (orientation: landscape) and (max-width: 950px){
+@media screen and (orientation: landscape) and (max-device-width: 950px){
 	.home_profile_container {
 		align-items: flex-start;
 		justify-content: flex-start;

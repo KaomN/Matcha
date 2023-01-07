@@ -2,7 +2,7 @@ const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest }  = require("../modules/HomeModules");
+const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest }  = require("../modules/HelperModules");
 
 const getUsers = async (req, min, max) => {
 	try {
@@ -63,11 +63,14 @@ const getUsers = async (req, min, max) => {
 						ON users.pk_userid = blocked.fk_userid
 					LEFT JOIN connect
 						ON users.pk_userid = connect.fk_userid
+					LEFT JOIN report
+						ON users.pk_userid = report.fk_userid
 					WHERE NOT pk_userid = ?
 						AND gender = ?
 						AND (genderpreference = ? OR (genderpreference = "both" AND NOT gender = ?))
 						AND blocked.targetuserid NOT IN (SELECT fk_userid FROM blocked WHERE targetuserid = users.pk_userid)
 						AND connect.targetuserid NOT IN (SELECT fk_userid FROM connect WHERE targetuserid = users.pk_userid)
+						AND report.targetuserid NOT IN (SELECT fk_userid FROM report WHERE targetuserid = users.pk_userid)
 					HAVING distance <= ?
 						AND commonInterests >= ?
 					ORDER BY distance ASC, rating DESC
@@ -88,7 +91,7 @@ const getUsers = async (req, min, max) => {
 							// Get the user's images
 							user.images = await getUserImages(user)
 							// Check if user has sent a connect request to the current user
-							user.connectRequest = await checkConnectRequest(user, req.session.userid)
+							user.connectRequest = await checkConnectRequest(user.userid, req.session.userid)
 							// Remove the latitude and longitude from the user object
 							delete user.latitude
 							delete user.longitude
@@ -158,9 +161,7 @@ const reportUser = async (req) => {
 			INSERT INTO report (fk_userid, targetuserid)
 			VALUES (?, ?)`,
 			[req.session.userid, req.body.userid])
-		if(await blockUser(req)) {
-			return ({status: true, message: "User reported"})
-		}
+		return ({status: true, message: "User reported"})
 	} catch (err) {
 		//console.log(err)
 		return({status: false, message: "Server connection error"});
@@ -168,25 +169,26 @@ const reportUser = async (req) => {
 }
 
 const  connectUser = async (req) => {
-	// Connect user
 	try {
+		// Create a new connect row with the two users
 		const [connect, fields] = await con.execute(`
-		INSERT INTO connect (fk_userid, targetuserid)
-		VALUES (?, ?)`,
-		[req.session.userid, req.body.userid])
-
-		if(req.body.connected) {
+			INSERT INTO connect (fk_userid, targetuserid)
+			VALUES (?, ?)`,
+			[req.session.userid, req.body.userid])
+			// Check if the target user has already sent a connect request to the current user
+		if(await checkConnectRequest(req.body.userid, req.session.userid)) {
+			// If so, create a new connected row with the two users
 			const pk_id =  uuidv4() + "-" + uuidv4()
 			const [connect, fields] = await con.execute(`
 				INSERT INTO connected (pk_id, userid1, userid2)
 				VALUES (?, ?, ?)`,
 				[pk_id, req.session.userid, req.body.userid])
-			return ({status: true, message: "Connected!"})
+			return ({status: true, message: "You are now connected with " + req.body.username + "!"})
 		}
-		return ({status: true, message: "Sent connect request"})
-	} catch (err) {
-		console.log(err)
-		return({status: false, message: "Server connection error"});
+		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
+	} catch(err) {
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
 	}
 }
 

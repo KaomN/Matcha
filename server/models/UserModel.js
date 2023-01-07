@@ -18,7 +18,7 @@ const register = async (req) => {
 			var [rows, fields] = await con.execute("SELECT * FROM users WHERE email = ?", [email])
 			if (rows[0] === undefined) {
 				const hash = await bcrypt.hash(password, 10);
-				let token = crypto.createHash('md5').update(username).digest("hex") + crypto.createHash('md5').update(email).digest("hex")
+				let token = uuidv4() + "-" + uuidv4()
 				result = await con.execute(`INSERT INTO users (firstname, surname, username, email, password, token)
 											VALUE (?, ?, ?, ?, ?, ?);`,
 											[firstname, surname, username, email, hash, token])
@@ -159,7 +159,7 @@ const forgotPassword = async (req, res) => {
 												WHERE email = ?`,
 												[email])
 		if (rows[0] !== undefined) {
-			const token = crypto.createHash('md5').update(rows[0].token).digest("hex") + crypto.createHash('md5').update(String(Date.now())).digest("hex")
+			const token = uuidv4() + "-" + uuidv4() + "-" + uuidv4() + "-" + uuidv4()
 			var result = await con.execute(`INSERT INTO usertokens (pk_userid, passwordresettoken, passwordresetexpr)
 											VALUES (?, ?, ?)
 											ON DUPLICATE KEY UPDATE passwordresettoken = VALUES(passwordresettoken), passwordresetexpr = VALUES(passwordresetexpr)`,
@@ -272,8 +272,9 @@ const completeProfile = async (req, res) => {
 				if (!result) {
 					Object.assign(error, {error: "Something went wrong!"});
 				}
+			} else {
+				Object.assign(error, {error: "Something went wrong!"});
 			}
-			Object.assign(error, {error: "Something went wrong!"});
 		}
 		//Interest
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
@@ -344,17 +345,22 @@ const completeProfile = async (req, res) => {
 };
 
 const getUserInfo = async (req) => {
-	var [rows, fields] = await con.execute(`SELECT imagename
-											FROM images
-											WHERE fk_userid = ?`,
-											[req.session.userid])
-	if (rows[0] !== undefined) {
-		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
-			if (fs.existsSync(profileImagePath)) {
-				return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename, firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
-			}
+	try {
+		var [rows, fields] = await con.execute(
+			`SELECT imagename
+			FROM images
+			WHERE fk_userid = ?`,
+			[req.session.userid])
+		if (rows[0] !== undefined) {
+			var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
+				if (fs.existsSync(profileImagePath)) {
+					return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename, firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
+				}
+		}
+		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
+	} catch(err) {
+		console.log(err)
 	}
-	return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
 }
 
 const getProfileImage = async (req) => {
@@ -424,6 +430,19 @@ const changeEmail = async (req) => {
 	}
 }
 
+const logout = async (req) => {
+	const lastActive = new Date();
+	var result = await con.execute(
+		`UPDATE users
+		SET lastactive = ?
+		WHERE pk_userid = ?`,
+		[lastActive, req.session.userid])
+	if(req.session.userid){
+		req.sessionStore.destroy(req.session.id, function(err) {})
+	}
+	return ({ status: true })
+}
+
 const test = async (req) => {
 	//console.log(req.session.preference)
 
@@ -483,5 +502,6 @@ module.exports = {
 	getUserInfo,
 	getProfileImage,
 	changeEmail,
+	logout,
 	test,
 }

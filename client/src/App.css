@@ -282,6 +282,14 @@ li {
 	padding: 1rem;
 }
 
+.padding2rem {
+	padding: 2rem;
+}
+
+.padding_top2rem {
+	padding-top: 2rem;
+}
+
 .padding05 {
 	padding: .5rem;
 }
