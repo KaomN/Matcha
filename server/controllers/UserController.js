@@ -110,9 +110,37 @@ router.put("/email", async (req, res) => {
 });
 
 
+router.get("/notification", async (req, res) => {
+	try {
+		res.send(await UserModel.getNotification(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.put("/notification", async (req, res) => {
+	res.send(await UserModel.markNotificationRead(req))
+});
+
+router.delete("/notification", async (req, res) => {
+	try {
+		res.send(await UserModel.deleteNotification(req))
+	} catch (e) {
+		console.log(e)
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
 router.get("/test", async (req, res) => {
 	res.send(await UserModel.test(req))
 });
 
+router.get("/history", async (req, res) => {
+	res.send(await UserModel.getHistory(req))
+});
+
+router.delete("/history", async (req, res) => {
+	res.send(await UserModel.deleteHistory(req))
+});
 
 module.exports = router;

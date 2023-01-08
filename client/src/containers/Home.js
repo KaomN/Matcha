@@ -6,10 +6,8 @@ import { LoadingSpinnerPromiseComponent } from "../components/LoadingSpinnerProm
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import UseGetUserProfiles from "./HomeComponents/UseGetUserProfiles";
 import UserProfile from "./HomeComponents/UserProfile";
-import SearchProfile from "./HomeComponents/SeachProfile";
 import UserProfileSortFilter from "./HomeComponents/UserProfileSortFilter";
 import { SocketContext } from "../context/SocketContext";
-import toast from 'react-simple-toasts';
 
 export default function Home() {
 	const { user } = useContext(UserContext);

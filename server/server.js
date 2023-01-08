@@ -12,7 +12,7 @@ const PORT = process.env.PORT;
 const {sessionMiddleware} = require('./modules/SessionMiddleware')
 const { Server } = require('socket.io')
 const app = express();
-const { updateLastActive, getUserToken } = require('./modules/HelperModules')
+const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, checkConnected } = require('./modules/HelperModules')
 
 // Session middleware
 app.use(sessionMiddleware);
@@ -72,6 +72,14 @@ function queryOnlineUsers(userId) {
 	return false;
 };
 
+function getUserSocketId(userId) {
+	const index = userStatus.findIndex((user) => user.userId === userId);
+	if (index > -1) {
+		return userStatus[index].socketId;
+	}
+	return null;
+}
+
 // Only allow authenticated users
 io.use((socket, next) => {
 	const session = socket.request.session;
@@ -120,6 +128,79 @@ io.on('connection', (socket) => {
 			// 	message: data.message
 			// });
 		});
+
+		/* Updating connection requests */
+		socket.on("send_connect_request", async function (data) {
+			const socketId = getUserSocketId(data.userid);
+			socket.to(socketId).emit("receive_connect_request", {
+				connectRequest: true
+			});
+		});
+
+		socket.on("send_disconnect_request", async function (data) {
+			const socketId = getUserSocketId(data.userid);
+			socket.to(socketId).emit("receive_disconnect_request", {
+				connectRequest: false,
+				connected: false,
+			});
+			socket.emit("receive_connected_request", {
+				connected: false
+			});
+		});
+		// Check if user is connected
+		socket.on("send_connected", async function (data) {
+			const socketId = getUserSocketId(data.userid);
+			const status = await checkConnectRequest(data.userid, socket.request.session.userid)
+			socket.to(socketId).emit("receive_connected_request", {
+				connected: status
+			});
+			socket.emit("receive_connected_request", {
+				connected: status
+			});
+		});
+
+		// Notification
+		socket.on("send_notification", async function (data) {
+			// emit notification to user if online
+			const socketId = getUserSocketId(data.userid);
+			if (data.type === "connect") {
+				const type = await checkConnectRequest(data.userid, socket.request.session.userid)
+				if(type) {
+					socket.to(socketId).emit("receive_notification", {
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`),
+						fk_userid: data.userid,
+						targetuserid: socket.request.session.userid,
+						notification: `${socket.request.session.username} has connected with you!`,
+						isread: 0,
+					});
+				} else {
+					socket.to(socketId).emit("receive_notification", {
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a connection request!`),
+						fk_userid: data.userid,
+						targetuserid: socket.request.session.userid,
+						notification: `${socket.request.session.username} has sent you a connection request!`,
+						isread: 0,
+					});
+				}
+			} else if (data.type === "profile") {
+				socket.to(socketId).emit("receive_notification", {
+					pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`),
+					fk_userid: data.userid,
+					targetuserid: socket.request.session.userid,
+					notification: `${socket.request.session.username} checked your profile!`,
+					isread: 0,
+				});
+			} else if (data.type === "disconnect") {
+				socket.to(socketId).emit("receive_notification", {
+					pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`),
+					fk_userid: data.userid,
+					targetuserid: socket.request.session.userid,
+					notification: `${socket.request.session.username} has disconnected from you!`,
+					isread: 0,
+				});
+			}
+		});
+
 		// Join profile room to listen for updates
 		socket.on("join_profile_room", async function (data) {
 			socket.join(await getUserToken(data.room));
@@ -176,6 +257,8 @@ app.use(cors({origin: "http://127.0.0.1:3001", credentials:true}));
 app.use(cors());
 // UserController
 app.use('/request', require('./controllers/UserController'));
+// UserController
+app.use('/user', require('./controllers/UserController'));
 // ChatController
 app.use('/chat', require('./controllers/ChatController'));
 // ProfileController

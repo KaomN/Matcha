@@ -185,5 +185,13 @@ router.delete("/block", async (req, res) => {
 	}
 });
 
+router.get("/disconnect", async (req, res) => {
+	try {
+		res.send(await ProfileModel.checkDisconnect(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
 module.exports = router;
 

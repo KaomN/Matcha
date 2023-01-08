@@ -5,6 +5,9 @@ import { UserContext } from '../context/UserContext';
 import "./styles/Header.css";
 import { userAuth } from "../components/UserAuth";
 import { SocketContext } from "../context/SocketContext";
+import Notifications from "./HeaderComponents/Notifications";
+import Chats from "./HeaderComponents/Chats";
+import Profile from "./HeaderComponents/Profile";
 
 
 function useProfileVisible(profileInitialIsVisible) {
@@ -128,17 +131,6 @@ export default function Header() {
 			}
 	}
 
-	// useEffect(() => {
-	// 	(async () => {
-	// 		var response = await fetch('/request/getprofileimage');
-	// 		response = await response.json()
-	// 		setProfileImageSrc(user.imageSrc)
-	// 		console.log("fetching profileimage")
-	// 		setPath(pathname.split("/"))
-	// 		console.log(user)
-	// 	})()
-	// }, [user]);
-
 	useEffect(() => {
 		setPath(pathname.split("/"))
 	}, [pathname]);
@@ -160,7 +152,7 @@ export default function Header() {
 		return null
 	}
 
-	if (path[1] === "home" || path[1] === "profile" || path[1] === "chat") {
+	if (path[1] === "home" || path[1] === "profile" || path[1] === "chat" || path[1] === "search") {
 		return (<header>
 			<div className="flex-center">
 				<span draggable="false" className="title unselectable" onClick={() => {navigate('/home')}}><h3>Matcha</h3></span>
@@ -170,45 +162,26 @@ export default function Header() {
 					<div className="header-profile-dropdown-container">
 						<li><i className="material-icons header-material-icons" href="/#" onClick={handleLogout} title="Logout">logout</i></li>
 						<li>
-							<div ref={refNotification}>
-								<i className="material-icons header-material-icons" onClick={ () => isNotificationVisible ? setIsNotificationVisible(false) : setIsNotificationVisible(true) }>notifications</i>
-								{!isNotificationVisible ? null : 
-								<div className="header-profile-dropdown header-zindex">
-									<div className="header-profile-dropdown-profile-container">
-										Show Notification
-									</div>
-								</div>
-								}
-							</div>
+							<Notifications
+							refNotification={refNotification}
+							isNotificationVisible={isNotificationVisible}
+							setIsNotificationVisible={setIsNotificationVisible}
+							/>
 						</li>
 						<li>
-							<div ref={refChat}>
-								<i className="material-icons header-material-icons" onClick={ () => isChatVisible ? setIsChatVisible(false) : setIsChatVisible(true) }>chat</i>
-								{!isChatVisible ? null : 
-								<div className="header-profile-dropdown header-zindex">
-									<div className="header-profile-dropdown-profile-container">
-										Show connected persons
-									</div>
-								</div>
-								}
-							</div>
+							<Chats
+							refChat={refChat}
+							isChatVisible={isChatVisible}
+							setIsChatVisible={setIsChatVisible}
+							/>
 						</li>
 						<li>
-							<div ref={refProfile}>
-								<img className="header-profile" src={user.imageSrc} onClick={ () => isProfileVisible ? setIsProfileVisible(false) : setIsProfileVisible(true) } alt="profile"></img>
-									{!isProfileVisible ? null : 
-									<div className="header-profile-dropdown header-zindex">
-										<div className="header-profile-dropdown-profile-container">
-											<div className="header-profile-dropdown-profile" onClick={() => {navigate("/profile"); setIsProfileVisible(false)}}>
-												<img className="header-profile-dropdown-profile-image" src={user.imageSrc} alt="profile"></img>
-												<div className="ml05 header-font-color">@{user.username}</div>
-											</div>
-											<div className="header-profile-seperator"></div>
-											<div className="header-profile-dropdown-profile-history">Profile history</div>
-										</div>
-									</div>
-									}
-							</div>
+							<Profile
+							refProfile={refProfile}
+							isProfileVisible={isProfileVisible}
+							setIsProfileVisible={setIsProfileVisible}
+							user={user}
+							/>
 						</li>
 					</div>
 				</ul>

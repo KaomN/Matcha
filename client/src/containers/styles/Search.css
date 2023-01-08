@@ -1,0 +1,11 @@
+.search_container {
+	width: 400px;
+	height: 100px;
+	background-color: aqua;
+	border-radius: var(--border-radius);
+	padding: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}

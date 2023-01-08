@@ -573,7 +573,7 @@ const connect = async (req) => {
 				INSERT INTO connected (pk_id, userid1, userid2)
 				VALUES (?, ?, ?)`,
 				[pk_id, req.session.userid, req.body.userid])
-			return ({status: true, message: "You are now connected with " + req.body.username + "!"})
+			return ({status: true, message: "You are now connected with " + req.body.username + "!", connected: true})
 		}
 		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
 	} catch(err) {
@@ -598,9 +598,16 @@ const disconnect = async (req) => {
 				WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
 				[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
 		}
+		const res2 = await con.execute(
+				`DELETE
+				FROM notifications
+				WHERE fk_userid = ?
+				AND targetuserid = ?
+				AND notification = ?`,
+				[req.body.userid, req.session.userid, req.body.message])
 		return ({status: true, message: "You are now disconnected with " + req.body.username + "!"})
 	} catch(err) {
-		//console.log(err)
+		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -630,7 +637,7 @@ const unreport = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " report deleted!"})
 	} catch(err) {
-		console.log(err)
+		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -643,7 +650,7 @@ const block = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " blocked"})
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -659,7 +666,21 @@ const unblock = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " unblocked!"})
 	} catch(err) {
-		console.log(err)
+		//console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const checkDisconnect = async (req) => {
+	try {
+		const res = await con.execute(
+			`SELECT *
+			FROM connected
+			WHERE (userid1 = ? AND userid2 = ?) OR (userid2 = ? AND userid1 = ?)`,
+			[req.query['userid1'], req.query['userid2'], req.query['userid1'], req.query['userid2']])
+		return ({status: res[0].length > 0})
+	} catch(err) {
+		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -685,5 +706,6 @@ module.exports = {
 	report,
 	unreport,
 	block,
-	unblock
+	unblock,
+	checkDisconnect,
 }

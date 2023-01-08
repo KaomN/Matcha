@@ -490,7 +490,83 @@ const test = async (req) => {
 	}
 };
 
+const markNotificationRead = async (req) => {
+	try {
+		const res = await con.execute(`	UPDATE notifications
+										SET isread = 1
+										WHERE pk_id = ?`,
+										[req.body.notificationid])
+		if(res) {
+			return ({ status: true })
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
+		}
+	} catch (err) {
+		console.log(err)
+		return ({ status: false, err: "Something went wrong!" })
+	}
+};
 
+const getNotification = async (req) => {
+	try {
+		const [notification, fields] = await con.execute(
+			`SELECT *
+			FROM notifications
+			WHERE fk_userid = ?
+			ORDER BY date DESC`,
+			[req.session.userid])
+		//console.log(notification)
+		return ({status: true, notification})
+	} catch (err) {
+		console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
+
+const deleteNotification = async (req) => {
+	try {
+		const res = await con.execute(
+			`DELETE
+			FROM notifications
+			WHERE fk_userid = ?`,
+			[req.session.userid])
+		return ({status: true, message: "Notification deleted!"})
+	} catch (err) {
+		console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
+
+const getHistory = async (req) => {
+	try {
+		const [history, fields] = await con.execute(
+			`SELECT history.pk_id as 'id', users.username, users.pk_userid,
+				(SELECT imagename FROM images WHERE images.fk_userid = users.pk_userid AND images.profilepic = 1) as 'image'
+			FROM history
+			INNER JOIN users ON history.targetuserid = users.pk_userid
+			WHERE fk_userid = ?
+			ORDER BY date DESC`,
+			[req.session.userid])
+		return ({status: true, history})
+	} catch (err) {
+		console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
+
+const deleteHistory = async (req) => {
+	try {
+		const res = await con.execute(
+			`DELETE
+			FROM history
+			WHERE pk_id = ?`,
+			[req.body.id])
+		return ({status: true, message: "History deleted!"})
+	} catch (err) {
+		//console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
 
 module.exports = {
 	register,
@@ -503,5 +579,10 @@ module.exports = {
 	getProfileImage,
 	changeEmail,
 	logout,
+	markNotificationRead,
+	getNotification,
+	deleteNotification,
+	getHistory,
+	deleteHistory,
 	test,
 }

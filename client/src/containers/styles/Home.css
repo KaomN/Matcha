@@ -30,7 +30,7 @@
 .home_sort_filter_container {
 	width: calc(100% - 1rem - 4px);
 	min-width: 266px;
-	max-width: 440px;
+	max-width: 396px;
 	display: flex;
 	align-items: center;
 	justify-content: space-around;

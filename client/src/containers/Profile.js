@@ -55,6 +55,7 @@ export default function Profile() {
 					if(params.profileID) {
 						socket.emit("join_profile_room", { room: params.profileID });
 					}
+					socket.emit("send_notification", { username: response.username, userid: response.userid, type: "profile" });
 					setProfile(response);
 				}
 			})();
@@ -87,6 +88,7 @@ export default function Profile() {
 				profile={profile}
 				setProfile={setProfile}
 				setLoading={setLoading}
+				user={user}
 				/>
 				}
 				<div className="profile-top-container pb05">

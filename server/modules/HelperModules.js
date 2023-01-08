@@ -71,7 +71,7 @@ async function checkConnectRequest(user, userid) {
 }
 
 async function checkConnected(user, userid) {
-	// Check if user has sent a connect request to userid
+	// Check if users ar connected
 	try {
 		const [connected, fields] = await con.execute(`
 			SELECT *
@@ -79,6 +79,7 @@ async function checkConnected(user, userid) {
 			WHERE userid1 = ? AND userid2= ?
 			OR userid2 = ? AND userid1= ?`,
 			[user, userid, userid, user])
+			//console.log(connected.length > 0)
 		if (connected.length > 0)
 			return (true)
 		return (false)
@@ -128,11 +129,39 @@ async function updateLastActive(userid) {
 
 async function getUserToken(userid) {
 	try {
-		// Update last active time
+		// Get user token
 		const [token, fields] = await con.execute(
 			`SELECT token FROM users WHERE pk_userid = ?`,
 			[userid])
 		return (token[0].token)
+	} catch (err) {
+		console.log(err)
+		return(false);
+	}
+}
+
+async function saveNotification(userid, targetuserid, message) {
+	// Save notification to database
+	try {
+		const [check, fields] = await con.execute(
+			`SELECT *
+			FROM notifications
+			WHERE fk_userid = ? AND targetuserid = ? AND notification = ?`,
+			[userid, targetuserid, message ])
+		if (check.length > 0){
+			const [update, fields] = await con.execute(
+				`UPDATE notifications
+				SET date = NOW(), isread = 0
+				WHERE fk_userid = ? AND targetuserid = ? AND notification = ?`,
+				[userid, targetuserid, message])
+				return (check[0].pk_id)
+		} else {
+			const [notification, fields] = await con.execute(
+				`INSERT INTO notifications (fk_userid, targetuserid, notification)
+				VALUES (?, ?, ?)`,
+				[userid, targetuserid, message])
+				return (notification.insertId)
+		}
 	} catch (err) {
 		console.log(err)
 		return(false);
@@ -148,4 +177,5 @@ module.exports = {
 	updateHistory,
 	updateLastActive,
 	getUserToken,
+	saveNotification,
 };

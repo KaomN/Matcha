@@ -12,6 +12,7 @@ import Settings from "./containers/Settings";
 import Chat from "./containers/Chat";
 import NotFound from "./containers/NotFound";
 import PrivateRoutes from "./components/PrivateRoutes";
+import AdvancedSearch from "./containers/AdvancedSearch";
 
 
 export default function Links() {
@@ -24,6 +25,7 @@ export default function Links() {
 				<Route path="passwordreset" element={<PasswordReset />} />
 				<Route element={<PrivateRoutes/>}>
 					<Route path="home" element={<Home />} />
+					<Route path="search" element={<AdvancedSearch />} />
 					<Route path="completeprofile" element={<CompleteProfile />} />
 					<Route path="profile" element={<Profile />} >
 						<Route path=":profileID" element={<Profile />} />
