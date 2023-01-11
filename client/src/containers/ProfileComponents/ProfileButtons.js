@@ -6,7 +6,7 @@ export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
 	const [connectRequest, setConnectRequest] = useState(props.profile.connectRequest);
 	const [connected, setConnected] = useState(props.profile.connected);
-
+	
 	useEffect(() => {
 		socket.on("receive_connect_request", (data) => {
 			setConnectRequest(data.connectRequest)
@@ -45,9 +45,21 @@ export default function ProfileButtons(props) {
 					})
 					const data = await response.json()
 					if (data.status) {
-						props.setProfile(profile => ({
-							...profile, blocked: true
-						}))
+						if(props.userProfileIsArray) {
+							props.setProfile(profile => profile.map((user) => {
+								if(user.userid === props.profile.userid) {
+									return {
+										...user, blocked: true
+									}
+								} else {
+									return user
+								}
+							}))
+						} else {
+							props.setProfile(profile => ({
+								...profile, blocked: true
+							}))
+						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
 					}
@@ -77,9 +89,21 @@ export default function ProfileButtons(props) {
 					})
 					const data = await response.json()
 					if (data.status) {
-						props.setProfile(profile => ({
-							...profile, blocked: false
-						}))
+						if(props.userProfileIsArray) {
+							props.setProfile(profile => profile.map((user) => {
+								if(user.userid === props.profile.userid) {
+									return {
+										...user, blocked: false
+									}
+								} else {
+									return user
+								}
+							}))
+						} else {
+							props.setProfile(profile => ({
+								...profile, blocked: false
+							}))
+						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
 					}
@@ -109,9 +133,21 @@ export default function ProfileButtons(props) {
 					})
 					const data = await response.json()
 					if (data.status) {
-						props.setProfile(profile => ({
-							...profile, reported: true
-						}))
+						if(props.userProfileIsArray) {
+							props.setProfile(profile => profile.map((user) => {
+								if(user.userid === props.profile.userid) {
+									return {
+										...user, reported: true
+									}
+								} else {
+									return user
+								}
+							}))
+						} else {
+							props.setProfile(profile => ({
+								...profile, reported: true
+							}))
+						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
 					}
@@ -141,9 +177,21 @@ export default function ProfileButtons(props) {
 					})
 					const data = await response.json()
 					if (data.status) {
-						props.setProfile(profile => ({
-							...profile, reported: false
-						}))
+						if(props.userProfileIsArray) {
+							props.setProfile(profile => profile.map((user) => {
+								if(user.userid === props.profile.userid) {
+									return {
+										...user, reported: false
+									}
+								} else {
+									return user
+								}
+							}))
+						} else {
+							props.setProfile(profile => ({
+								...profile, reported: false
+							}))
+						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
 					}
@@ -172,13 +220,37 @@ export default function ProfileButtons(props) {
 					const data = await response.json()
 					if (data.status) {
 						if(data.connected) {
-							props.setProfile(profile => ({
-								...profile, connectRequestSent: true, connected: true
-							}))
+							if(props.userProfileIsArray) {
+								props.setProfile(profile => profile.map((user) => {
+									if(user.userid === props.profile.userid) {
+										return {
+											...user, connectRequestSent: true, connected: true
+										}
+									} else {
+										return user
+									}
+								}))
+							} else {
+								props.setProfile(profile => ({
+									...profile, connectRequestSent: true, connected: true
+								}))
+							}
 						} else {
-							props.setProfile(profile => ({
-								...profile, connectRequestSent: true
-							}))
+							if(props.userProfileIsArray) {
+								props.setProfile(profile => profile.map((user) => {
+									if(user.userid === props.profile.userid) {
+										return {
+											...user, connectRequestSent: true
+										}
+									} else {
+										return user
+									}
+								}))
+							} else {
+								props.setProfile(profile => ({
+									...profile, connectRequestSent: true
+								}))
+							}
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						// setTimeout(() => {
@@ -220,9 +292,21 @@ export default function ProfileButtons(props) {
 					})
 					const data = await response.json()
 					if (data.status) {
-						props.setProfile(profile => ({
-							...profile, connectRequestSent: false, connected: false, connectRequest: data.connectRequest
-						}))
+						if(props.userProfileIsArray) {
+							props.setProfile(profile => profile.map((user) => {
+								if(user.userid === props.profile.userid) {
+									return {
+										...user, connectRequestSent: false, connected: false, connectRequest: data.connectRequest
+									}
+								} else {
+									return user
+								}
+							}))
+						} else {
+							props.setProfile(profile => ({
+								...profile, connectRequestSent: false, connected: false, connectRequest: data.connectRequest
+							}))
+						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						socket.emit("send_disconnect_request", { userid: props.profile.userid});
 						props.setLoading(false)

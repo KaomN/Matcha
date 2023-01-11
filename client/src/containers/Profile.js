@@ -89,6 +89,7 @@ export default function Profile() {
 				setProfile={setProfile}
 				setLoading={setLoading}
 				user={user}
+				userProfileIsArray={false}
 				/>
 				}
 				<div className="profile-top-container pb05">

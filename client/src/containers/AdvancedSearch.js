@@ -1,148 +1,181 @@
 import { useState, useEffect, useContext, useCallback } from "react";
 import { SocketContext } from '../context/SocketContext';
 import { useNavigate } from "react-router-dom";
-import UserProfileSortFilter from "./HomeComponents/UserProfileSortFilter";
+import SearchFilterSort from "./SearchComponents/SearchFilterSort";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
-import AgeSortButton from "./HomeComponents/Buttons/AgeSortButton";
-import RatingSortButton from "./HomeComponents/Buttons/RatingSortButton";
 import StyledSliderComponent from "./HomeComponents/StyledSlider";
+import Maps from "./SearchComponents/Maps";
+import { UserContext } from "../context/UserContext";
+import Select from "./SearchComponents/src/index";
 import "./styles/Search.css";
-
 
 export default function AdvancedSearch() {
 	const socket = useContext(SocketContext);
-	const [user, setUser] = useState("loading");
+	const { user } = useContext(UserContext);
 	const [userProfiles, setUserProfiles] = useState([]);
-	const [filterAge, setFilterAge] = useState({min: 18, max: 100});
-	const [filterRating, setFilterRating] = useState({min: 0, max: 100});
-	const [filterDistance, setFilterDistance] = useState({min: 0, max: 50});
-	const [filterInterest, setFilterInterest] = useState({min: 1, max: 5});
-	const [isLoading, setIsLoading] = useState(false);
-	const [hasSearched, setHasSearched] = useState(true);
+	const [searchAge, setSearchAge] = useState({min: 18, max: 100});
+	const [searchRating, setSearchRating] = useState({min: 0, max: 100});
+	// const [filterAge, setFilterAge] = useState({min: 0, max: 100});
+	// const [filterRating, setFilterRating] = useState({min: 0, max: 100});
+	// const [filterDistance, setFilterDistance] = useState({min: 0, max: 50});
+	// const [filterInterest, setFilterInterest] = useState({min: 1, max: 5});
+	const [filterTagsOptions, setFilterTagsOptions] = useState([])
+	const [options, setOptions] = useState([]);
+	const [selectedTags, setSelectedTags] = useState([])
+	const [isLoading, setIsLoading] = useState(true);
+	const [isSearching, setIsSearching] = useState(false);
+	const [hasSearched, setHasSearched] = useState(false);
+	const [toggleSearch, setToggleSearch] = useState(true);
 	const [sort, setSort] = useState("distanceAsc");
+	const [location, setLocation] = useState({lat: parseFloat(user.latitude), lng: parseFloat(user.longitude)});
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		let mounted = true;
+		if(mounted) {
+			(async function() {
+				setIsLoading(true);
+				const response = await fetch("/search/tags");
+				const data = await response.json();
+				if(data.status) {
+					setOptions(data.tags);
+				}
+				setIsLoading(false);
+			})();
+		}
+		return () => {mounted = false};
+	}, []);
 
 	useEffect(() => {
 		socket.emit("update_last_active", { queryId: user.userid});
 	}, []);
 
-	const onAgeFilter = useCallback((value) => {
-		setFilterAge({min: value[0], max: value[1]});
+	const onAgeSearch = useCallback((value) => {
+		setSearchAge({min: value[0], max: value[1]});
 	}, [])
 
-	const onRatingFilter = useCallback((value) => {
-		setFilterRating({min: value[0], max: value[1]});
+	const onRatingSearch = useCallback((value) => {
+		setSearchRating({min: value[0], max: value[1]});
 	}, [])
 
-	function userSort(sort) {
-		if(sort === "ageAsc") {
-			return function(a, b) {
-				return a.age - b.age;
+
+	if (isLoading) {
+		return (
+			<LoadingSpinner />
+		)
+	}
+
+	async function handleSearch() {
+		setIsSearching(true);
+		const response = await fetch("/search/search", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				age: searchAge,
+				rating: searchRating,
+				tags: selectedTags,
+				location: location
+			})
+		});
+		const data = await response.json();
+		if(data.status) {
+			setUserProfiles(data.users);
+			setIsSearching(true);
+			setHasSearched(true);
+			if(selectedTags.length > 0) {
+				setFilterTagsOptions(selectedTags)
+			} else {
+				setFilterTagsOptions(options)
 			}
-		} else if(sort === "ageDsc") {
-			return function(a, b) {
-				return b.age - a.age;
-			}
-		} else if(sort === "ratingAsc") {
-			return function(a, b) {
-				return a.rating - b.rating;
-			}
-		} else if(sort === "ratingDsc") {
-			return function(a, b) {
-				return b.rating - a.rating;
-			}
-		} else if(sort === "distanceAsc") {
-			return function(a, b) {
-				return a.distance - b.distance;
-			}
-		} else if(sort === "distanceDsc") {
-			return function(a, b) {
-				return b.distance - a.distance;
-			}
-		} else if(sort === "interestAsc") {
-			return function(a, b) {
-				return a.commonInterests - b.commonInterests;
-			}
-		} else if(sort === "interestDsc") {
-			return function(a, b) {
-				return b.commonInterests - a.commonInterests;
-			}
+		} else {
+			setIsSearching(false);
+			setHasSearched(false)
 		}
+		setIsSearching(false);
 	}
 
-	function filterAgeFunc(profile) {
-		return profile.age >= filterAge.min && profile.age <= filterAge.max;
+	function handleToggleSearch() {
+		setToggleSearch(!toggleSearch);
 	}
 
-	function filterRatingFunc(profile) {
-		return profile.rating >= filterRating.min && profile.rating <= filterRating.max;
-	}
-
-	function filterDistanceFunc(profile) {
-		return profile.distance >= filterDistance.min && profile.distance <= filterDistance.max;
-	}
-
-	function filterInterestFunc(profile) {
-		return profile.commonInterests >= filterInterest.min && profile.commonInterests <= filterInterest.max;
-	}
-
+	//console.log(toggleSearch)
 	return (
-		<main className="ma home_profile_container">
-
-			<div className="search_container">
-				<div className="flex-col filter_input_container">
-					<div className="flex-row filter_slider pos-relative">
-						<span className="age_slider_label unselectable">Age</span>
-						<StyledSliderComponent
-						min={18}
-						onAfterChange={onAgeFilter}
-						defaultValue={[18, 100]}
-						/>
+		<main className="ma search_main_container">
+			<div className="search_container_middle">
+				<div className="search_container ma">
+					<div className="toggle_search_container">
+						<div className="toggle_search_line"></div>
+						<i className="material-icons search_icon" title="Search" onClick={handleToggleSearch}>search</i>
+						<div className="toggle_search_line"></div>
 					</div>
-					<div className="flex-row filter_slider pos-relative">
-						<span className="rating_slider_label unselectable">Rating</span>
-						<StyledSliderComponent
-						onAfterChange={onRatingFilter}
-						defaultValue={[0, 100]}
-						/>
+					<div className={toggleSearch ? "search_item_container" : "search_item_container_hidden"}>
+						<div className="flex-col filter_input_container">
+							<div className="flex-row filter_slider pos-relative">
+								<span className="age_slider_label unselectable">Age</span>
+								<StyledSliderComponent
+								min={18}
+								onAfterChange={onAgeSearch}
+								defaultValue={[18, 100]}
+								/>
+							</div>
+							<div className="flex-row filter_slider pos-relative">
+								<span className="rating_slider_label unselectable">Rating</span>
+								<StyledSliderComponent
+								onAfterChange={onRatingSearch}
+								defaultValue={[0, 100]}
+								/>
+							</div>
+						</div>
+						<Maps
+							setLocation={setLocation}
+							location={location}
+							/>
+						<div className="search_select_container">
+							<Select
+								multi
+								options={options}
+								onChange={(values) => {
+									setSelectedTags(values);
+								}}
+								max={5}
+								className="search_select"
+								color="#2f4f4f"
+								placeholder="Select tags"
+								dropdownHeight="150px"
+								separator={true}
+								clearable={true}
+								dropdownGap={-1}
+								dropdownPosition="auto"
+							/>
+						</div>
+						{isSearching && <LoadingSpinnerComponent size={30}/> }
+						{!isSearching && <button className="search_button" onClick={handleSearch}>Search</button> }
 					</div>
 				</div>
 			</div>
-
-			{hasSearched && <UserProfileSortFilter
+			<div className="search_result_container">
+				{hasSearched && <SearchFilterSort
 				setUserProfiles={setUserProfiles}
-				userProfiles={userProfiles}
+				profile={userProfiles}
 				setSort={setSort}
 				sort={sort}
-				setFilterAge={setFilterAge}
-				setFilterRating={setFilterRating}
-				setFilterDistance={setFilterDistance}
-				setFilterInterest={setFilterInterest}
-			/>}
-			{userProfiles.length === 0 && !isLoading ?
-			<div className="home_no_profile">No matching profiles found</div>
-			:
-			<>
-			{/* <SearchProfile/> */}
-			
-			{/* Sort the userProfiles array by the userSort function */}
-			<div className="home_profiles_container">
-			{/* {userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).length > 0 ?
-				userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).map(profile => {
-					return <div key={profile.userid} className="home_user_profile_container">
-								<UserProfile
-								profile={profile}
-								setUserProfiles={setUserProfiles}
-								/>
-							</div>
-				})
-			: */}
-			<div> No results from filter</div>
-			{/* {loading && <LoadingSpinnerPromiseComponent/>} */}
-			{/* <div>{error && 'Error'}</div> */}
+				searchAge={searchAge}
+				searchRating={searchRating}
+				user={user}
+				// setFilterAge={setFilterAge}
+				// setFilterRating={setFilterRating}
+				// setFilterDistance={setFilterDistance}
+				setFilterTagsOptions={setFilterTagsOptions}
+				// filterAge={filterAge}
+				// filterRating={filterRating}
+				// filterDistance={filterDistance}
+				filterTagsOptions={options}
+				hasSearched={hasSearched}
+				/>}
 			</div>
-			</>
-			}
 		</main>
 	);
 }

@@ -23,7 +23,6 @@ export default function Home() {
 	const [hasMore, setHasMore] = useState(true);
 	const navigate = useNavigate();
 
-
 	const {
 		loading,
 		error,
@@ -54,10 +53,6 @@ export default function Home() {
 			navigate("/completeprofile");
 		}
 	}, [navigate, user]);
-
-	useEffect(() => {
-		socket.emit("update_last_active", { queryId: user.userid});
-	}, []);
 
 	function userSort(sort) {
 		if(sort === "ageAsc") {
@@ -116,14 +111,12 @@ export default function Home() {
 			setIsLoading(false);
 		}
 	}, [loading, setIsLoading]);
-
 	return (
 		<>
 		{isLoading ?
 		<LoadingSpinner/>
 		:
 		<main className="ma home_profile_container">
-			{/* <div className="home_message"> This is a test Message</div> */}
 			{userProfiles.length === 0 && !loading ?
 			<div className="home_no_profile">No matching profiles found</div>
 			:
@@ -139,7 +132,6 @@ export default function Home() {
 			setFilterDistance={setFilterDistance}
 			setFilterInterest={setFilterInterest}
 			/>
-			{/* Sort the userProfiles array by the userSort function */}
 			<div className="home_profiles_container">
 			{userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).length > 0 ?
 				userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).map(profile => {
@@ -147,6 +139,7 @@ export default function Home() {
 								<UserProfile
 								profile={profile}
 								setUserProfiles={setUserProfiles}
+								user={user}
 								/>
 							</div>
 				})

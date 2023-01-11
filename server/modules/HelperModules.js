@@ -168,6 +168,55 @@ async function saveNotification(userid, targetuserid, message) {
 	}
 }
 
+function createTagsSearchQuery(tags) {
+	// Create query for tags
+	if(tags.length === 0)
+		var query = "NOT pk_userid = ?"
+	else
+		var query = "pk_userid IN (SELECT fk_userid FROM tagitem INNER JOIN tag ON tagitem.fk_tagid = tag.pk_tagid WHERE tag.tag IN ("
+	for (let i = 0; i < tags.length; i++) {
+		if (i < tags.length - 1)
+			query += "'" + tags[i].label + "'" + ", "
+		if(i === tags.length - 1)
+			query += "'" + tags[i].label + "'"
+	}
+	if(tags.length !== 0)
+	query += ") GROUP BY fk_userid HAVING COUNT(*) = " + tags.length + ") AND NOT pk_userid = ?"
+	return (query)
+}
+
+function canConnect(sessionPreference, userPreference, sessionGender, userGender) {
+	// Check if user can connect
+	if (sessionPreference === "both" && userPreference === "both"
+		|| sessionPreference === "both" && userPreference === "male" && sessionGender === "male"
+		|| sessionPreference === "both" && userPreference === "female" && sessionGender === "female"
+		|| sessionPreference === userGender && (userPreference === sessionGender || userPreference === "both")) {
+		return (true)
+	} else {
+		return (false)
+	}
+}
+
+async function getUserTagsArray(user) {
+	// Get all interests for a user as an array
+	try {
+		const [interests, fields] = await con.execute(`
+			SELECT tag
+			FROM tag
+			INNER JOIN tagitem ON fk_tagid = pk_tagid
+			INNER JOIN users ON fk_userid = pk_userid
+			WHERE pk_userid = ?`,
+			[user.userid])
+		return (interests.map(function (obj) {
+				return obj.tag
+			})
+		)
+	} catch (err) {
+		//console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
+
 module.exports = {
 	getUserInterests,
 	getProfilePic,
@@ -178,4 +227,7 @@ module.exports = {
 	updateLastActive,
 	getUserToken,
 	saveNotification,
+	createTagsSearchQuery,
+	canConnect,
+	getUserTagsArray
 };

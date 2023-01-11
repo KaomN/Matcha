@@ -2,7 +2,7 @@ const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest }  = require("../modules/HelperModules");
+const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest, canConnect }  = require("../modules/HelperModules");
 
 const getUsers = async (req, min, max) => {
 	try {
@@ -11,22 +11,30 @@ const getUsers = async (req, min, max) => {
 		if (req.session.preference === "both") {
 			if (req.session.latitude && req.session.longitude) {
 				var [rows, fields] = await con.execute(`
-					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography,
-						( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) ) + sin( radians(?) ) * sin( radians(latitude) ) ) ) AS distance
+					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography, genderpreference as 'preference', gender,
+						(6371 * acos(cos( radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin( radians(?)) * sin(radians(latitude)))) AS distance,
+						(SELECT COUNT(*) FROM tagitem WHERE fk_userid = users.pk_userid AND fk_tagid IN (SELECT fk_tagid FROM tagitem WHERE fk_userid = ?)) AS 'commonInterests',
+						(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = users.pk_userid) OR (userid2 = ? AND userid1 = users.pk_userid)) AS connected,
+						(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
+						(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
 					FROM users
-						LEFT JOIN blocked
-					ON users.pk_userid = blocked.fk_userid
-						LEFT JOIN connect
-					ON users.pk_userid = connect.fk_userid
+					LEFT JOIN blocked
+						ON users.pk_userid = blocked.fk_userid
+					LEFT JOIN connect
+						ON users.pk_userid = connect.fk_userid
+					LEFT JOIN report
+						ON users.pk_userid = report.fk_userid
 					WHERE NOT pk_userid = ?
+						AND genderpreference = ?
 						AND blocked.targetuserid NOT IN (SELECT fk_userid FROM blocked WHERE targetuserid = users.pk_userid)
 						AND connect.targetuserid NOT IN (SELECT fk_userid FROM connect WHERE targetuserid = users.pk_userid)
+						AND report.targetuserid NOT IN (SELECT fk_userid FROM report WHERE targetuserid = users.pk_userid)
 					HAVING distance <= ?
-					ORDER BY distance ASC
+						AND commonInterests >= ?
+					ORDER BY distance ASC, rating DESC
 					LIMIT ? , ?`,
-					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, searchRadius, min, max])
+					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.gender, searchRadius, minInterestCount, min, max])
 					// If there are any rows returned from the database (i.e. users were found)
-				console.log(rows)
 					if (rows && rows.length) {
 					// Loop through each user
 					for (const user of rows) {
@@ -36,12 +44,13 @@ const getUsers = async (req, min, max) => {
 							// Get the user's interests
 							user.interests = await getUserInterests(user)
 							// Get the user's profile picture
-							user.profilepic = await getProfilePic(user)
+							user.profilePic = await getProfilePic(user)
 							// Get the user's images
 							user.images = await getUserImages(user)
-							// Check if user has sent a connect request to the current user
-							user.connectRequest = await checkConnectRequest(user, req.session.userid)
+							// Check if user can connect
+							user.canConnect = canConnect(req.session.preference, user.preference, req.session.gender, user.gender)
 							// Remove the latitude and longitude from the user object
+							
 							delete user.latitude
 							delete user.longitude
 						} catch (err) {
@@ -55,9 +64,12 @@ const getUsers = async (req, min, max) => {
 		} else {
 			if (req.session.latitude && req.session.longitude) {
 				var [rows, fields] = await con.execute(`
-					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography,
+					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography, genderpreference as 'preference', gender,
 						(6371 * acos(cos( radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin( radians(?)) * sin(radians(latitude)))) AS distance,
-						(SELECT COUNT(*) FROM tagitem WHERE fk_userid = users.pk_userid AND fk_tagid IN (SELECT fk_tagid FROM tagitem WHERE fk_userid = ?)) AS 'commonInterests'
+						(SELECT COUNT(*) FROM tagitem WHERE fk_userid = users.pk_userid AND fk_tagid IN (SELECT fk_tagid FROM tagitem WHERE fk_userid = ?)) AS 'commonInterests',
+						(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = users.pk_userid) OR (userid2 = ? AND userid1 = users.pk_userid)) AS connected,
+						(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
+						(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
 					FROM users
 					LEFT JOIN blocked
 						ON users.pk_userid = blocked.fk_userid
@@ -75,9 +87,8 @@ const getUsers = async (req, min, max) => {
 						AND commonInterests >= ?
 					ORDER BY distance ASC, rating DESC
 					LIMIT ? , ?`,
-					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.preference, req.session.gender, req.session.gender, searchRadius, minInterestCount, min, max])
+					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.preference, req.session.gender, req.session.gender, searchRadius, minInterestCount, min, max])
 				// If there are any rows returned from the database (i.e. users were found)
-				//console.log(rows)
 				if (rows && rows.length) {
 					// Loop through each user
 					for (const user of rows) {
@@ -90,8 +101,8 @@ const getUsers = async (req, min, max) => {
 							user.profilePic = await getProfilePic(user)
 							// Get the user's images
 							user.images = await getUserImages(user)
-							// Check if user has sent a connect request to the current user
-							user.connectRequest = await checkConnectRequest(user.userid, req.session.userid)
+							// Check if user can connect
+							user.canConnect = canConnect(req.session.preference, user.preference, req.session.gender, user.gender)
 							// Remove the latitude and longitude from the user object
 							delete user.latitude
 							delete user.longitude
@@ -105,8 +116,6 @@ const getUsers = async (req, min, max) => {
 			}
 		}
 		//console.log(rows)
-		// Ascendig Distancerows.sort((a,b) => a.distance - b.distance)
-		// Descending Distance rows.sort((a,b) => b.distance - a.distance)
 		return (rows)
 	} catch (err) {
 		console.log(err)

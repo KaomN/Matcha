@@ -111,6 +111,11 @@ export default function Header() {
 	const { refNotification, isNotificationVisible, setIsNotificationVisible } = useNotificationVisible(false);
 	const [state, setState] = useState("loading");
 
+	// Emit updating activity everytime pathname changes
+	useEffect(() => {
+		socket.emit("update_last_active", { queryId: user.userid});
+	}, [pathname]);
+
 	function fetchLogout() {
 		const promise = new Promise((resolve, reject) => {
 			setTimeout(() => {
@@ -129,6 +134,10 @@ export default function Header() {
 				setUser({})
 				navigate("/login");
 			}
+	}
+
+	function handleNavigate() {
+		navigate("/search")
 	}
 
 	useEffect(() => {
@@ -160,7 +169,7 @@ export default function Header() {
 			<nav className="pr05">
 				<ul className="header-overflow-visible">
 					<div className="header-profile-dropdown-container">
-						<li><i className="material-icons header-material-icons" href="/#" onClick={handleLogout} title="Logout">logout</i></li>
+						<li><i className="material-icons header-material-icons" onClick={handleLogout} title="Logout">logout</i></li>
 						<li>
 							<Notifications
 							refNotification={refNotification}
@@ -183,6 +192,7 @@ export default function Header() {
 							user={user}
 							/>
 						</li>
+						<li><i className="material-icons header-material-icons" title="Search" onClick={handleNavigate} >search</i></li>
 					</div>
 				</ul>
 			</nav>

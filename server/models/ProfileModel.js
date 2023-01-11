@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
 const emailTransporter =  require("../setup").emailTransporter;
 var NodeGeocoder = require('node-geocoder');
-const { checkConnectRequest, checkConnected, updateHistory } = require("../modules/HelperModules");
+const { checkConnectRequest, checkConnected, updateHistory, canConnect } = require("../modules/HelperModules");
 
 
 
@@ -70,21 +70,7 @@ const getProfile = async (userID, req) => {
 			rows[0].distance = Math.ceil(rows[0].distance)
 			Object.assign(rows[0], {isOwn:false})
 			Object.assign(rows[0], {status: true})
-			if (req.session.preference === "both" && rows[0].preference === "both") {
-				Object.assign(rows[0], {canConnect: true})
-			} else if (req.session.preference === "both" && rows[0].preference === "male" && req.session.gender === "male") {
-				Object.assign(rows[0], {canConnect: true})
-			} else if (req.session.preference === "both" && rows[0].preference === "female" && req.session.gender === "female") {
-				Object.assign(rows[0], {canConnect: true})
-			} else if (req.session.preference === "male" && rows[0].preference === "male" && req.session.gender === "male") {
-				Object.assign(rows[0], {canConnect: true})
-			}  else if (req.session.preference === "female" && rows[0].preference === "female" && req.session.gender === "female") {
-				Object.assign(rows[0], {canConnect: true})
-			} else if (req.session.preference === rows[0].gender) {
-				Object.assign(rows[0], {canConnect: true})
-			} else {
-				Object.assign(rows[0], {canConnect: false})
-			}
+			Object.assign(rows[0], {canConnect: canConnect(req.session.preference, rows[0].preference, req.session.gender, rows[0].gender)})
 			delete rows[0].email
 			delete rows[0].latitude
 			delete rows[0].longitude

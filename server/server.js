@@ -183,13 +183,15 @@ io.on('connection', (socket) => {
 					});
 				}
 			} else if (data.type === "profile") {
-				socket.to(socketId).emit("receive_notification", {
-					pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`),
-					fk_userid: data.userid,
-					targetuserid: socket.request.session.userid,
-					notification: `${socket.request.session.username} checked your profile!`,
-					isread: 0,
-				});
+				if(data.userid !== socket.request.session.userid) {
+					socket.to(socketId).emit("receive_notification", {
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`),
+						fk_userid: data.userid,
+						targetuserid: socket.request.session.userid,
+						notification: `${socket.request.session.username} checked your profile!`,
+						isread: 0,
+					});
+				}
 			} else if (data.type === "disconnect") {
 				socket.to(socketId).emit("receive_notification", {
 					pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`),
@@ -265,7 +267,8 @@ app.use('/chat', require('./controllers/ChatController'));
 app.use('/profile', require('./controllers/ProfileController'));
 // HomeController
 app.use('/home', require('./controllers/HomeController'));
-
+// SearchController
+app.use('/search', require('./controllers/SearchController'));
 // server.listen(PORT, () => {
 // 	console.log(`Server listening on ${PORT}`);
 // });
