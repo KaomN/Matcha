@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from '../context/UserContext';
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import toast from 'react-simple-toasts';
 import "./styles/Profile.css";
@@ -35,6 +35,7 @@ export default function Profile() {
 	const [errorMessage, setErrorMessage] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [onlineStatus, setOnlineStatus] = useState(false);
+	const { pathname } = useLocation();
 
 	useEffect(() => {
 		if(!user.profile) {
@@ -51,9 +52,9 @@ export default function Profile() {
 				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
 				response = await response.json()
 				if(response.status) {
-					socket.emit("online_query", { queryId: response.userid });
+					socket.emit("online_query", { queryId: response.userid, path: pathname });
 					if(params.profileID) {
-						socket.emit("join_profile_room", { room: params.profileID });
+						socket.emit("join_profile_room", { room: params.profileID, path: pathname });
 					}
 					socket.emit("send_notification", { username: response.username, userid: response.userid, type: "profile" });
 					setProfile(response);

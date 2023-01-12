@@ -39,6 +39,7 @@ const getSearch = async (req) => {
 					user.distance = Math.ceil(user.distance)
 					// Get the user's interests
 					user.interests = await getUserTagsArray(user)
+					// Get the number of interests
 					user.tagsCount = user.interests.length
 					// Get the user's profile picture
 					user.profilePic = await getProfilePic(user)

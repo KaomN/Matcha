@@ -47,10 +47,6 @@ export default function AdvancedSearch() {
 		return () => {mounted = false};
 	}, []);
 
-	useEffect(() => {
-		socket.emit("update_last_active", { queryId: user.userid});
-	}, []);
-
 	const onAgeSearch = useCallback((value) => {
 		setSearchAge({min: value[0], max: value[1]});
 	}, [])

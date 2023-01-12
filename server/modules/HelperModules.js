@@ -28,7 +28,7 @@ async function getProfilePic(user) {
 			[user.userid])
 		return (path + user.username + "/" + profilepic[0].imagename)
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -47,7 +47,7 @@ async function getUserImages(user) {
 		}
 		return (images)
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -140,26 +140,26 @@ async function getUserToken(userid) {
 	}
 }
 
-async function saveNotification(userid, targetuserid, message) {
+async function saveNotification(userid, targetuserid, message, type) {
 	// Save notification to database
 	try {
 		const [check, fields] = await con.execute(
 			`SELECT *
 			FROM notifications
-			WHERE fk_userid = ? AND targetuserid = ? AND notification = ?`,
-			[userid, targetuserid, message ])
+			WHERE fk_userid = ? AND targetuserid = ? AND notification = ? AND type = ?`,
+			[userid, targetuserid, message, type])
 		if (check.length > 0){
 			const [update, fields] = await con.execute(
 				`UPDATE notifications
 				SET date = NOW(), isread = 0
-				WHERE fk_userid = ? AND targetuserid = ? AND notification = ?`,
-				[userid, targetuserid, message])
+				WHERE fk_userid = ? AND targetuserid = ? AND notification = ? AND type = ?`,
+				[userid, targetuserid, message, type])
 				return (check[0].pk_id)
 		} else {
 			const [notification, fields] = await con.execute(
-				`INSERT INTO notifications (fk_userid, targetuserid, notification)
-				VALUES (?, ?, ?)`,
-				[userid, targetuserid, message])
+				`INSERT INTO notifications (fk_userid, targetuserid, notification, type)
+				VALUES (?, ?, ?, ?)`,
+				[userid, targetuserid, message, type])
 				return (notification.insertId)
 		}
 	} catch (err) {
@@ -217,6 +217,38 @@ async function getUserTagsArray(user) {
 	}
 }
 
+async function getMessages(user) {
+	// Get all messages for a user
+	try {
+		const [messages, fields] = await con.execute(`
+			SELECT messagedate, userid, message, isread
+			FROM messages
+			WHERE fk_connected = ?
+			ORDER BY messagedate DESC`,
+			[user.room])
+			//console.log(messages)
+		return messages
+	} catch (err) {
+		//console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+}
+
+async function saveMessage(message, userid, room) {
+	// Save message to database
+	try {
+		const [save, fields] = await con.execute(`
+			INSERT INTO messages (fk_connected, userid, message)
+			VALUES (?, ?, ?)`,
+			[room, userid, message])
+		return (true)
+	} catch (err) {
+		//console.log(err)
+		return({status: false, message: "Server connection error"});
+	}
+
+}
+
 module.exports = {
 	getUserInterests,
 	getProfilePic,
@@ -229,5 +261,7 @@ module.exports = {
 	saveNotification,
 	createTagsSearchQuery,
 	canConnect,
-	getUserTagsArray
+	getUserTagsArray,
+	getMessages,
+	saveMessage,
 };

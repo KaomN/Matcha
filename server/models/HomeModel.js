@@ -118,33 +118,7 @@ const getUsers = async (req, min, max) => {
 		//console.log(rows)
 		return (rows)
 	} catch (err) {
-		console.log(err)
-		return({status: false, message: "Server connection error"});
-	}
-}
-
-const getUsersAdvanced = async (req) => {
-
-	try {
-		if (req.session.preference === "both") {
-			return ({status: true, message: "Fetching users"})
-		} else {
-			var [rows, fields] = await con.execute(`
-				SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid'
-				FROM users
-				WHERE NOT pk_userid = ? AND gender = ? AND genderpreference = ? OR genderpreference = "both" AND NOT gender = ?`,
-				[req.session.userid, req.session.preference, req.session.gender, req.session.gender])
-			for (const user of rows) {
-				user.distance = calcDistance(req.session.latitude, req.session.longitude, user.latitude, user.longitude)
-				user.interests = await getUserInterests(user)
-			}
-		}
-		console.log(rows)
-		// Ascendig Distance rows.sort((a,b) => a.distance - b.distance)
-		// Descending Distance rows.sort((a,b) => b.distance - a.distance)
-		return (rows)
-	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -158,7 +132,7 @@ const blockUser = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: "User blocked"})
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -203,7 +177,6 @@ const  connectUser = async (req) => {
 
 module.exports = {
 	getUsers,
-	getUsersAdvanced,
 	blockUser,
 	reportUser,
 	connectUser,

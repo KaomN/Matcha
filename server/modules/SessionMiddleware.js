@@ -8,7 +8,7 @@ const sessionMiddleware = session({
 	secret: process.env.SESSION_SECRET,
 	store: new MySQLStore({}, require("../setup").pool),
 	resave: false,
-	saveUninitialized: false,
+	saveUninitialized: true,
 	clearExpired: true,
 	checkExpirationInterval: 86400000, // Clears expired sessions every day
 	expiration: 604800000 , // Set session expiration 1 week

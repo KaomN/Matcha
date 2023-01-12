@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function NotificationItems(props) {
 	const navigate = useNavigate();
-
-	async function navigateToUser() {
+	
+	async function handleNavigate() {
 		try {
 			if(!props.item.isread) {
 				const response = await fetch("/user/notification/", {
@@ -34,12 +34,13 @@ export default function NotificationItems(props) {
 		} catch (error) {
 			//console.log(error)
 		}
-		navigate(`/profile/${props.item.targetuserid}`);
+		props.item.notification.slice(-8) === "message!" ? navigate(`/chat`) : navigate(`/profile/${props.item.targetuserid}`)
+		props.setIsNotificationVisible(false)
 	}
 
 	return (
 		<>
-			<div className="unselectable notification_onclick" onClick={navigateToUser}>{props.item.notification}</div>
+			<div className="unselectable notification_onclick" onClick={handleNavigate}>{props.item.notification}</div>
 			{!props.item.isread ? <div className="notification_isread unselectable"></div> : null}
 		</>
 	);

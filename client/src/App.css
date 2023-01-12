@@ -22,8 +22,8 @@ html, body {
 
 #root {
 	width: 100%;
-	height: calc(100% - .5rem);
-	padding-top: .5rem;
+	height: calc(100%);
+	/* padding-top: .5rem; */
 
 }
 

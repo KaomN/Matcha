@@ -37,10 +37,15 @@ router.get("/getuserinfo", async (req, res) => {
 
 // Logout
 router.get("/logout", (req, res) => {
-
-	req.sessionStore.destroy(req.session.id, function(err) {
+	console.log(req.sessionStore)
+	try {
+		req.sessionStore.destroy(req.session.id, function(err) {
+			
+		})
 		res.send({status: true});
-	})
+	} catch (err) {
+		console.log(err)
+	}
 });
 
 // Verify account request
@@ -126,7 +131,7 @@ router.delete("/notification", async (req, res) => {
 	try {
 		res.send(await UserModel.deleteNotification(req))
 	} catch (e) {
-		console.log(e)
+		//console.log(e)
 		res.send({ status: false, err: "Something went wrong!" })
 	}
 });
@@ -136,7 +141,11 @@ router.get("/test", async (req, res) => {
 });
 
 router.get("/history", async (req, res) => {
-	res.send(await UserModel.getHistory(req))
+	if(req.session.userid !== undefined) {
+		res.send(await UserModel.getHistory(req))
+	} else {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
 });
 
 router.delete("/history", async (req, res) => {

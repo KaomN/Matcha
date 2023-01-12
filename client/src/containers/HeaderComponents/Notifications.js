@@ -59,6 +59,25 @@ export default function Notifications(props) {
 		setNotification(notificationCopy)
 	});
 
+	socket.on("receive_message_notitifaction", (data) => {
+		if(checkNotificationArray(data.pk_id)) {
+			return
+		}
+		const notificationCopy = notification.slice()
+		notificationCopy.unshift(data)
+		var res = false
+		for (let i = 0; i < notificationCopy.length; i++) {
+			if(notificationCopy[i].isread === 0) 
+				var res = true
+		}
+		if(res) {
+			setIsRead(false)
+		} else {
+			setIsRead(true)
+		}
+		setNotification(notificationCopy)
+	});
+
 	useEffect(() => {
 		let mounted = true;
 		if(mounted) {

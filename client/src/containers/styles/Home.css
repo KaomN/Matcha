@@ -40,6 +40,7 @@
 	border: 2px solid var(--color-primary-darker);
 	padding: 0.5rem;
 	margin-bottom: 1rem;
+	margin-top: 1rem;
 	box-shadow: rgba(0, 0, 0, 0.75) 0px 25px 20px -20px;
 }
 

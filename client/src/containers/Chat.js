@@ -1,113 +1,87 @@
 import { useState, useEffect, useContext } from "react";
-import { trackPromise} from 'react-promise-tracker';
+import { UserContext } from '../context/UserContext';
+import { LoadingSpinner } from "../components/LoadingSpinner";
+import ChatUserProfiles from "./ChatComponents/ChatUserProfiles";
+import ChatMessage from "./ChatComponents/ChatMessage";
+import { ActiveChatContext } from '../context/ActiveChatContext';
+import useChat from "./ChatComponents/UseChat";
 import { SocketContext } from '../context/SocketContext';
 
-// import io from 'socket.io-client';
-// const socket = io({
-// 	transports: ["polling"],
-// });
 
+
+import "./styles/Chat.css";
 
 export default function Chat() {
+	const { user } = useContext(UserContext);
+	const { activeChat, setActiveChat } = useContext(ActiveChatContext);
+	const [connectedUser, setConnectedUser] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [componentIsLoading, setComponentIsLoading] = useState(false);
+	const { messages, sendMessage } = useChat(activeChat);
 	const socket = useContext(SocketContext);
-	const [user, setUser] = useState("loading");
-	const [channel, setChannel] = useState("channel");
-	const [message, setMessage] = useState("");
-	const [test, setTest] = useState("");
-	socket.on("connect_error", (err) => {
-		console.log(`connect_error due to ${err.message}`);
-	});
-	// useEffect(() => {
-	// 	function fetchUserinfo() {
-	// 		const promise = new Promise((resolve, reject) => {
-	// 			setTimeout(() => {
-	// 				resolve(fetch('/chat/getlogininfo', {
-	// 					credentials: "include",
-	// 					method: "GET",
-	// 				})
-	// 				.then((response) => response.json()));
-	// 			}, 500)
-	// 		});
-	// 		return promise
-	// 	}
-	// 	(async function() {
-	// 		setUser(await trackPromise(fetchUserinfo()))
-	// 	})();
-	// }, []);
-	//console.log(user)
-// 	const [isConnected, setIsConnected] = useState(socket.connected);
-// 	useEffect(() => {
-// 		socket.on('connect', () => {
-// 			setIsConnected(true);
-// 		});
-	
-// 		socket.on('disconnect', () => {
-// 			setIsConnected(false);
-// 		});
-	
-// 		// Cleanup
-// 		return () => {
-// 			socket.off('connect');
-// 			socket.off('disconnect');
-// 		};
-//  }, []);
-	
-		//socket.emit('new-connection', {user});
-	useEffect(() => {
-		// if(user !== "loading") {
-			
-			// socket.emit("connected", (response) => {
-			// 	console.log("running")
-			// 	console.log(response)
-			// });
-			// socket.on("connect", function () {
-				// socket.emit("joinChannel", {
-				// 	channel: channel
-				// });
-				// console.log("joined channel:", channel)
-			// });
-		// }
-		socket.emit("joinChannel", {
-			channel: channel
-		});
-		console.log("joined channel:", channel)
-	}, []);
 
-
-	function handleChatSubmit(event) {
-		if(event.key === "Enter") {
-			//console.log("emit chat")
-			socket.emit("message", { message: event.target.value, channel: "channel" });
-		}
-	}
 	useEffect(() => {
-		socket.on("receive_message", function (data) {
-			if (data.channel == channel) {
-				console.log("test")
+		let mounted = true;
+		if(mounted) {
+			if(connectedUser.length > 0) {
+				(async function() {
+					const response = await fetch(`/chat/chat/`)
+					const data = await response.json()
+					if(data.status) {
+						setConnectedUser(data.connectedUsers)
+					}
+					setComponentIsLoading(false)
+				})();
+			} else {
+				(async function() {
+					setIsLoading(true)
+					const response = await fetch(`/chat/chat/`)
+					const data = await response.json()
+					if(data.status) {
+						setConnectedUser(data.connectedUsers)
+					}
+					setIsLoading(false)
+				})();
 			}
-			//setMessage(data)
-			console.log(data)
-		});
-	}, []);
-	
-console.log(user)
-	return (
-		<main className="flex-column flex-center">
-			<h3>Chat page. Show connected users on a panel to the left. clicking on the user brings up the Chat page in the middle with history of the chat</h3>
-			<div className="message-container">
-				<div className="user-message-input">
-					<span className="user-message-username">kaom</span>
-					<input type="text" className="chat-input" id="userMessage" placeholder="Write a comment..." autoComplete="off" onKeyDown={handleChatSubmit}/>
-				</div>
-				<div className="messages">
-					<div>
-						{/* <div className="comments-container">
-							<span>kaom</span><div className="message" title="0 seconds ago">asd</div>
-						</div> */}
-					</div>
-				</div>
-			</div>
+			
+		}
+		return () => {mounted = false};
+	}, [activeChat]);
 
+
+	function filterActiveChat(user) {
+		return user.room === activeChat.channel
+	}
+
+	if(isLoading)
+		return (<LoadingSpinner />)
+	return (
+		<main className="chat_main_container">
+			<div className="chat_user_container ma">
+				{connectedUser.map((user, index) => {
+					return (
+						<div key={index}>
+							<ChatUserProfiles
+							profile={user}
+							setActiveChat={setActiveChat}
+							activeChat={activeChat}
+							setComponentIsLoading={setComponentIsLoading}
+							/>
+						</div>
+					)
+				})}
+			</div>
+			<div className="chat_messages_container ma">
+				<ChatMessage
+				user={user}
+				activeChat={activeChat}
+				connectedUserFiltered={connectedUser.filter(filterActiveChat)}
+				setConnectedUser={setConnectedUser}
+				componentIsLoading={componentIsLoading}
+				sendMessage={sendMessage}
+				messages={messages}
+				/>
+			</div>
 		</main>
 	);
 }

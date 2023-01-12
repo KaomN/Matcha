@@ -1,11 +1,14 @@
 import toast from 'react-simple-toasts';
 import { SocketContext } from "../../context/SocketContext";
 import { useEffect, useContext, useState } from "react";
+import { useLocation } from "react-router-dom"
+
 
 export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
 	const [connectRequest, setConnectRequest] = useState(props.profile.connectRequest);
 	const [connected, setConnected] = useState(props.profile.connected);
+	const { pathname } = useLocation();
 	
 	useEffect(() => {
 		socket.on("receive_connect_request", (data) => {
@@ -61,6 +64,7 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -105,6 +109,7 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -149,6 +154,7 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -193,6 +199,7 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -254,9 +261,9 @@ export default function ProfileButtons(props) {
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						// setTimeout(() => {
-							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect" });
-							socket.emit("send_connected", { userid: props.profile.userid});
-							socket.emit("send_connect_request", { userid: props.profile.userid});
+							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname});
+							socket.emit("send_connected", { userid: props.profile.userid, path: pathname});
+							socket.emit("send_connect_request", { userid: props.profile.userid , path: pathname});
 							props.setLoading(false)
 						// }, 1300)
 					}
@@ -308,7 +315,7 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-						socket.emit("send_disconnect_request", { userid: props.profile.userid});
+						socket.emit("send_disconnect_request", { userid: props.profile.userid, path: pathname });
 						props.setLoading(false)
 					}
 				})();

@@ -12,7 +12,7 @@ const PORT = process.env.PORT;
 const {sessionMiddleware} = require('./modules/SessionMiddleware')
 const { Server } = require('socket.io')
 const app = express();
-const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, checkConnected } = require('./modules/HelperModules')
+const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, checkConnected, saveMessage } = require('./modules/HelperModules')
 
 // Session middleware
 app.use(sessionMiddleware);
@@ -33,7 +33,7 @@ io.use(wrap(sessionMiddleware));
 
 const userStatus = [];
 
-function updateUserStatus(userId, socketId) {
+function updateUserStatus(userId, socketId, path) {
 	const index = userStatus.findIndex((user) => user.userId === userId)
 	if (index !== -1) {
 		//console.log("-----userStatus array-----")
@@ -41,6 +41,7 @@ function updateUserStatus(userId, socketId) {
 			userId: userId,
 			socketId: socketId,
 			lastActive: parseInt(Date.now()),
+			path: path
 		};
 	} else {
 		//console.log("-----userStatus array-----")
@@ -48,6 +49,7 @@ function updateUserStatus(userId, socketId) {
 			userId: userId,
 			socketId: socketId,
 			lastActive: parseInt(Date.now()),
+			path: path
 		});
 	}
 	//console.log(userStatus)
@@ -72,10 +74,10 @@ function queryOnlineUsers(userId) {
 	return false;
 };
 
-function getUserSocketId(userId) {
+function getUser(userId) {
 	const index = userStatus.findIndex((user) => user.userId === userId);
 	if (index > -1) {
-		return userStatus[index].socketId;
+		return userStatus[index];
 	}
 	return null;
 }
@@ -93,67 +95,116 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
 	try {
-		//console.log("joining", socket.request.session.token)
+
 		socket.join(socket.request.session.token);
 		socket.to(socket.request.session.token).emit('online_response', {
 			onlineStatus: true
 		});
-		socket.channel = ""
-		// Get all connected users and display them.
-		socket.on("connected", async (callback) => {
-			const session = socket.request.session;
-			//var [rows, fields] = await con.execute('SELECT * FROM connected WHERE userid1 = ? OR userid2 = ?', [session.userid, session.userid])
-			//console.log(rows)
-			callback({
-				status: "ok"
-			});
-		})
 
-		socket.on("joinChannel", function (data) {
-			//console.log(data)
-			socket.channel = data.channel;
-			//console.log(data.channel)
-			socket.join(data.channel);
-			//console.log("socket.channel")
+		socket.on("message", async function (data) {
+			const user = getUser(data.userid);
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
+			await saveMessage(data.message, socket.request.session.userid, data.channel);
+			if(user) {
+				if(user.path === "/chat" || user.path === "/chat/" ) {
+					socket.to(user.socketId).emit("receive_message", {
+						message: data.message,
+						messagedate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+						userid: socket.request.session.userid,
+						sentto: data.userid,
+						channel: data.channel,
+					});
+				} else {
+					socket.to(user.socketId).emit("receive_message_notitifaction", {
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3),
+						fk_userid: data.userid,
+						targetuserid: socket.request.session.userid,
+						notification: `${socket.request.session.username} has sent you a message!`,
+						type: "message",
+						isread: 0,
+					});
+				}
+			} else {
+				await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3)
+			}
+			socket.emit("receive_message", {
+				message: data.message,
+				messagedate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+				userid: socket.request.session.userid,
+				sentto: data.userid,
+				channel: data.channel,
+			});
 		});
 
-		socket.on("message", function (data) {
-			// emit a "message" event to every other socket
-			console.log(data)
-			//socket.to("channel").emit('receive_message', data);
-			socket.to(data.channel).emit("receive_message", {
-				message: data.message
-			});
-			// socket.broadcast.emit("receive_message", {
-			// 	message: data.message
-			// });
+		socket.on("message_chat_notification", async function (data) {
+			const user = getUser(data.userid);
+			if(user) {
+				socket.to(user.socketId).emit("receive_message_chat_notification", {
+					channel: data.channel,
+					isread: false,
+				});
+			} else {
+				await saveNotification(data.sentto, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3)
+			}
 		});
+
+		// check if user is typing in the chat
+		socket.on("typing", async function (data) {
+			const user = getUser(data.userid);
+			if(user) {
+				socket.to(user.socketId).emit("receive_typing", {
+					typing: true,
+					userid: socket.request.session.userid,
+				});
+			}
+			setTimeout(function () {
+				const checkUserStillActive = getUser(data.userid);
+				if(checkUserStillActive) {
+					socket.to(checkUserStillActive.socketId).emit("receive_typing", {
+						typing: false,
+						userid: socket.request.session.userid,
+					});
+				}
+			}, 3000);
+		});
+
 
 		/* Updating connection requests */
 		socket.on("send_connect_request", async function (data) {
-			const socketId = getUserSocketId(data.userid);
-			socket.to(socketId).emit("receive_connect_request", {
-				connectRequest: true
-			});
+			const user = getUser(data.userid);
+			if(user) {
+				socket.to(user.socketId).emit("receive_connect_request", {
+					connectRequest: true
+				});
+			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
+
 		});
 
 		socket.on("send_disconnect_request", async function (data) {
-			const socketId = getUserSocketId(data.userid);
-			socket.to(socketId).emit("receive_disconnect_request", {
-				connectRequest: false,
-				connected: false,
-			});
+			const user = getUser(data.userid);
+			//console.log(user)
+			if(user) {
+				socket.to(user.socketId).emit("receive_disconnect_request", {
+					connectRequest: false,
+					connected: false,
+				});
+			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 			socket.emit("receive_connected_request", {
 				connected: false
 			});
 		});
 		// Check if user is connected
 		socket.on("send_connected", async function (data) {
-			const socketId = getUserSocketId(data.userid);
+			const user = getUser(data.userid);
 			const status = await checkConnectRequest(data.userid, socket.request.session.userid)
-			socket.to(socketId).emit("receive_connected_request", {
-				connected: status
-			});
+			if (user) {
+				socket.to(user.socketId).emit("receive_connected_request", {
+					connected: status
+				});
+			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 			socket.emit("receive_connected_request", {
 				connected: status
 			});
@@ -162,58 +213,66 @@ io.on('connection', (socket) => {
 		// Notification
 		socket.on("send_notification", async function (data) {
 			// emit notification to user if online
-			const socketId = getUserSocketId(data.userid);
-			if (data.type === "connect") {
-				const type = await checkConnectRequest(data.userid, socket.request.session.userid)
-				if(type) {
-					socket.to(socketId).emit("receive_notification", {
-						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`),
+			// notification types:
+			// 1. connect
+			// 2. profile
+			// 3. message
+			// 4. connected
+			// 5. disconnect
+			const user = getUser(data.userid);
+			if(user) {
+				if (data.type === "connect") {
+					const type = await checkConnectRequest(data.userid, socket.request.session.userid)
+					if(type) {
+						socket.to(user.socketId).emit("receive_notification", {
+							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`, 4),
+							fk_userid: data.userid,
+							targetuserid: socket.request.session.userid,
+							notification: `${socket.request.session.username} has connected with you!`,
+							isread: 0,
+						});
+					} else {
+						socket.to(user.socketId).emit("receive_notification", {
+							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a connection request!`, 1),
+							fk_userid: data.userid,
+							targetuserid: socket.request.session.userid,
+							notification: `${socket.request.session.username} has sent you a connection request!`,
+							isread: 0,
+						});
+					}
+				} else if (data.type === "profile") {
+					if(data.userid !== socket.request.session.userid) {
+						socket.to(user.socketId).emit("receive_notification", {
+							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`, 2),
+							fk_userid: data.userid,
+							targetuserid: socket.request.session.userid,
+							notification: `${socket.request.session.username} checked your profile!`,
+							isread: 0,
+						});
+					}
+				} else if (data.type === "disconnect") {
+					socket.to(user.socketId).emit("receive_notification", {
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5),
 						fk_userid: data.userid,
 						targetuserid: socket.request.session.userid,
-						notification: `${socket.request.session.username} has connected with you!`,
-						isread: 0,
-					});
-				} else {
-					socket.to(socketId).emit("receive_notification", {
-						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a connection request!`),
-						fk_userid: data.userid,
-						targetuserid: socket.request.session.userid,
-						notification: `${socket.request.session.username} has sent you a connection request!`,
+						notification: `${socket.request.session.username} has disconnected from you!`,
 						isread: 0,
 					});
 				}
-			} else if (data.type === "profile") {
-				if(data.userid !== socket.request.session.userid) {
-					socket.to(socketId).emit("receive_notification", {
-						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`),
-						fk_userid: data.userid,
-						targetuserid: socket.request.session.userid,
-						notification: `${socket.request.session.username} checked your profile!`,
-						isread: 0,
-					});
-				}
-			} else if (data.type === "disconnect") {
-				socket.to(socketId).emit("receive_notification", {
-					pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`),
-					fk_userid: data.userid,
-					targetuserid: socket.request.session.userid,
-					notification: `${socket.request.session.username} has disconnected from you!`,
-					isread: 0,
-				});
 			}
 		});
 
 		// Join profile room to listen for updates
 		socket.on("join_profile_room", async function (data) {
 			socket.join(await getUserToken(data.room));
-			updateUserStatus(socket.request.session.userid, socket.id)
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 			socket.to(socket.request.session.token).emit('online_response', {
 				onlineStatus: true
 			});
 		});
 		// Update last active
-		socket.on("update_last_active", () => {
-			updateUserStatus(socket.request.session.userid, socket.id)
+		socket.on("update_last_active", (data) => {
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 			socket.to(socket.request.session.token).emit('online_response', {
 				onlineStatus: true
 			});
@@ -225,7 +284,7 @@ io.on('connection', (socket) => {
 			socket.emit('online_response', {
 				onlineStatus: onlineStatus
 			});
-			updateUserStatus(socket.request.session.userid, socket.id);
+			updateUserStatus(socket.request.session.userid, socket.id, data.path);
 			socket.to(socket.request.session.token).emit('online_response', {
 				onlineStatus: true
 			});

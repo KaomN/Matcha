@@ -13,6 +13,7 @@
 
 .search_container_middle {
 	width: 100%;
+	
 }
 
 .search_container {
@@ -25,11 +26,11 @@
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
-	margin-bottom: .5rem;
 	border-radius: var(--border-radius);
 	border: 2px solid var(--color-primary-darker);
 	box-shadow: rgb(0 0 0 / 75%) 0px 25px 20px -20px;
 	max-height: 500px;
+	margin-top: 0.5rem;
 }
 
 .search_item_container_hidden {
@@ -213,6 +214,7 @@
 	box-shadow: rgb(0 0 0 / 75%) 0px 25px 20px -20px;
 	height: calc(100% - 1rem - 4px);
 	position: relative;
+	margin-top: 0.5rem;
 }
 
 .search_result_container {
@@ -415,10 +417,8 @@
 		width: auto;
 		max-width: none;
 		flex-direction: row;
-		/* height: calc(100% - 2rem + 4px); */
 		margin-right: 0.5rem;
 		max-height: none;
-		/* min-width: none; */
 		height: auto;
 	}
 
@@ -458,9 +458,8 @@
 	.search_sort_filter_container {
 		width: calc(100% - 1rem - 4px);
 		max-width: 100%;
-		height: calc(100% - 1rem - 4px);
+		height: calc(100% - 1.5rem - 4px);
 		min-height: 244px;
-		/* margin-bottom: 0.5rem; */
 	}
 
 	.home_sort_button_container {
