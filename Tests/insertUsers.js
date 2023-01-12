@@ -7,9 +7,9 @@ async function insert() {
 			"Games", "Food", "Movies", "Cars", "Music", "Traveling", "Sports", "Art", "Fashion",
 			"Technology", "Books", "Animals", "Nature", "Cooking", "Dancing", "Gaming", "Gardening",
 			"Hiking", "Hunting", "Meditation", "Photography", "Reading", "Singing", "Skiing", "Swimming",
-			"Writing", "Yoga", "Camping", "Fishing", "Horseback Riding", "Painting", "Sailing", "Surfing",
-			"Tennis", "Volleyball", "Walking", "Wine Tasting", "Working Out", "Baking", "Biking", "Boating",
-			"Climbing", "Golfing", "Motorcycling", "Rock Climbing", "Running", "Scuba Diving", "Shopping", "Snowboarding",]
+			"Writing", "Yoga", "Camping", "Fishing", "Horseback-Riding", "Painting", "Sailing", "Surfing",
+			"Tennis", "Volleyball", "Walking", "Wine Tasting", "Working-Out", "Baking", "Biking", "Boating",
+			"Climbing", "Golfing", "Motorcycling", "Rock-Climbing", "Running", "Scuba-Diving", "Shopping", "Snowboarding",]
 		for (const tag of interests) {
 			var [rows, fields] = await con.execute('SELECT * FROM tag WHERE tag = ?', [tag])
 			if (!rows[0]) {

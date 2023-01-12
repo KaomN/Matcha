@@ -4,7 +4,7 @@ export default function InterestForm(props) {
 
 	const [interestError, setInterestError] = useState("");
 	const [interestClicked, setInterestClicked] = useState("");
-
+	const reInterest = /^[A-Za-z-]+$/;
 	function interestKeydown(event) {
 		if(event.key === " ")
 			event.preventDefault()
@@ -13,6 +13,8 @@ export default function InterestForm(props) {
 				setInterestError("Error! Interest tags max length 25!")
 			} else if(event.target.value.trim().length === 0) {
 				setInterestError("Error! Interest tags cant be empty!")
+			} else if(!reInterest.test(event.target.value.trim())) {
+				setInterestError("Error! Interest tags can only contain '-' and letters!")
 			} else {
 				let interestValue = event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1).toLowerCase().trim()
 				props.setInterest([...props.interest, {id:props.interest.length, name:interestValue} ]);

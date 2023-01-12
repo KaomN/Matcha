@@ -3,6 +3,7 @@ function capitalize(s) {
 }
 
 export async function HandleSubmit(props) {
+	console.log(props)
 	if (props.type === "name") {
 		try {
 			props.setPromiseTracker(true)
@@ -156,43 +157,65 @@ export async function HandleSubmit(props) {
 	}
 	else if (props.type === "interestPut") {
 		try {
+			const reInterest = /^[A-Za-z-]+$/;
 			if(props.event.key === " ")
 				props.event.preventDefault()
 			else if(props.event.key === "Enter") {
-				props.setPromiseTracker(true)
-				let response = await fetch('/profile/interest', {
-					headers: {'Content-Type': 'application/json'},
-					method: "PUT",
-					body: JSON.stringify({ interest: capitalize(props.value)})
-				});
-				response = await response.json()
-				if(response.status) {
-					props.setInterestSuccessMsg("Updated successfully!")
-					setTimeout(() => {
-						props.setInterestSuccessMsg("")
-					}, 3000)
-					// Update Interest state
-					const interestCopy = props.interest.slice()
-					interestCopy.push({tag: capitalize(props.value), id: props.interest.length})
-					props.setInterest(interestCopy)
-					// Update User.interest state
-					const userInterestCopy = props.user.interest.slice()
-					userInterestCopy.push({tag: capitalize(props.value)})
-					props.setUser(user => ( {
-						...user,
-						interest: userInterestCopy
-					}))
-					props.event.target.value = "";
+				if(props.value.length > 25 ) {
+					console.log("this1")
+					props.setErrorPutInterest("Error! Interest tags max length 25!")
+					// setTimeout(() => {
+					// 	props.setErrorPutInterest("")
+					// }, 3000)
+				} else if(props.value.trim().length === 0) {
+					console.log("this2")
+					props.setErrorPutInterest("Error! Interest tags cant be empty!")
+					// setTimeout(() => {
+					// 	props.setErrorPutInterest("")
+					// }, 3000)
+				} else if(!reInterest.test(props.value.trim())) {
+					console.log("this3")
+					props.setErrorPutInterest("Error! Interest tags can only contain '-' and letters!")
+					// setTimeout(() => {
+					// 	props.setErrorPutInterest("")
+					// }, 3000)
 				} else {
-					props.setErrorPutInterest(response.err)
-					setTimeout(() => {
-						props.setErrorPutInterest("")
-					}, 3000)
-				}
-				props.setPromiseTracker(false)
+					console.log("here")
+					props.setPromiseTracker(true)
+					let response = await fetch('/profile/interest', {
+						headers: {'Content-Type': 'application/json'},
+						method: "PUT",
+						body: JSON.stringify({ interest: capitalize(props.value)})
+					});
+					response = await response.json()
+					if(response.status) {
+						props.setInterestSuccessMsg("Updated successfully!")
+						setTimeout(() => {
+							props.setInterestSuccessMsg("")
+						}, 3000)
+						// Update Interest state
+						const interestCopy = props.interest.slice()
+						interestCopy.push({tag: capitalize(props.value), id: props.interest.length})
+						props.setInterest(interestCopy)
+						// Update User.interest state
+						const userInterestCopy = props.user.interest.slice()
+						userInterestCopy.push({tag: capitalize(props.value)})
+						props.setUser(user => ( {
+							...user,
+							interest: userInterestCopy
+						}))
+						props.event.target.value = "";
+					} else {
+						props.setErrorPutInterest(response.err)
+						setTimeout(() => {
+							props.setErrorPutInterest("")
+						}, 3000)
+					}
+					props.setPromiseTracker(false)
+				} 
 			}
 		} catch (err) {
-
+			console.log(err)
 		}
 	}
 	else if (props.type === "interestDelete") {
