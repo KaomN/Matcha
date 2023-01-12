@@ -39,7 +39,7 @@ async function createDatabase() {
 		}
 		await con.end();
 	} catch (err) {
-		console.log(err)
+
 	}
 }
 

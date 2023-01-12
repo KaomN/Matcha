@@ -1,6 +1,4 @@
 const con = require("../setup").pool;
-const emailTransporter =  require("../setup").emailTransporter;
-var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest, canConnect }  = require("../modules/HelperModules");
 
@@ -115,10 +113,8 @@ const getUsers = async (req, min, max) => {
 				return({status: false, message: "Please update your location!"});
 			}
 		}
-		//console.log(rows)
 		return (rows)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -132,13 +128,12 @@ const blockUser = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: "User blocked"})
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
 
 const reportUser = async (req) => {
-	// Report user and block them
+	// Report user
 	try {
 		const [report, fields] = await con.execute(`
 			INSERT INTO report (fk_userid, targetuserid)
@@ -146,7 +141,6 @@ const reportUser = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: "User reported"})
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -170,7 +164,6 @@ const  connectUser = async (req) => {
 		}
 		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }

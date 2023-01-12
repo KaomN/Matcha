@@ -13,7 +13,6 @@ const uploadImage = async (image, path, imageSize) => {
 						.toFile(path)
 		return true
 	} catch(err) {
-		console.log(err)
 		return false; 
 	}
 }

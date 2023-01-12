@@ -19,7 +19,7 @@ export default function ChatUserProfiles(props) {
 			}
 		});
 		return () => {socket.off("receive_message_chat_notification");};
-	}, [props.profile.room, props.activeChat.channel]);
+	}, [props.profile.room, props.activeChat.channel, socket]);
 
 	useEffect(() => {
 		var unread = false;
@@ -29,7 +29,7 @@ export default function ChatUserProfiles(props) {
 			}
 		})
 		setUnreadMessage(unread);
-	}, [props.profile.messages, props.activeChat]);
+	}, [props.profile.messages, props.activeChat, props.profile.userid]);
 
 	useEffect(() => {
 		
@@ -38,12 +38,11 @@ export default function ChatUserProfiles(props) {
 
 	async function handleOnclick() {
 		props.setComponentIsLoading(true)
-		const response = await fetch(`/chat/markread`,{
+		await fetch(`/chat/markread`,{
 			method: "PUT",
 			headers: {"Content-Type": "application/json",},
 			body: JSON.stringify({channel: props.profile.room})
 		})
-		const data = await response.json()
 		setUnreadMessage(false);
 		props.setActiveChat({userid: props.profile.userid, channel: props.profile.room})
 

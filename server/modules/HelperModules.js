@@ -12,7 +12,6 @@ async function getUserInterests(user) {
 			[user.userid])
 		return (interests)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -28,7 +27,6 @@ async function getProfilePic(user) {
 			[user.userid])
 		return (path + user.username + "/" + profilepic[0].imagename)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -47,7 +45,6 @@ async function getUserImages(user) {
 		}
 		return (images)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -64,7 +61,6 @@ async function checkConnectRequest(user, userid) {
 			return (true)
 		return (false)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 	
@@ -79,12 +75,10 @@ async function checkConnected(user, userid) {
 			WHERE userid1 = ? AND userid2= ?
 			OR userid2 = ? AND userid1= ?`,
 			[user, userid, userid, user])
-			//console.log(connected.length > 0)
 		if (connected.length > 0)
 			return (true)
 		return (false)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 	
@@ -109,7 +103,6 @@ async function updateHistory(user, userid) {
 			[user, userid])
 		return (true)
 	} catch (err) {
-		console.log(err)
 		return(false);
 	}
 }
@@ -122,7 +115,6 @@ async function updateLastActive(userid) {
 			[userid])
 		return (true)
 	} catch (err) {
-		console.log(err)
 		return(false);
 	}
 }
@@ -135,7 +127,6 @@ async function getUserToken(userid) {
 			[userid])
 		return (token[0].token)
 	} catch (err) {
-		console.log(err)
 		return(false);
 	}
 }
@@ -163,7 +154,6 @@ async function saveNotification(userid, targetuserid, message, type) {
 				return (notification.insertId)
 		}
 	} catch (err) {
-		console.log(err)
 		return(false);
 	}
 }
@@ -212,7 +202,6 @@ async function getUserTagsArray(user) {
 			})
 		)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -226,10 +215,8 @@ async function getMessages(user) {
 			WHERE fk_connected = ?
 			ORDER BY messagedate DESC`,
 			[user.room])
-			//console.log(messages)
 		return messages
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -243,7 +230,6 @@ async function saveMessage(message, userid, room) {
 			[room, userid, message])
 		return (true)
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 

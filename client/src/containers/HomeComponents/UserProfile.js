@@ -1,5 +1,4 @@
 import { useState } from "react";
-import toast from 'react-simple-toasts';
 import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 import ProfileButtons from "../ProfileComponents/ProfileButtons";
 
@@ -14,100 +13,6 @@ export default function UserProfile(props) {
 	function previousImage() {
 		setImagePage(imagePage - 1)
 	}
-
-	// async function handleBlock() {
-	// 	try {
-	// 		setLoading(true)
-	// 		setTimeout(() => {
-	// 			(async function() {
-	// 				const response = await fetch("/home/blockuser", {
-	// 					method: "POST",
-	// 					headers: {
-	// 						"Content-Type": "application/json"
-	// 					},
-	// 					body: JSON.stringify({
-	// 						userid: props.profile.userid
-	// 					})
-	// 				})
-	// 				const data = await response.json()
-	// 				if (data.status) {
-	// 					props.setUserProfiles(prevUserProfiles => {
-	// 						return prevUserProfiles.filter(user => user.userid !== props.profile.userid)
-	// 					})
-	// 					toast(data.message, { position: 'top-center', duration: 5000 })
-	// 					setLoading(false)
-	// 				}
-	// 			})();
-	// 		}, 500)
-	// 	} catch (err) {
-	// 		//console.log(err)
-	// 		toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
-	// 		setLoading(false)
-	// 	}
-	// }
-	
-	// async function handleReport() {
-	// 	try {
-	// 		setLoading(true)
-	// 		setTimeout(() => {
-	// 			(async function() {
-	// 				const response = await fetch("/home/reportuser", {
-	// 					method: "POST",
-	// 					headers: {
-	// 						"Content-Type": "application/json"
-	// 					},
-	// 					body: JSON.stringify({
-	// 						userid: props.profile.userid
-	// 					})
-	// 				})
-	// 				const data = await response.json()
-	// 				if (data.status) {
-	// 					props.setUserProfiles(prevUserProfiles => {
-	// 						return prevUserProfiles.filter(user => user.userid !== props.profile.userid)
-	// 					})
-	// 					toast(data.message, { position: 'top-center', duration: 5000 })
-	// 					setLoading(false)
-	// 				}
-	// 			})();
-	// 		}, 500)
-	// 	} catch (err) {
-	// 		//console.log(err)
-	// 		toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
-	// 		setLoading(false)
-	// 	}
-	// }
-
-	// async function handleConnect() {
-	// 	try {
-	// 		setLoading(true)
-	// 		setTimeout(() => {
-	// 			(async function() {
-	// 				const response = await fetch("/home/connectuser", {
-	// 					method: "POST",
-	// 					headers: {
-	// 						"Content-Type": "application/json"
-	// 					},
-	// 					body: JSON.stringify({
-	// 						userid: props.profile.userid,
-	// 						username: props.profile.username
-	// 					})
-	// 				})
-	// 				const data = await response.json()
-	// 				if (data.status) {
-	// 					props.setUserProfiles(prevUserProfiles => {
-	// 						return prevUserProfiles.filter(user => user.userid !== props.profile.userid)
-	// 					})
-	// 					toast(data.message, { position: 'top-center', duration: 5000 })
-	// 					setLoading(false)
-	// 				}
-	// 			})();
-	// 		}, 500)
-	// 	} catch (err) {
-	// 		//console.log(err)
-	// 		toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
-	// 		setLoading(false)
-	// 	}
-	// }
 
 	return (
 		<>

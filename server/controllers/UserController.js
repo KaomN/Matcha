@@ -37,14 +37,12 @@ router.get("/getuserinfo", async (req, res) => {
 
 // Logout
 router.get("/logout", (req, res) => {
-	console.log(req.sessionStore)
 	try {
 		req.sessionStore.destroy(req.session.id, function(err) {
-			
+			res.send({status: true});
 		})
-		res.send({status: true});
 	} catch (err) {
-		console.log(err)
+
 	}
 });
 
@@ -81,7 +79,6 @@ router.post("/getlocation", async (req, res) => {
 			url:'https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY
 		});
 		Object.assign(response.data, {"status": true});
-		//console.log(response.data)
 		res.send(response.data)
 	} catch (error) {
 		res.send({status: false, msg: "Error fetching API location data"})
@@ -110,8 +107,6 @@ router.put("/email", async (req, res) => {
 	} else {
 		res.send(error)
 	}
-	
-	//res.send({status:true})
 });
 
 
@@ -131,7 +126,6 @@ router.delete("/notification", async (req, res) => {
 	try {
 		res.send(await UserModel.deleteNotification(req))
 	} catch (e) {
-		//console.log(e)
 		res.send({ status: false, err: "Something went wrong!" })
 	}
 });

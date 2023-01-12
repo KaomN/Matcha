@@ -8,7 +8,6 @@ import PasswordReset from "./containers/PasswordReset";
 import Home from "./containers/Home";
 import CompleteProfile from "./containers/CompleteProfile";
 import Profile from "./containers/Profile";
-import Settings from "./containers/Settings";
 import Chat from "./containers/Chat";
 import NotFound from "./containers/NotFound";
 import PrivateRoutes from "./components/PrivateRoutes";
@@ -30,7 +29,6 @@ export default function Links() {
 					<Route path="profile" element={<Profile />} >
 						<Route path=":profileID" element={<Profile />} />
 					</Route>
-					<Route path="settings" element={<Settings />} />
 					<Route path="chat" element={<Chat />} >
 						<Route path=":chatID" element={<Chat />} />
 					</Route>

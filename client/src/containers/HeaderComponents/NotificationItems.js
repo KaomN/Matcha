@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import toast from 'react-simple-toasts';
 
 export default function NotificationItems(props) {
 	const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function NotificationItems(props) {
 					var res = false
 					for (let i = 0; i < notificationCopy.length; i++) {
 						if(notificationCopy[i].isread === 0) 
-							var res = true
+							res = true
 					}
 					if(res) {
 						props.setIsRead(false)
@@ -32,7 +33,7 @@ export default function NotificationItems(props) {
 				props.setIsNotificationVisible(false)
 			}
 		} catch (error) {
-			//console.log(error)
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 		props.item.notification.slice(-8) === "message!" ? navigate(`/chat`) : navigate(`/profile/${props.item.targetuserid}`)
 		props.setIsNotificationVisible(false)

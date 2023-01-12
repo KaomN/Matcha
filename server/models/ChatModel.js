@@ -13,17 +13,13 @@ const getConnectedUsers = async (req) => {
 		for (const user of rows) {
 			try {
 				user.profilePic = await getProfilePic(user)
-
 				user.messages = await getMessages(user)
 			} catch (err) {
-				//console.error(err)
 				return({status: false, message: "Server connection error"});
 			}
 		}
-		//console.log(rows)
 		return { status: true, connectedUsers: rows }
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -36,14 +32,8 @@ const markMessageRead = async (req) => {
 			[ req.body.channel, req.session.userid ])
 		return { status: true}
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
-}
-
-
-const getSearch = async (req) => {
-
 }
 
 module.exports = {

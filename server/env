@@ -1,0 +1,16 @@
+# Server Port
+PORT = 3001
+
+# Session secret
+SESSION_SECRET = ThIsIsAsEcReTkEy
+
+# Google credentials
+APP_EMAIL = Google app email
+APP_PASSWORD = Google app password
+API_KEY = Google API key
+
+# DB CONFIG
+DB_USER = root
+DB_HOST = localhost
+DB_PASSWORD = password
+DB_DATABASE = matcha

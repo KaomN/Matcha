@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from '../context/UserContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import "./styles/Signup.css";
+import toast from 'react-simple-toasts';
+
 
 export default function Signup() {
 	const { user, userContextLoading } = useContext(UserContext);
@@ -53,8 +55,7 @@ export default function Signup() {
 				setErrorPasswordConfirm(response.errorPasswordConfirm)
 			}
 		} else {
-			// Server error
-			console.log("Server error")
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 
@@ -62,7 +63,7 @@ export default function Signup() {
 		if(user.auth) {
 			navigate("/home");
 		}
-	}, [user, userContextLoading, navigate]);
+	}, [user.auth, navigate]);
 
 	if(userContextLoading)
 		return <LoadingSpinner />

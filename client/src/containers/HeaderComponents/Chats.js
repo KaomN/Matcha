@@ -2,13 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { ActiveChatContext } from '../../context/ActiveChatContext';
 import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 import ChatItems from "./ChatItems";
+import toast from 'react-simple-toasts';
 
 
 export default function Chats(props) {
 	const { activeChat, setActiveChat } = useContext(ActiveChatContext);
 	const [connectedUsers, setConnectedUser] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(false)
 
 	useEffect(() => {
 		(async function() {
@@ -18,7 +18,7 @@ export default function Chats(props) {
 			if(data.status) {
 				setConnectedUser(data.connectedUsers)
 			} else {
-				setError(true)
+				toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			}
 			setIsLoading(false)
 		})();

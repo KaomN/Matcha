@@ -29,7 +29,7 @@ export default function ProfileButtons(props) {
 			socket.off("receive_disconnect_request");
 			socket.off("receive_connected_request");
 			};
-	}, []);
+	}, [socket]);
 
 	async function handleBlock() {
 		try {

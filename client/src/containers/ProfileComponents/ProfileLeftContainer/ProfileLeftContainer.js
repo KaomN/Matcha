@@ -45,8 +45,6 @@ export default function ProfileLeftContainer(props) {
 					setIsEditProfileImageVisible={setIsEditProfileImageVisible}
 					setUser={props.setUser}
 					user={props.user}
-					setSucessMessage={props.setSucessMessage}
-					setErrorMessage={props.setErrorMessage}
 					/>
 				}
 				{(props.profile.profile === true) ?

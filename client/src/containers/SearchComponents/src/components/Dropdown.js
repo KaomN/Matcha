@@ -26,7 +26,6 @@ const dropdownPosition = (props, methods) => {
 const Dropdown = ({ props, state, methods }) => (
   <DropDown
     tabIndex="-1"
-    aria-expanded="true"
     role="list"
     dropdownPosition={dropdownPosition(props, methods)}
     selectBounds={state.selectBounds}

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import toast from 'react-simple-toasts';
 import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 import ProfileButtons from "../ProfileComponents/ProfileButtons";
 
@@ -15,111 +14,9 @@ export default function UserProfile(props) {
 		setImagePage(imagePage - 1)
 	}
 
-	async function handleBlock() {
-		try {
-			setLoading(true)
-			setTimeout(() => {
-				(async function() {
-					const response = await fetch("/home/blockuser", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							userid: props.profile.userid
-						})
-					})
-					const data = await response.json()
-					if (data.status) {
-						// props.setUserProfiles(prevUserProfiles => {
-						// 	return prevUserProfiles.filter(user => user.userid !== props.profile.userid)
-						// })
-						toast(data.message, { position: 'top-center', duration: 5000 })
-						setLoading(false)
-					}
-				})();
-			}, 500)
-		} catch (err) {
-			//console.log(err)
-			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
-			setLoading(false)
-		}
-	}
-	
-	async function handleReport() {
-		try {
-			setLoading(true)
-			setTimeout(() => {
-				(async function() {
-					const response = await fetch("/home/reportuser", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							userid: props.profile.userid
-						})
-					})
-					const data = await response.json()
-					if (data.status) {
-						// props.setUserProfiles(prevUserProfiles => {
-						// 	return prevUserProfiles.filter(user => user.userid !== props.profile.userid)
-						// })
-						toast(data.message, { position: 'top-center', duration: 5000 })
-						setLoading(false)
-					}
-				})();
-			}, 500)
-		} catch (err) {
-			//console.log(err)
-			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
-			setLoading(false)
-		}
-	}
-
-	async function handleConnect() {
-		try {
-			setLoading(true)
-			setTimeout(() => {
-				(async function() {
-					const response = await fetch("/home/connectuser", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							userid: props.profile.userid,
-							username: props.profile.username
-						})
-					})
-					const data = await response.json()
-					if (data.status) {
-						// props.setUserProfiles(prevUserProfiles => {
-						// 	return prevUserProfiles.filter(user => user.userid !== props.profile.userid)
-						// })
-						toast(data.message, { position: 'top-center', duration: 5000 })
-						setLoading(false)
-					}
-				})();
-			}, 500)
-		} catch (err) {
-			//console.log(err)
-			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
-			setLoading(false)
-		}
-	}
-
 	return (
 		<>
 		{loading ? <LoadingSpinnerComponent class="home_loader_component" size={100}/> : null}
-		{/* {props.profile.canConnect && <i className="material-icons home_material_icons home_connect_btn" title="Connect" onClick={handleConnect}>star</i>}
-		<i className="material-icons home_material_icons home_block_btn" title="Block" onClick={handleBlock}>block</i>
-		<i className="material-icons home_material_icons home_report_btn" title="Report" onClick={handleReport}>report</i>
-		{ props
-
-		}
-		<i className="material-icons home_material_icons profile_connect_request" title="Connection request" onClick={handleReport}>star_half</i>
-		<i className="material-icons home_material_icons profile_connected" title="Connected" onClick={handleReport}>star</i> */}
 		<ProfileButtons
 		profile={props.profile}
 		setProfile={props.setProfile}
@@ -159,9 +56,9 @@ export default function UserProfile(props) {
 		<div className="home_profile_right_container">
 			<div className="home_user_info_container">
 				<div className="home_user_profile_info">
-					<span>{props.profile.firstname} {props.profile.surname} <i className="material-icons profile-button-disabled" draggable="false">female</i></span>
+					<span>{props.profile.firstname} {props.profile.surname}</span> {/* <i className="material-icons profile-button-disabled" draggable="false">female</i>*/}
 					<div>Age: {props.profile.age}</div>
-					<div>Gender: {props.profile.gender}</div>
+					<div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false">{props.profile.gender}</i></div>
 					<div>{props.profile.distance} km away</div>
 					<div>Rating: {props.profile.rating}</div>
 					<div className="home_interest_container">

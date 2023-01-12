@@ -7,11 +7,9 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import UseGetUserProfiles from "./HomeComponents/UseGetUserProfiles";
 import UserProfile from "./HomeComponents/UserProfile";
 import UserProfileSortFilter from "./HomeComponents/UserProfileSortFilter";
-import { SocketContext } from "../context/SocketContext";
 
 export default function Home() {
 	const { user } = useContext(UserContext);
-	const socket = useContext(SocketContext);
 	const [profileLimit, setProfileLimit] = useState({min: 0, max: 5});
 	const [userProfiles, setUserProfiles] = useState([]);
 	const [sort, setSort] = useState("distanceAsc");
@@ -36,7 +34,6 @@ export default function Home() {
 		// create a new observer that will check if bottom of the page is visible
 		observer.current = new IntersectionObserver(entries => {
 			// if bottom of the page is visible, and there is more data to load, set the profile limit
-			//setTop(entries[0].boundingClientRect.top)
 			if (entries[0].isIntersecting && hasMore) {
 				setProfileLimit({min: 0, max: profileLimit.max + 5})
 				//divRef.current.scrollTo({top: 0, left: 0})
@@ -111,6 +108,7 @@ export default function Home() {
 			setIsLoading(false);
 		}
 	}, [loading, setIsLoading]);
+	
 	return (
 		<>
 		{isLoading ?

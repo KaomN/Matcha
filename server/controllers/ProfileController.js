@@ -5,14 +5,7 @@ const Validator = require('../modules/InputValidator');
 
 router.get("/profile", async (req, res) => {
 	res.send(await ProfileModel.getProfile(req.query['id'], req))
-}); 
-
-
-// ADD BELOW TO POSTS
-// router.post("/getprofile/:id", async (req, res) => {
-// 	console.log(req.params.id)
-// 	//res.send(await ProfileModel.getProfile(req.query['id'], req))
-// }); 
+});
 
 router.post("/uploadprofileimage", async (req, res) => {
 	var error = {}
@@ -37,7 +30,6 @@ router.post("/deleteimage", async (req, res) => {
 });
 
 router.put("/name", async (req, res) => {
-	console.log(req.body)
 	var error = {}
 	if(Validator.checkName(req, error)) {
 		res.send(await ProfileModel.updateName(req))

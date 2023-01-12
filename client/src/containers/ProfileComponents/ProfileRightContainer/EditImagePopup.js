@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { LoadingSpinnerPromiseComponent } from "../../../components/LoadingSpinnerPromiseComponent";
 import Cropper from 'react-easy-crop'
+import toast from 'react-simple-toasts';
 
 
 export default function EditImagePopup(props) {
 
 	const [imageFileInput, setImageFileInput] = useState("");
-	const [errorMessage, setErrorMessage] = useState("");
 	const [pictures, setPictures] = useState([]);
 	const [promiseTracker, setPromiseTracker] = useState(false);
 	const [cropImages, setCropImages] = useState({ x: 0, y: 0 })
@@ -42,10 +42,7 @@ export default function EditImagePopup(props) {
 
 	async function uploadImages() {
 		if(pictures.length < 1) {
-			setErrorMessage("Please select an image to upload!")
-			setTimeout(() => {
-				setErrorMessage("")
-			}, 3000)
+			toast("Please select an image to upload!", { position: 'top-center', duration: 5000 })
 		} else {
 			setPromiseTracker(true);
 			const formdata = new FormData();
@@ -63,17 +60,11 @@ export default function EditImagePopup(props) {
 				const profileCopy = JSON.parse(JSON.stringify(props.profile));
 				profileCopy.images.push(response.image)
 				props.setProfile(profileCopy)
-				props.setSucessMessage("Profile updated successfully!") 
-				setTimeout(() => {
-					props.setSucessMessage("")
-				}, 3000)
+				toast("image Uploaded!", { position: 'top-center', duration: 5000 })
 				props.setIsEditImageVisible(false)
 				setPromiseTracker(false)
 			} else {
-				setErrorMessage(response.err)
-				setTimeout(() => {
-					setErrorMessage("")
-				}, 3000)
+				toast(response.err, { position: 'top-center', duration: 5000 })
 				setPromiseTracker(false)
 			}
 		}
@@ -96,9 +87,6 @@ export default function EditImagePopup(props) {
 									</div>
 									<div className="flex-column-completeprofile pb-1rem">
 										{imageFileInput}
-									</div>
-									<div className="flex-center pb-1rem profile-update-error">
-										{errorMessage}
 									</div>
 									{pictures.length < 1 ?
 									null

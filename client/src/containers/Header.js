@@ -114,7 +114,7 @@ export default function Header() {
 	// Emit updating activity everytime pathname changes
 	useEffect(() => {
 		socket.emit("update_last_active", { path: pathname });
-	}, [pathname]);
+	}, [pathname, socket]);
 
 	function fetchLogout() {
 		const promise = new Promise((resolve, reject) => {

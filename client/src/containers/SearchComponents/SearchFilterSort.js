@@ -16,15 +16,15 @@ export default function SearchFilterSort(props) {
 	const [toggleFilter, setToggleFilter] = useState(true);
 	const onAgeFilter = useCallback((value) => {
 		setFilterAge({min: value[0], max: value[1]});
-	}, [props])
+	}, [])
 
 	const onRatingFilter = useCallback((value) => {
 		setFilterRating({min: value[0], max: value[1]});
-	}, [props])
+	}, [])
 	
 	const onDistanceFilter = useCallback((value) => {
 		setFilterDistance({min: value[0], max: value[1]});
-	}, [props])
+	}, [])
 
 	function userSort(sort) {
 		if(sort === "ageAsc") {
@@ -182,7 +182,7 @@ export default function SearchFilterSort(props) {
 							</div>
 				})
 				:
-				<div>No profiles</div>
+				<div className="ma">No profiles found</div>
 				}
 			</div>
 			}

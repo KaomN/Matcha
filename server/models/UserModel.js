@@ -1,13 +1,9 @@
 const bcrypt = require('bcrypt');
-const crypto = require('crypto')
 const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
-// const axios = require('axios');
-// const dotenv = require('dotenv');
-// dotenv.config({path: __dirname + '/.env'});
 
 // Register request
 const register = async (req) => {
@@ -68,13 +64,6 @@ const login = async (req) => {
 			} else {
 				const match = await bcrypt.compare(password, rows[0].password)
 				if(match) {
-					// Check if there is already a session.
-					// if (req.session.username) {
-					// 	req.sessionStore.destroy(req.session.id, function(err) {
-					// 		if(err)
-					// 			console.log(err)
-					// 	})
-					// }
 					var [result, fields] = await con.execute(`SELECT tag
 															FROM tag
 															INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
@@ -108,10 +97,8 @@ const login = async (req) => {
 						fs.mkdirSync(__dirname.slice(0, -7) + "/uploads/" + req.session.username);
 					}
 					if(rows[0].profile === 1){
-						//return ({status: false, error: "Incorrect username/password"});
 						return ({status: true, profile: true});
 					} else {
-						//return ({status: false, error: "Incorrect username/password"});
 						return ({status: true, profile: false});
 					}
 				} else {
@@ -120,7 +107,6 @@ const login = async (req) => {
 			}
 		}
 	} catch (err) {
-		//console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 }
@@ -145,7 +131,6 @@ const verify = async (req) => {
 			return ({"status": true, "verified": true});
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 };
@@ -339,7 +324,6 @@ const completeProfile = async (req, res) => {
 			return (error);
 		}
 	} catch (err) {
-		console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 };
@@ -359,7 +343,7 @@ const getUserInfo = async (req) => {
 		}
 		return ({ auth: true , username: req.session.username, isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png", firstname: req.session.firstname, surname: req.session.surname, gender: req.session.gender, age: req.session.age, birthdate: req.session.birthdate, interest:req.session.interest, latitude: req.session.latitude, longitude: req.session.longitude, preference: req.session.preference, biography: req.session.biography, rating: req.session.rating, userid: req.session.userid, profile: req.session.profile })
 	} catch(err) {
-		console.log(err)
+		
 	}
 }
 
@@ -443,53 +427,6 @@ const logout = async (req) => {
 	return ({ status: true })
 }
 
-const test = async (req) => {
-	//console.log(req.session.preference)
-
-	function distance(lat1, lng1, lat2, lng2) {
-		lng1 =  lng1 * Math.PI / 180;
-		lng2 = lng2 * Math.PI / 180;
-		lat1 = lat1 * Math.PI / 180;
-		lat2 = lat2 * Math.PI / 180;
-
-		let dlon = lng2 - lng1;
-		let dlat = lat2 - lat1;
-		 // Haversine formula
-		let a = Math.pow(Math.sin(dlat / 2), 2)
-				+ Math.cos(lat1) * Math.cos(lat2)
-				* Math.pow(Math.sin(dlon / 2),2);
-			
-		let c = 2 * Math.asin(Math.sqrt(a));
-
-		// Radius of earth in kilometers. Use 3956 for miles
-		let r = 6371;
-
-		// calculate the result
-		return(parseInt(c * r));
-	}
-
-	try {
-		if (req.session.preference === "both") {
-			
-		} else {
-			// Get all users that match with users gender preference
-			var [rows, fields] = await con.execute(`SELECT username, age, firstname, surname, latitude, longitude
-													FROM users
-													WHERE NOT pk_userid = ? AND gender = ? AND genderpreference = ? OR genderpreference = "both" AND NOT gender = ?`,
-													[req.session.userid, req.session.preference, req.session.gender, req.session.gender])
-			//var [rows, fields] = await con.execute('SELECT * FROM users WHERE NOT pk_userid = ? AND gender = ?', [req.session.userid, req.session.preference])
-			// calculate distance between user1 and user2
-			for (const user of rows) {
-				user.distance = distance(req.session.latitude, req.session.longitude, user.latitude, user.longitude) + "km away"
-			}
-		}
-		return (rows)
-	} catch (err) {
-		//console.log(err)
-		return({status: false, message: "Server connection error"});
-	}
-};
-
 const markNotificationRead = async (req) => {
 	try {
 		const res = await con.execute(`	UPDATE notifications
@@ -502,7 +439,6 @@ const markNotificationRead = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch (err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 };
@@ -515,10 +451,8 @@ const getNotification = async (req) => {
 			WHERE fk_userid = ?
 			ORDER BY date DESC`,
 			[req.session.userid])
-		//console.log(notification)
 		return ({status: true, notification})
 	} catch (err) {
-		console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -532,7 +466,6 @@ const deleteNotification = async (req) => {
 			[req.session.userid])
 		return ({status: true, message: "Notification deleted!"})
 	} catch (err) {
-		console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -549,7 +482,6 @@ const getHistory = async (req) => {
 			[req.session.userid])
 		return ({status: true, history})
 	} catch (err) {
-		console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -563,7 +495,6 @@ const deleteHistory = async (req) => {
 			[req.body.id])
 		return ({status: true, message: "History deleted!"})
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -584,5 +515,4 @@ module.exports = {
 	deleteNotification,
 	getHistory,
 	deleteHistory,
-	test,
 }

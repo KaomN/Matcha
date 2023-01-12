@@ -27,7 +27,6 @@ export default function UseGetUserProfiles(profileLimit, setUserProfiles, setHas
 				params: { min: profileLimit.min, max: profileLimit.max },
 				cancelToken: new axios.CancelToken(c => cancel = c)
 			}).then(res => {
-				//console.log(res.data)
 				setUserProfiles(prevUserProfiles => {
 					removeNonUniqueUserId(res, prevUserProfiles)
 					return [...new Set([...prevUserProfiles, ...res.data])]

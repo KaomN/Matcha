@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import Cropper from 'react-easy-crop'
 import { LoadingSpinnerPromiseComponent } from '../../../components/LoadingSpinnerPromiseComponent';
+import toast from 'react-simple-toasts';
 
 
 export default function EditProfileImagePopup(props) {
-
 	const [profileImageFileInput, setProfileImageFileInput] = useState("");
 	const [profilePicture, setProfilePicture] = useState({});
 	const [profilePictureSrc, setProfilePictureSrc] = useState("");
@@ -51,23 +51,15 @@ export default function EditProfileImagePopup(props) {
 			});
 			response = await response.json();
 			if(response.status) {
-				setTimeout(() => {
-					props.setUser(user => ( {
-						...user,
-						imageSrc: response.imageSrc
-					}))
-					props.setIsEditProfileImageVisible(false)
-					props.setSucessMessage("Profile updated successfully!")
-					setTimeout(() => {
-						props.setSucessMessage("")
-					}, 3000)
-					setPromiseTracker(false)
-				}, 1500)
+				props.setUser(user => ( {
+					...user,
+					imageSrc: response.imageSrc
+				}))
+				props.setIsEditProfileImageVisible(false)
+				toast("Profile Image Updated!", { position: 'top-center', duration: 5000 })
+				setPromiseTracker(false)
 			} else {
-				props.setErrorMessage(response.err)
-				setTimeout(() => {
-					props.setErrorMessage("")
-				}, 3000)
+				toast(response.err, { position: 'top-center', duration: 5000 })
 				setPromiseTracker(false)
 			}
 		}

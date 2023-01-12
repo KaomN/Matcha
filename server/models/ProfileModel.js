@@ -1,11 +1,9 @@
 const con = require("../setup").pool;
 const bcrypt = require('bcrypt');
-const axios = require('axios');
 var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
 const emailTransporter =  require("../setup").emailTransporter;
-var NodeGeocoder = require('node-geocoder');
 const { checkConnectRequest, checkConnected, updateHistory, canConnect } = require("../modules/HelperModules");
 
 
@@ -81,7 +79,6 @@ const getProfile = async (userID, req) => {
 			return ({status: false, msg: "usernotfound"});
 		}
 	} catch (err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -144,7 +141,6 @@ const uploadProfileImage = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -177,7 +173,6 @@ const uploadProfileImages = async (req) => {
 			return ({ status: false, err: "Invalid image file!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -201,7 +196,6 @@ const deleteImage = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -223,7 +217,6 @@ const updateName = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -255,7 +248,6 @@ const updateUsername = async (req) => {
 			return ({ status: false, err: "Username taken!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -276,7 +268,6 @@ const updateDate = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -296,7 +287,6 @@ const updateGender = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -316,7 +306,6 @@ const updatePreference = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -375,7 +364,6 @@ const updateInterest = async (req) => {
 			}
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -408,7 +396,6 @@ const deleteInterest = async (req) => {
 			return ({status: false, err: "Interest deletion failed!"})
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -428,7 +415,6 @@ const updateBiography = async (req) => {
 			return ({status: false, err: "Interest deletion failed!"})
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -486,7 +472,6 @@ const sendEmailChangeRequest = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -516,7 +501,6 @@ const updatePassword = async (req) => {
 			return ({status: false, err: "Something went wrong!"})
 		}
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -539,7 +523,6 @@ const updatePosition = async (req) => {
 			return ({status: false, err: "Something went wrong!"})
 		}
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -563,7 +546,6 @@ const connect = async (req) => {
 		}
 		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -593,7 +575,6 @@ const disconnect = async (req) => {
 				[req.body.userid, req.session.userid, req.body.message])
 		return ({status: true, message: "You are now disconnected with " + req.body.username + "!"})
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -607,7 +588,6 @@ const report = async (req) => {
 				[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " reported!"})
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -623,7 +603,6 @@ const unreport = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " report deleted!"})
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -636,7 +615,6 @@ const block = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " blocked"})
 	} catch (err) {
-		//console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -652,7 +630,6 @@ const unblock = async (req) => {
 			[req.session.userid, req.body.userid])
 		return ({status: true, message: req.body.username + " unblocked!"})
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -666,7 +643,6 @@ const checkDisconnect = async (req) => {
 			[req.query['userid1'], req.query['userid2'], req.query['userid1'], req.query['userid2']])
 		return ({status: res[0].length > 0})
 	} catch(err) {
-		//console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }

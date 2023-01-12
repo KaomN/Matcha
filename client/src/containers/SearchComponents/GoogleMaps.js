@@ -3,7 +3,7 @@ import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api"
 
 function GoogleMaps(props) {
 	const [markerPos, setMarkerPos] = useState(props.position)
-	const [initialPosition, setInitialPosition] = useState(props.position)
+	const [ initialPosition ] = useState(props.position)
 	const { isLoaded } = useJsApiLoader({
 		googleMapsApiKey: process.env.REACT_APP_API_KEY,
 	});

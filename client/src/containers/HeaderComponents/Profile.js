@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {LoadingSpinnerComponent} from "../../components/LoadingSpinnerComponent";
 import HistoryItems from "./HistoryItems";
+import toast from 'react-simple-toasts';
 
 
 export default function Profile(props) {
@@ -21,7 +22,7 @@ export default function Profile(props) {
 				}
 				setIsLoading(false)
 			} catch (error) {
-				//console.log(error)
+				toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 				setIsLoading(false)
 			}
 		})();

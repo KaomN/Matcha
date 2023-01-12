@@ -5,7 +5,6 @@ import ChatUserProfiles from "./ChatComponents/ChatUserProfiles";
 import ChatMessage from "./ChatComponents/ChatMessage";
 import { ActiveChatContext } from '../context/ActiveChatContext';
 import useChat from "./ChatComponents/UseChat";
-import { SocketContext } from '../context/SocketContext';
 
 
 
@@ -18,7 +17,6 @@ export default function Chat() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [componentIsLoading, setComponentIsLoading] = useState(false);
 	const { messages, sendMessage } = useChat(activeChat);
-	const socket = useContext(SocketContext);
 
 	useEffect(() => {
 		let mounted = true;
@@ -46,7 +44,7 @@ export default function Chat() {
 			
 		}
 		return () => {mounted = false};
-	}, [activeChat]);
+	}, [activeChat, connectedUser.length]);
 
 
 	function filterActiveChat(user) {

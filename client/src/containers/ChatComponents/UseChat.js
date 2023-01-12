@@ -10,7 +10,6 @@ const useChat = (activeChat) => {
 
 	useEffect(() => {
 		setMessages([])
-
 	}, [activeChat]);
 
 	useEffect(() => {
@@ -20,7 +19,7 @@ const useChat = (activeChat) => {
 			socket.emit("message_chat_notification", {
 				channel: message.channel,
 				userid: message.userid,
-				userid: message.sentto,
+				sendto: message.sentto,
 				path: pathname
 			});
 			if(message.channel === activeChat.channel) {
@@ -33,7 +32,7 @@ const useChat = (activeChat) => {
 		});
 
 		return () => {socket.off("receive_message");};
-	}, [activeChat, pathname]);
+	}, [activeChat, pathname, socket]);
 
 	const sendMessage = (messageBody) => {
 		if (socket.disconnected)

@@ -7,7 +7,7 @@ export default function Maps(props) {
 		position={props.location}
 		setSavedPosition={props.setLocation}
 		isLoaded={props.isLoaded}/>
-	,[props.location]);
+	,[props.location, props.setLocation, props.isLoaded]);
 	return (
 		<div className="search_map_container">
 			{Maps}

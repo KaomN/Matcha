@@ -1,6 +1,4 @@
 const con = require("../setup").pool;
-
-
 const { getUserTagsArray, getProfilePic, getUserImages, createTagsSearchQuery, canConnect }  = require("../modules/HelperModules");
 
 const getTags = async (req) => {
@@ -8,7 +6,6 @@ const getTags = async (req) => {
 		const [rows, fields] = await con.query("SELECT pk_tagid as 'value', tag as 'label' FROM tag");
 		return { status: true, tags: rows };
 	} catch (e) {
-		//console.log(e);
 		return { status: false, err: "Something went wrong!" };
 	}
 }
@@ -27,12 +24,15 @@ const getSearch = async (req) => {
 				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
 			FROM users
 			WHERE ${tagsQuery}
-			HAVING distance <= ? AND rating BETWEEN ? AND ? AND age BETWEEN ? AND ?
+			HAVING distance <= ?
+				AND rating BETWEEN ? AND ?
+				AND age BETWEEN ? AND ?
+				AND blocked = 0
+				AND reported = 0
 			ORDER BY distance ASC, rating DESC`,
 			[req.body.location.lat, req.body.location.lng, req.body.location.lat, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, distance, req.body.rating.min, req.body.rating.max, req.body.age.min, req.body.age.max])
 		if (rows && rows.length) {
 			// Loop through each user
-			//console.log(rows)
 			for (const user of rows) {
 				try {
 					// Rounds the distance to the nearest whole number
@@ -57,7 +57,6 @@ const getSearch = async (req) => {
 		}
 		return { status: true, users: rows };
 	} catch (e) {
-		console.log(e);
 		return { status: false, err: "Something went wrong!" };
 	}
 }

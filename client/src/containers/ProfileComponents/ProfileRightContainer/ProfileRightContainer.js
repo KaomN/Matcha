@@ -4,7 +4,7 @@ import { useEditImageVisible } from "../UsePopupVisibility";
 
 export default function ProfileRightContainer(props) {
 	const { refEditImage, isEditImageVisible, setIsEditImageVisible } = useEditImageVisible(false);
-	//console.log(props)
+	
 	return (
 		<div className="padding05 profile-right-container pos-relative">
 			{!isEditImageVisible ?
@@ -15,8 +15,6 @@ export default function ProfileRightContainer(props) {
 			setIsEditImageVisible={setIsEditImageVisible}
 			profile={props.profile}
 			setProfile={props.setProfile}
-			setSucessMessage={props.setSucessMessage}
-			setErrorMessage={props.setErrorMessage}
 			/>
 			}
 			{props.profile.images.length > 0 ?
@@ -26,7 +24,6 @@ export default function ProfileRightContainer(props) {
 			profile={props.profile}
 			isOwn={props.profile.isOwn}
 			setProfile={props.setProfile}
-			setSucessMessage={props.setSucessMessage}
 			/>
 			:
 			<div>

@@ -18,7 +18,6 @@ export default function Login() {
 			})
 		});
 		response = await response.json();
-		console.log(response)
 		if(response.status) {
 			setFormInputClass("form_message_success")
 			setMessageEmail(response.message)

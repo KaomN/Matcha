@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { SocketContext } from "../../context/SocketContext";
 import NotificationItems from "./NotificationItems";
 import {LoadingSpinnerComponent} from "../../components/LoadingSpinnerComponent";
+import toast from 'react-simple-toasts';
 
 
 export default function Notifications(props) {
@@ -9,27 +10,6 @@ export default function Notifications(props) {
 	const [notification, setNotification] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRead, setIsRead] = useState(true);
-
-	// useEffect(() => {
-	// 	socket.on("receive_notification", (data) => {
-	// 		const notificationCopy = notification.slice()
-	// 		notificationCopy.unshift(data)
-	// 		var res = false
-	// 		for (let i = 0; i < notificationCopy.length; i++) {
-	// 			if(notificationCopy[i].isread === 0) 
-	// 				var res = true
-	// 		}
-	// 		if(res) {
-	// 			setIsRead(false)
-	// 		} else {
-	// 			setIsRead(true)
-	// 		}
-	// 		setNotification(notificationCopy)
-	// 		console.log(notificationCopy)
-	// 		console.log(data)
-	// 	});
-	// 	return () => {socket.off("notification");};
-	// }, []);
 
 	function checkNotificationArray(pk_id) {
 		for (let i = 0; i < notification.length; i++) {
@@ -46,12 +26,12 @@ export default function Notifications(props) {
 		}
 		const notificationCopy = notification.slice()
 		notificationCopy.unshift(data)
-		var res = false
+		var res1 = false
 		for (let i = 0; i < notificationCopy.length; i++) {
 			if(notificationCopy[i].isread === 0) 
-				var res = true
+				res1 = true
 		}
-		if(res) {
+		if(res1) {
 			setIsRead(false)
 		} else {
 			setIsRead(true)
@@ -65,12 +45,12 @@ export default function Notifications(props) {
 		}
 		const notificationCopy = notification.slice()
 		notificationCopy.unshift(data)
-		var res = false
+		var res2 = false
 		for (let i = 0; i < notificationCopy.length; i++) {
 			if(notificationCopy[i].isread === 0) 
-				var res = true
+				res2 = true
 		}
-		if(res) {
+		if(res2) {
 			setIsRead(false)
 		} else {
 			setIsRead(true)
@@ -86,12 +66,12 @@ export default function Notifications(props) {
 				const response = await fetch(`/user/notification/`)
 				const data = await response.json()
 				if (data.status) {
-					var res = false
+					var res3 = false
 					for (let i = 0; i < data.notification.length; i++) {
 						if(data.notification[i].isread === 0) 
-							var res = true
+							res3 = true
 					}
-					if(res) {
+					if(res3) {
 						setIsRead(false)
 					} else {
 						setIsRead(true)
@@ -122,11 +102,10 @@ export default function Notifications(props) {
 				})();
 			}, 500);
 		} catch (error) {
-			//console.log(error)
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 
-	//console.log(notification)
 	return (
 		<>
 			<div ref={props.refNotification} className="pos-relative" title="Notifications">

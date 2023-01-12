@@ -1,9 +1,10 @@
+import toast from 'react-simple-toasts';
+
 function capitalize(s) {
 	return s && s[0].toUpperCase() + s.slice(1);
 }
 
 export async function HandleSubmit(props) {
-	console.log(props)
 	if (props.type === "name") {
 		try {
 			props.setPromiseTracker(true)
@@ -33,7 +34,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "username") {
@@ -62,7 +63,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "dateofbirth") {
@@ -92,7 +93,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-			console.log(err)
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "gender") {
@@ -122,7 +123,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "preference") {
@@ -152,7 +153,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "interestPut") {
@@ -162,25 +163,21 @@ export async function HandleSubmit(props) {
 				props.event.preventDefault()
 			else if(props.event.key === "Enter") {
 				if(props.value.length > 25 ) {
-					console.log("this1")
 					props.setErrorPutInterest("Error! Interest tags max length 25!")
-					// setTimeout(() => {
-					// 	props.setErrorPutInterest("")
-					// }, 3000)
+					setTimeout(() => {
+						props.setErrorPutInterest("")
+					}, 3000)
 				} else if(props.value.trim().length === 0) {
-					console.log("this2")
 					props.setErrorPutInterest("Error! Interest tags cant be empty!")
-					// setTimeout(() => {
-					// 	props.setErrorPutInterest("")
-					// }, 3000)
+					setTimeout(() => {
+						props.setErrorPutInterest("")
+					}, 3000)
 				} else if(!reInterest.test(props.value.trim())) {
-					console.log("this3")
 					props.setErrorPutInterest("Error! Interest tags can only contain '-' and letters!")
-					// setTimeout(() => {
-					// 	props.setErrorPutInterest("")
-					// }, 3000)
+					setTimeout(() => {
+						props.setErrorPutInterest("")
+					}, 3000)
 				} else {
-					console.log("here")
 					props.setPromiseTracker(true)
 					let response = await fetch('/profile/interest', {
 						headers: {'Content-Type': 'application/json'},
@@ -215,7 +212,7 @@ export async function HandleSubmit(props) {
 				} 
 			}
 		} catch (err) {
-			console.log(err)
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "interestDelete") {
@@ -251,7 +248,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker2(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "biography") {
@@ -279,7 +276,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "email") {
@@ -305,11 +302,10 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "password") {
-		console.log("password")
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/password', {
@@ -330,7 +326,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 	else if (props.type === "position") {
@@ -360,7 +356,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
 	}
 }

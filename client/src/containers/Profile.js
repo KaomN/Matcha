@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from '../context/UserContext';
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import toast from 'react-simple-toasts';
 import "./styles/Profile.css";
 import { useEditProfileVisible } from "./ProfileComponents/UsePopupVisibility";
 import ProfileButtons from "./ProfileComponents/ProfileButtons";
@@ -27,12 +26,10 @@ export default function Profile() {
 	// Custom States for popups
 	const { refEditProfile, isEditProfileVisible, setIsEditProfileVisible } = useEditProfileVisible(false);
 	// User context
-	const { user, setUser, userContextLoading } = useContext(UserContext);
+	const { user, setUser } = useContext(UserContext);
 	// Profile states
 	const [profile, setProfile] = useState("loading");
 	// states for Uploading images
-	const [successMessage, setSucessMessage] = useState("");
-	const [errorMessage, setErrorMessage] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [onlineStatus, setOnlineStatus] = useState(false);
 	const { pathname } = useLocation();
@@ -41,7 +38,7 @@ export default function Profile() {
 		if(!user.profile) {
 			navigate("/completeprofile");
 		}
-	}, [user, userContextLoading, navigate]);
+	}, [user, navigate]);
 
 	let params = useParams()
 
@@ -62,14 +59,14 @@ export default function Profile() {
 			})();
 		}
 		return () => {mounted = false};
-	}, [user, params, socket]);
+	}, [user, params, socket, pathname]);
 
 	useEffect(() => {
 		socket.on("online_response", data => {
 			setOnlineStatus(data.onlineStatus)
 		});
 		return () => {socket.off("online_response");};
-	}, []);
+	}, [socket]);
 
 	if (profile === "loading") {
 		return <LoadingSpinner />
@@ -97,15 +94,13 @@ export default function Profile() {
 					<ProfileLeftContainer
 					profile={profile}
 					setProfile={setProfile}
-					setSucessMessage={setSucessMessage}
-					setErrorMessage={setErrorMessage}
 					onlineStatus={onlineStatus}
+					user={user}
+					setUser={setUser}
 					/>
 					<ProfileRightContainer
 					profile={profile}
 					setProfile={setProfile}
-					setErrorMessage={setErrorMessage}
-					setSucessMessage={setSucessMessage}
 					user={user}
 					setUser={setUser}
 					/>

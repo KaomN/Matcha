@@ -482,6 +482,12 @@
 	justify-content: space-evenly;
 }
 
+.home_profile_gender_container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 @media screen and (orientation: landscape) and (max-device-width: 950px){
 	.home_profile_container {
 		align-items: flex-start;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 
 
@@ -35,7 +35,7 @@ export default function ChatMessage(props) {
 							if(message.userid === props.connectedUserFiltered[0].userid) {
 								return (
 									<div key={index} className="chat_message_container_left">
-										<img className="chat_message_left_profileimage" src={props.connectedUserFiltered[0].profilePic}></img>
+										<img className="chat_message_left_profileimage" src={props.connectedUserFiltered[0].profilePic} alt="profile"></img>
 										<div className="chat_message_left_align">
 
 											{message.message}
@@ -49,7 +49,7 @@ export default function ChatMessage(props) {
 										<div className="chat_message_right_align">
 											{message.message}
 										</div>
-										<img className="chat_message_right_profileimage" src={props.user.imageSrc}></img>
+										<img className="chat_message_right_profileimage" src={props.user.imageSrc} alt="profile"></img>
 									</div>
 								)
 							}
@@ -59,7 +59,7 @@ export default function ChatMessage(props) {
 								if(message.userid === connectedUser.userid) {
 									return (
 										<div key={index} className="chat_message_container_left">
-											<img className="chat_message_left_profileimage" src={connectedUser.profilePic}></img>
+											<img className="chat_message_left_profileimage" src={connectedUser.profilePic} alt="profile"></img>
 											<div className="chat_message_left_align">
 
 												{message.message}
@@ -73,7 +73,7 @@ export default function ChatMessage(props) {
 											<div className="chat_message_right_align">
 												{message.message}
 											</div>
-											<img className="chat_message_right_profileimage" src={props.user.imageSrc}></img>
+											<img className="chat_message_right_profileimage" src={props.user.imageSrc} alt="profile"></img>
 										</div>
 									)
 								}

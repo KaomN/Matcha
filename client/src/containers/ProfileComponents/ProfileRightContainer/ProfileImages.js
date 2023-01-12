@@ -1,4 +1,6 @@
 import { useState } from "react";
+import toast from 'react-simple-toasts';
+
 
 export default function ProfileImages(props) {
 	const [imagePage, setImagePage] = useState(0);
@@ -37,10 +39,7 @@ export default function ProfileImages(props) {
 						setImagePage(imagePage - 1);
 					}
 					props.setProfile(profileCopy)
-					props.setSucessMessage("Profile updated successfully!")
-					setTimeout(() => {
-						props.setSucessMessage("")
-					}, 2000)
+					toast("Image Deleted!", { position: 'top-center', duration: 5000 })
 				}
 			}} title="Delete">close</i>
 			</div>

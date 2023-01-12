@@ -1,5 +1,4 @@
 import { Oval } from 'react-loader-spinner'
-import ProfilePassword from '../containers/ProfileComponents/PrivateComponents/ProfilePassword';
 
 export const LoadingSpinnerComponent = (props) => {
 	return (

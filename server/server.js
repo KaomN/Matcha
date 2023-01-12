@@ -1,4 +1,3 @@
-const session = require('express-session')
 const express = require('express');
 const bodyParser = require('body-parser');
 const Database = require("./createDatabase");
@@ -20,6 +19,7 @@ app.use(sessionMiddleware);
 const httpServer = app.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 });
+
 const io = new Server(httpServer, {
 	cors: {
 		origin: 'http://localhost:3000',
@@ -36,7 +36,6 @@ const userStatus = [];
 function updateUserStatus(userId, socketId, path) {
 	const index = userStatus.findIndex((user) => user.userId === userId)
 	if (index !== -1) {
-		//console.log("-----userStatus array-----")
 		userStatus[index] = {
 			userId: userId,
 			socketId: socketId,
@@ -44,7 +43,6 @@ function updateUserStatus(userId, socketId, path) {
 			path: path
 		};
 	} else {
-		//console.log("-----userStatus array-----")
 		userStatus.push({
 			userId: userId,
 			socketId: socketId,
@@ -52,7 +50,6 @@ function updateUserStatus(userId, socketId, path) {
 			path: path
 		});
 	}
-	//console.log(userStatus)
 }
 
 function deleteUser(userId) {
@@ -183,7 +180,6 @@ io.on('connection', (socket) => {
 
 		socket.on("send_disconnect_request", async function (data) {
 			const user = getUser(data.userid);
-			//console.log(user)
 			if(user) {
 				socket.to(user.socketId).emit("receive_disconnect_request", {
 					connectRequest: false,
@@ -279,7 +275,6 @@ io.on('connection', (socket) => {
 		});
 		// Check if user is online
 		socket.on('online_query', function (data) {
-			//console.log("running online_query")
 			const onlineStatus = queryOnlineUsers(data.queryId);
 			socket.emit('online_response', {
 				onlineStatus: onlineStatus
@@ -301,7 +296,6 @@ io.on('connection', (socket) => {
 		});
 
 	} catch (err) {
-		//console.log(err)
 	}
 });
 
@@ -328,6 +322,3 @@ app.use('/profile', require('./controllers/ProfileController'));
 app.use('/home', require('./controllers/HomeController'));
 // SearchController
 app.use('/search', require('./controllers/SearchController'));
-// server.listen(PORT, () => {
-// 	console.log(`Server listening on ${PORT}`);
-// });

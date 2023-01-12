@@ -1,6 +1,4 @@
 import { useState, useEffect, useContext, useCallback } from "react";
-import { SocketContext } from '../context/SocketContext';
-import { useNavigate } from "react-router-dom";
 import SearchFilterSort from "./SearchComponents/SearchFilterSort";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
@@ -11,16 +9,10 @@ import Select from "./SearchComponents/src/index";
 import "./styles/Search.css";
 
 export default function AdvancedSearch() {
-	const socket = useContext(SocketContext);
 	const { user } = useContext(UserContext);
 	const [userProfiles, setUserProfiles] = useState([]);
 	const [searchAge, setSearchAge] = useState({min: 18, max: 100});
 	const [searchRating, setSearchRating] = useState({min: 0, max: 100});
-	// const [filterAge, setFilterAge] = useState({min: 0, max: 100});
-	// const [filterRating, setFilterRating] = useState({min: 0, max: 100});
-	// const [filterDistance, setFilterDistance] = useState({min: 0, max: 50});
-	// const [filterInterest, setFilterInterest] = useState({min: 1, max: 5});
-	const [filterTagsOptions, setFilterTagsOptions] = useState([])
 	const [options, setOptions] = useState([]);
 	const [selectedTags, setSelectedTags] = useState([])
 	const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +21,6 @@ export default function AdvancedSearch() {
 	const [toggleSearch, setToggleSearch] = useState(true);
 	const [sort, setSort] = useState("distanceAsc");
 	const [location, setLocation] = useState({lat: parseFloat(user.latitude), lng: parseFloat(user.longitude)});
-	const navigate = useNavigate();
 
 	useEffect(() => {
 		let mounted = true;
@@ -81,11 +72,6 @@ export default function AdvancedSearch() {
 			setUserProfiles(data.users);
 			setIsSearching(true);
 			setHasSearched(true);
-			if(selectedTags.length > 0) {
-				setFilterTagsOptions(selectedTags)
-			} else {
-				setFilterTagsOptions(options)
-			}
 		} else {
 			setIsSearching(false);
 			setHasSearched(false)
@@ -97,7 +83,6 @@ export default function AdvancedSearch() {
 		setToggleSearch(!toggleSearch);
 	}
 
-	//console.log(toggleSearch)
 	return (
 		<main className="ma search_main_container">
 			<div className="search_container_middle">
@@ -161,13 +146,6 @@ export default function AdvancedSearch() {
 				searchAge={searchAge}
 				searchRating={searchRating}
 				user={user}
-				// setFilterAge={setFilterAge}
-				// setFilterRating={setFilterRating}
-				// setFilterDistance={setFilterDistance}
-				setFilterTagsOptions={setFilterTagsOptions}
-				// filterAge={filterAge}
-				// filterRating={filterRating}
-				// filterDistance={filterDistance}
 				filterTagsOptions={options}
 				hasSearched={hasSearched}
 				/>}

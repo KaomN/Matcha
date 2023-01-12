@@ -53,9 +53,11 @@ header {
 	height: 55px;
 	margin-bottom: 0.5rem;
 	border-radius: var(--border-radius);
-	background-color: aquamarine;
+	border: 2px solid var(--color-primary-darker);
+	background-color: #00b997;
 	transition: background-color 0.2s ease;
 	box-shadow: rgba(0, 0, 0, 0.70) 0px 3px 8px;
+	cursor: pointer;
 }
 
 
@@ -76,12 +78,6 @@ header {
 	box-shadow: inset 0 0 14px 14px var(--color-primary-light);
 	border: solid 4px transparent;
 	border-radius: 14px;
-}
-
-.header-profile-dropdown-profile:hover {
-	cursor: pointer;
-	background-color: aqua;
-	transition: background-color 0.2s ease;
 }
 
 .header-profile-dropdown-profile-container {
@@ -396,7 +392,7 @@ header {
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	height: 100%;
+	height: calc(100% - 6px);
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);

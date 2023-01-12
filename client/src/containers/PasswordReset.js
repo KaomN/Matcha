@@ -13,10 +13,10 @@ export default function PasswordReset() {
 	const [messageType, setMessageType] = useState("");
 
 	const [searchParams] = useSearchParams();
-	//console.log(searchParams.get("token"))
+
 	async function handleSubmit(event) {
 		event.preventDefault();
-		console.log(searchParams.get("token"))
+
 		let response = await fetch('/request/passwordreset', {
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
@@ -27,7 +27,7 @@ export default function PasswordReset() {
 			})
 		});
 		response = await response.json();
-		console.log(response);
+
 		if(response.status) {
 			setMessageType("form_message_success");
 			setMessage(response.message);
@@ -43,12 +43,12 @@ export default function PasswordReset() {
 	}
 
 	return (
-		<main className="form-container">
+		<main className="password_reset_main ma">
 			<form onSubmit={handleSubmit}>
 				<div className="lock-image-container">
 					<i className="material-icons lock-reset">lock_reset</i>
 				</div>
-				<h3>Camagru Password Reset</h3>
+				<h3>Matcha Password Reset</h3>
 				<div className="center">
 					<div className={messageType}>{message}</div>
 				</div>
