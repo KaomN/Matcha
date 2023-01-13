@@ -39,6 +39,11 @@ export default function Profile() {
 			navigate("/completeprofile");
 		}
 	}, [user, navigate]);
+	
+	useEffect(() => {
+		setOnlineStatus(false)
+	}, [pathname]);
+
 
 	let params = useParams()
 
