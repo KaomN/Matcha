@@ -54,10 +54,16 @@ export default function Profile() {
 				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
 				response = await response.json()
 				if(response.status) {
+					if(socket.disconnected)
+						socket.open()
 					socket.emit("online_query", { queryId: response.userid, path: pathname });
 					if(params.profileID) {
+						if(socket.disconnected)
+							socket.open()
 						socket.emit("join_profile_room", { userid: params.profileID, path: pathname });
 					}
+					if(socket.disconnected)
+						socket.open()
 					socket.emit("send_notification", { username: response.username, userid: response.userid, type: "profile" });
 					setProfile(response);
 				}
@@ -67,6 +73,8 @@ export default function Profile() {
 	}, [user, params, socket, pathname]);
 
 	useEffect(() => {
+		if(socket.disconnected)
+			socket.open()
 		socket.on("online_response", data => {
 			setOnlineStatus(data.onlineStatus)
 		});

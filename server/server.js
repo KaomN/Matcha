@@ -36,7 +36,6 @@ app.use(bodyParser.json());
 // For file uploads
 app.use(fileUpload());
 app.use(cors({origin: "http://127.0.0.1:3001", credentials:true}));
-//app.use(cors());
 
 // Session middleware
 app.use(sessionMiddleware);
@@ -53,10 +52,10 @@ const io = new Server(httpServer, {
 });
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
-// Have Socket Io use the sessionMiddleware
+// Have SocketIo use sessionMiddleware
 io.use(wrap(sessionMiddleware));
 
-// For users
+// For connected users
 const userStatus = [];
 
 function updateUserStatus(userId, socketId, path) {
@@ -105,15 +104,11 @@ function getUser(userId) {
 	return null;
 }
 
-//Only allow authenticated users
-
 io.use((socket, next) => {
 	const session = socket.request.session;
 	if (session && session.authenticated) {
 		updateUserStatus(session.userid, socket.id)
 		next();
-	} else {
-		next(new Error("unauthorized"));
 	}
 });
 

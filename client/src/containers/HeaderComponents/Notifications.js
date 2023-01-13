@@ -11,52 +11,57 @@ export default function Notifications(props) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRead, setIsRead] = useState(true);
 
-	function checkNotificationArray(pk_id) {
-		for (let i = 0; i < notification.length; i++) {
-			if(notification[i].pk_id === pk_id) {
-				return true
+	useEffect(() => {
+		function checkNotificationArray(pk_id) {
+			for (let i = 0; i < notification.length; i++) {
+				if(notification[i].pk_id === pk_id) {
+					return true
+				}
 			}
+			return false
 		}
-		return false
-	}
-
-	socket.on("receive_notification", (data) => {
-		if(checkNotificationArray(data.pk_id)) {
-			return
-		}
-		const notificationCopy = notification.slice()
-		notificationCopy.unshift(data)
-		var res1 = false
-		for (let i = 0; i < notificationCopy.length; i++) {
-			if(notificationCopy[i].isread === 0) 
-				res1 = true
-		}
-		if(res1) {
-			setIsRead(false)
-		} else {
-			setIsRead(true)
-		}
-		setNotification(notificationCopy)
-	});
-
-	socket.on("receive_message_notitifaction", (data) => {
-		if(checkNotificationArray(data.pk_id)) {
-			return
-		}
-		const notificationCopy = notification.slice()
-		notificationCopy.unshift(data)
-		var res2 = false
-		for (let i = 0; i < notificationCopy.length; i++) {
-			if(notificationCopy[i].isread === 0) 
-				res2 = true
-		}
-		if(res2) {
-			setIsRead(false)
-		} else {
-			setIsRead(true)
-		}
-		setNotification(notificationCopy)
-	});
+		if (socket.disconnected)
+			socket.open()
+		socket.on("receive_notification", (data) => {
+			if(checkNotificationArray(data.pk_id)) {
+				return
+			}
+			const notificationCopy = notification.slice()
+			notificationCopy.unshift(data)
+			var res1 = false
+			for (let i = 0; i < notificationCopy.length; i++) {
+				if(notificationCopy[i].isread === 0) 
+					res1 = true
+			}
+			if(res1) {
+				setIsRead(false)
+			} else {
+				setIsRead(true)
+			}
+			setNotification(notificationCopy)
+		});
+		if (socket.disconnected)
+			socket.open()
+		socket.on("receive_message_notitifaction", (data) => {
+			if(checkNotificationArray(data.pk_id)) {
+				return
+			}
+			const notificationCopy = notification.slice()
+			notificationCopy.unshift(data)
+			var res2 = false
+			for (let i = 0; i < notificationCopy.length; i++) {
+				if(notificationCopy[i].isread === 0) 
+					res2 = true
+			}
+			if(res2) {
+				setIsRead(false)
+			} else {
+				setIsRead(true)
+			}
+			setNotification(notificationCopy)
+		});
+		return () => {socket.off("receive_message_notitifaction");socket.off("receive_notification");};
+	}, [socket, notification]);
 
 	useEffect(() => {
 		let mounted = true;

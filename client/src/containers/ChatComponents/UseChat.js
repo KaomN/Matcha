@@ -14,8 +14,10 @@ const useChat = (activeChat) => {
 
 	useEffect(() => {
 		if (socket.disconnected)
-				socket.open()
+			socket.open()
 		socket.on("receive_message", (message) => {
+			if(socket.disconnected)
+				socket.open()
 			socket.emit("message_chat_notification", {
 				channel: message.channel,
 				userid: message.userid,

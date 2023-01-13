@@ -11,9 +11,13 @@ export default function ProfileButtons(props) {
 	const { pathname } = useLocation();
 	
 	useEffect(() => {
+		if (socket.disconnected)
+			socket.open()
 		socket.on("receive_connect_request", (data) => {
 			setConnectRequest(data.connectRequest)
 		});
+		if (socket.disconnected)
+			socket.open()
 		socket.on("receive_disconnect_request", (data) => {
 			if(data.connected) {
 				setConnected(data.connected)
@@ -21,6 +25,8 @@ export default function ProfileButtons(props) {
 				setConnectRequest(data.connectRequest)
 			}
 		});
+		if (socket.disconnected)
+			socket.open()
 		socket.on("receive_connected_request", (data) => {
 			setConnected(data.connected)
 		});
@@ -64,6 +70,8 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						if (socket.disconnected)
+							socket.open()
 						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
@@ -109,6 +117,8 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						if (socket.disconnected)
+							socket.open()
 						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
@@ -154,6 +164,8 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						if (socket.disconnected)
+							socket.open()
 						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
@@ -199,6 +211,8 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						if (socket.disconnected)
+							socket.open()
 						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
@@ -261,8 +275,14 @@ export default function ProfileButtons(props) {
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						// setTimeout(() => {
+							if (socket.disconnected)
+								socket.open()
 							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname});
+							if (socket.disconnected)
+								socket.open()
 							socket.emit("send_connected", { userid: props.profile.userid, path: pathname});
+							if (socket.disconnected)
+								socket.open()
 							socket.emit("send_connect_request", { userid: props.profile.userid , path: pathname});
 							props.setLoading(false)
 						// }, 1300)
@@ -315,6 +335,8 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
+						if (socket.disconnected)
+							socket.open()
 						socket.emit("send_disconnect_request", { userid: props.profile.userid, path: pathname });
 						props.setLoading(false)
 					}

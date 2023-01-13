@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { trackPromise} from 'react-promise-tracker';
+import { trackPromise } from 'react-promise-tracker';
 import { useContext, useEffect, useState, useRef } from "react";
 import { UserContext } from '../context/UserContext';
 import "./styles/Header.css";
@@ -111,9 +111,11 @@ export default function Header() {
 	const { refNotification, isNotificationVisible, setIsNotificationVisible } = useNotificationVisible(false);
 	const [state, setState] = useState("loading");
 
-	// Emit updating activity everytime pathname changes
+	//Emit updating activity everytime pathname changes
 	useEffect(() => {
 		if(pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot" && pathname !== "/" && pathname !== "/passwordreset" && pathname !== "/forgotpassword" ) {
+			if(socket.disconnected)
+				socket.open()
 			socket.emit("update_last_active", { path: pathname });
 		}
 	}, [pathname, socket]);
@@ -130,8 +132,8 @@ export default function Header() {
 
 	async function handleLogout(event) {
 		event.preventDefault();
-			// if (socket.disconnected)
-			// 	socket.open()
+			if (socket.disconnected)
+				socket.open()
 			socket.emit("logout", { userId: user.userid });
 			await trackPromise(fetchLogout());
 			setUser({})

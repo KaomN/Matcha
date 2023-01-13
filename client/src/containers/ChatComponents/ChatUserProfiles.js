@@ -6,6 +6,8 @@ export default function ChatUserProfiles(props) {
 	const socket = useContext(SocketContext);
 
 	useEffect(() => {
+		if(socket.disconnected)
+			socket.open()
 		socket.on("receive_message_chat_notification", async (data) => {
 			if (data.channel === props.profile.room && props.activeChat.channel !== props.profile.room) {
 				setUnreadMessage(true);
