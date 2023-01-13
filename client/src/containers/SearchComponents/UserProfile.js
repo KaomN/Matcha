@@ -58,7 +58,7 @@ export default function UserProfile(props) {
 				<div className="home_user_profile_info">
 					<span>{props.profile.firstname} {props.profile.surname}</span> {/* <i className="material-icons profile-button-disabled" draggable="false">female</i>*/}
 					<div>Age: {props.profile.age}</div>
-					<div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false">{props.profile.gender}</i></div>
+					<div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.gender}>{props.profile.gender}</i></div>
 					<div>{props.profile.distance} km away</div>
 					<div>Rating: {props.profile.rating}</div>
 					<div className="home_interest_container">

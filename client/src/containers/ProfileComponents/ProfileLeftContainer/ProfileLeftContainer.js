@@ -1,10 +1,6 @@
 import { useEditProfileImageVisible } from "../UsePopupVisibility";
 import EditProfileImagePopup from "./EditProfileImagePopup";
 
-function capitalize(s) {
-	return s && s[0].toUpperCase() + s.slice(1);
-}
-
 export default function ProfileLeftContainer(props) {
 	const { refEditProfileImage, isEditProfileImageVisible, setIsEditProfileImageVisible } = useEditProfileImageVisible(false);
 
@@ -62,7 +58,7 @@ export default function ProfileLeftContainer(props) {
 			<div className="padding05 flex-center flex-col">
 				{/* <div>Date of birth: {profile.dateofbirth}</div> */}
 				<div>Age: {props.profile.age}</div>
-				<div>Gender: {capitalize(props.profile.gender)}</div>
+				<div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.gender}>{props.profile.gender}</i></div>
 				{(props.profile.isOwn === true) ?
 					null
 					:

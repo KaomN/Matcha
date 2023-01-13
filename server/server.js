@@ -1,9 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const Database = require("./createDatabase");
+const { createDatabase }= require("./createDatabase");
 const fileUpload = require('express-fileupload');
 const cors = require('cors')
-Database.createDatabase();
+const con = require("./setup").pool;
+createDatabase();
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
@@ -12,10 +13,21 @@ const {sessionMiddleware} = require('./modules/SessionMiddleware')
 const { Server } = require('socket.io')
 const app = express();
 const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, checkConnected, saveMessage } = require('./modules/HelperModules')
+var CronJob = require('cron').CronJob;
+
+// Cron job to delete ratings older than 7 days
+const job = new CronJob('00 00 00 * * *', async function() {
+	try {
+		await con.execute("DELETE FROM rating WHERE date < NOW() - INTERVAL 7 DAY");
+	} catch (err) {
+
+	}
+});
+
+job.start();
 
 // Session middleware
 app.use(sessionMiddleware);
-//app.use(express.static('public'));
 const httpServer = app.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 });
@@ -31,6 +43,7 @@ const wrap = middleware => (socket, next) => middleware(socket.request, {}, next
 // Have Socket Io use the sessionMiddleware
 io.use(wrap(sessionMiddleware));
 
+// For users
 const userStatus = [];
 
 function updateUserStatus(userId, socketId, path) {
@@ -92,7 +105,6 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
 	try {
-
 		socket.join(socket.request.session.token);
 		socket.to(socket.request.session.token).emit('online_response', {
 			onlineStatus: true
@@ -134,7 +146,7 @@ io.on('connection', (socket) => {
 		});
 
 		socket.on("message_chat_notification", async function (data) {
-			const user = getUser(data.userid);
+			const user = getUser(data.sendto);
 			if(user) {
 				socket.to(user.socketId).emit("receive_message_chat_notification", {
 					channel: data.channel,
@@ -144,27 +156,6 @@ io.on('connection', (socket) => {
 				await saveNotification(data.sentto, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3)
 			}
 		});
-
-		// check if user is typing in the chat
-		socket.on("typing", async function (data) {
-			const user = getUser(data.userid);
-			if(user) {
-				socket.to(user.socketId).emit("receive_typing", {
-					typing: true,
-					userid: socket.request.session.userid,
-				});
-			}
-			setTimeout(function () {
-				const checkUserStillActive = getUser(data.userid);
-				if(checkUserStillActive) {
-					socket.to(checkUserStillActive.socketId).emit("receive_typing", {
-						typing: false,
-						userid: socket.request.session.userid,
-					});
-				}
-			}, 3000);
-		});
-
 
 		/* Updating connection requests */
 		socket.on("send_connect_request", async function (data) {

@@ -4,24 +4,23 @@ var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
 const emailTransporter =  require("../setup").emailTransporter;
-const { checkConnectRequest, checkConnected, updateHistory, canConnect } = require("../modules/HelperModules");
-
-
+const { checkConnectRequest, checkConnected, updateHistory, canConnect, addRating } = require("../modules/HelperModules");
 
 // Get user profile
 const getProfile = async (userID, req) => {
 	try {
 		var [rows, fields] = await con.execute(
-			`SELECT username, firstname, surname, gender, age, dateofbirth, biography, latitude, longitude, pk_userid as 'userid', rating, genderpreference as 'preference', email, lastactive,
+			`SELECT username, firstname, surname, gender, age, dateofbirth, biography, latitude, longitude, pk_userid as 'userid', genderpreference as 'preference', email, lastactive,
 				(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance,
 				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = pk_userid) AS connectRequest,
 				(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = pk_userid) AS connectRequestSent,
 				(SELECT COUNT(*) FROM blocked WHERE fk_userid = ? AND targetuserid = pk_userid) AS blocked,
 				(SELECT COUNT(*) FROM report WHERE fk_userid = ? AND targetuserid = pk_userid) AS reported,
-				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = pk_userid) OR (userid2 = ? AND userid1 = pk_userid)) AS connected
+				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = pk_userid) OR (userid2 = ? AND userid1 = pk_userid)) AS connected,
+				(SELECT COUNT(*) FROM (SELECT * FROM rating WHERE fk_userid = ? LIMIT 100) AS ratings) AS rating
 			FROM users
 			WHERE pk_userid = ?`,
-			[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, userID])
+			[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, userID, userID])
 		if(rows[0] !== undefined) {
 			// Fetch images
 			var result = await con.execute(
@@ -534,6 +533,7 @@ const connect = async (req) => {
 			INSERT INTO connect (fk_userid, targetuserid)
 			VALUES (?, ?)`,
 			[req.session.userid, req.body.userid])
+		await addRating( req.body.userid, req.session.userid, "connect")
 			// Check if the target user has already sent a connect request to the current user
 		if(await checkConnectRequest(req.body.userid, req.session.userid)) {
 			// If so, create a new connected row with the two users
@@ -542,6 +542,7 @@ const connect = async (req) => {
 				INSERT INTO connected (pk_id, userid1, userid2)
 				VALUES (?, ?, ?)`,
 				[pk_id, req.session.userid, req.body.userid])
+			await addRating( req.body.userid, req.session.userid, "connected")
 			return ({status: true, message: "You are now connected with " + req.body.username + "!", connected: true})
 		}
 		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})

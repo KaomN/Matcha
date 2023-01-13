@@ -228,12 +228,56 @@ async function saveMessage(message, userid, room) {
 			INSERT INTO messages (fk_connected, userid, message)
 			VALUES (?, ?, ?)`,
 			[room, userid, message])
+
 		return (true)
 	} catch (err) {
 		return({status: false, message: "Server connection error"});
 	}
 
 }
+
+async function addRating(userid, fromUserId, type) {
+	// Check and add rating
+	try {
+		const [res, fields] = await con.execute(
+			`SELECT *
+			FROM rating
+			WHERE fk_userid = ? AND fk_fromuserid = ? AND type = ?`,
+			[userid, fromUserId, type])
+		if (res.length > 0) {
+			if(type === "connected") {
+				await con.execute(
+					`UPDATE rating
+					SET date = NOW()
+					WHERE (fk_userid = ? AND fk_fromuserid = ? AND type = ?) OR (fk_userid = ? AND fk_fromuserid = ? AND type = ?)`,
+					[userid, fromUserId, type, fromUserId, userid, type])
+			} else {
+				await con.execute(
+					`UPDATE rating
+					SET date = NOW()
+					WHERE fk_userid = ? AND fk_fromuserid = ? AND type = ?`,
+					[userid, fromUserId, type])
+			}
+		} else {
+			if(type === "connected") {
+				await con.execute(
+					`INSERT into rating (fk_userid, fk_fromuserid, type)
+					VALUES (?, ?, ?), (?, ?, ?)`,
+					[userid, fromUserId, type, fromUserId, userid, type])
+			} else {
+			await con.execute(
+				`INSERT into rating (fk_userid, fk_fromuserid, type)
+				VALUES (?, ?, ?)`,
+				[userid, fromUserId, type])
+			}
+		}
+		return true
+	} catch (err) {
+		return false;
+	}
+
+}
+
 
 module.exports = {
 	getUserInterests,
@@ -250,4 +294,5 @@ module.exports = {
 	getUserTagsArray,
 	getMessages,
 	saveMessage,
+	addRating,
 };

@@ -31,10 +31,6 @@ export default function ChatUserProfiles(props) {
 		setUnreadMessage(unread);
 	}, [props.profile.messages, props.activeChat, props.profile.userid]);
 
-	useEffect(() => {
-		
-		//receive_message_chat_notification
-	}, [props.profile.messages, props.activeChat]);
 
 	async function handleOnclick() {
 		props.setComponentIsLoading(true)

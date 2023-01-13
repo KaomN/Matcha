@@ -1,6 +1,6 @@
 const con = require("../setup").pool;
 const { v4: uuidv4 } = require('uuid');
-const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest, canConnect }  = require("../modules/HelperModules");
+const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest, canConnect, addRating }  = require("../modules/HelperModules");
 
 const getUsers = async (req, min, max) => {
 	try {
@@ -9,12 +9,13 @@ const getUsers = async (req, min, max) => {
 		if (req.session.preference === "both") {
 			if (req.session.latitude && req.session.longitude) {
 				var [rows, fields] = await con.execute(`
-					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography, genderpreference as 'preference', gender,
+					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', biography, genderpreference as 'preference', gender,
 						(6371 * acos(cos( radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin( radians(?)) * sin(radians(latitude)))) AS distance,
 						(SELECT COUNT(*) FROM tagitem WHERE fk_userid = users.pk_userid AND fk_tagid IN (SELECT fk_tagid FROM tagitem WHERE fk_userid = ?)) AS 'commonInterests',
 						(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = users.pk_userid) OR (userid2 = ? AND userid1 = users.pk_userid)) AS connected,
 						(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
-						(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
+						(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest,
+						(SELECT COUNT(*) FROM (SELECT * FROM rating WHERE fk_userid = pk_userid LIMIT 100) AS ratings) AS rating
 					FROM users
 					LEFT JOIN blocked
 						ON users.pk_userid = blocked.fk_userid
@@ -62,12 +63,13 @@ const getUsers = async (req, min, max) => {
 		} else {
 			if (req.session.latitude && req.session.longitude) {
 				var [rows, fields] = await con.execute(`
-					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography, genderpreference as 'preference', gender,
+					SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', biography, genderpreference as 'preference', gender,
 						(6371 * acos(cos( radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin( radians(?)) * sin(radians(latitude)))) AS distance,
 						(SELECT COUNT(*) FROM tagitem WHERE fk_userid = users.pk_userid AND fk_tagid IN (SELECT fk_tagid FROM tagitem WHERE fk_userid = ?)) AS 'commonInterests',
 						(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = users.pk_userid) OR (userid2 = ? AND userid1 = users.pk_userid)) AS connected,
 						(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
-						(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
+						(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest,
+						(SELECT COUNT(*) FROM (SELECT * FROM rating WHERE fk_userid = pk_userid LIMIT 100) AS ratings) AS rating
 					FROM users
 					LEFT JOIN blocked
 						ON users.pk_userid = blocked.fk_userid
@@ -115,6 +117,7 @@ const getUsers = async (req, min, max) => {
 		}
 		return (rows)
 	} catch (err) {
+		console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }
@@ -152,6 +155,7 @@ const  connectUser = async (req) => {
 			INSERT INTO connect (fk_userid, targetuserid)
 			VALUES (?, ?)`,
 			[req.session.userid, req.body.userid])
+		await addRating( req.body.userid, req.session.userid, "connect")
 			// Check if the target user has already sent a connect request to the current user
 		if(await checkConnectRequest(req.body.userid, req.session.userid)) {
 			// If so, create a new connected row with the two users
@@ -160,6 +164,7 @@ const  connectUser = async (req) => {
 				INSERT INTO connected (pk_id, userid1, userid2)
 				VALUES (?, ?, ?)`,
 				[pk_id, req.session.userid, req.body.userid])
+				await addRating( req.body.userid, req.session.userid, "connected")
 			return ({status: true, message: "You are now connected with " + req.body.username + "!"})
 		}
 		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})

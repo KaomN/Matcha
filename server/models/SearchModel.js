@@ -15,13 +15,14 @@ const getSearch = async (req) => {
 		const distance = 50;
 		var tagsQuery =  createTagsSearchQuery(req.body.tags)
 		var [rows, fields] = await con.execute(`
-			SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', rating, biography, genderpreference as 'preference', gender,
+			SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', biography, genderpreference as 'preference', gender,
 				(6371 * acos(cos( radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin( radians(?)) * sin(radians(latitude)))) AS distance,
 				(SELECT COUNT(*) FROM blocked WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS blocked,
 				(SELECT COUNT(*) FROM report WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS reported,
 				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = users.pk_userid) OR (userid2 = ? AND userid1 = users.pk_userid)) AS connected,
 				(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
-				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
+				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest,
+				(SELECT COUNT(*) FROM (SELECT * FROM rating WHERE fk_userid = pk_userid LIMIT 100) AS ratings) AS rating
 			FROM users
 			WHERE ${tagsQuery}
 			HAVING distance <= ?
