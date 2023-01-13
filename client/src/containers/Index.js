@@ -1,12 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { UserContext } from '../context/UserContext';
 import { useSearchParams } from "react-router-dom";
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useNavigate } from "react-router-dom";
 import "./styles/Index.css";
 
 export default function Index() {
-	const { user, userContextLoading } = useContext(UserContext);
+	const { user } = useContext(UserContext);
 	const [popup, setPopup] = useState("");
 	const [pin, setPin] = useState("");
 	const [responseMsg, setResponseMsg] = useState("");
@@ -33,7 +32,7 @@ export default function Index() {
 										<div className="popup-content">
 											<p>Success! Your account is now verified!</p>
 											<div className="center">
-												<a href="/login"><button type="button" className="form_button_verify">Login!</button></a>
+												<button type="button" className="form_button_verify" onClick={navigate("/login")}>Login!</button>
 											</div>
 										</div>
 									</div>);
@@ -74,42 +73,40 @@ export default function Index() {
 						}
 						
 					}
-						setPopup(	<div className="popup">
-										<div className="popup-content-email-change ">
-											<div className="form">
-												<div className="lock-image-container">
-													<i className="material-icons lock">alternate_email</i>
-												</div>
-												<h3 className="title-email-change">Email change request</h3>
-												<center><p>Enter the pin code that was sent to you</p></center>
-												<div className="form_message_error">{responseErrorMsg}</div>
-												<div className="form_input_group">
-													<input name="pin" type="text" className="form-input-email-change" placeholder="Pin" autoComplete="off" maxLength="6" defaultValue={pin} onChange={function(e) {setPin(e.target.value); setResponseErrorMsg("")}}/>
-													<div className="email-change-success">{responseMsg}</div>
-												</div>
-												<div className="button_container2">
-													<button className="form_button2" onClick={handleSubmit}>Submit</button>
-												</div>
+					setPopup(	<div className="popup">
+									<div className="popup-content-email-change ">
+										<div className="form">
+											<div className="lock-image-container">
+												<i className="material-icons lock">alternate_email</i>
 											</div>
-											<div className="flex-center">
-												<a href="login" draggable="false"><span>Back To Login</span></a>
+											<h3 className="title-email-change">Email change request</h3>
+											<center><p>Enter the pin code that was sent to you</p></center>
+											<div className="form_message_error">{responseErrorMsg}</div>
+											<div className="form_input_group">
+												<input name="pin" type="text" className="form-input-email-change" placeholder="Pin" autoComplete="off" maxLength="6" defaultValue={pin} onChange={function(e) {setPin(e.target.value); setResponseErrorMsg("")}}/>
+												<div className="email-change-success">{responseMsg}</div>
+											</div>
+											<div className="button_container2">
+												<button className="form_button2" onClick={handleSubmit}>Submit</button>
 											</div>
 										</div>
-									</div>);
+										<div className="flex-center">
+											<div className="login a-links unselectable" onClick={navigate("/login")}>Login</div>
+										</div>
+									</div>
+								</div>);
 				})()
 			}
 		}
 		return () => mounted = false;
 	}, [searchParams, responseErrorMsg, responseMsg, pin]);
 
-		useEffect(() => {
+	useEffect(() => {
 		if(user.auth && searchParams.get("emailchangerequest") === null && searchParams.get("verification") === null) {
 			navigate("/home");
 		}
-	}, [user, userContextLoading, navigate, searchParams]);
+	}, [user.auth, navigate, searchParams]);
 
-	if(userContextLoading)
-		return <LoadingSpinner />
 	return (
 		<main className="ma">
 			<div>

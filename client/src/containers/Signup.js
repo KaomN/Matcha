@@ -7,7 +7,7 @@ import toast from 'react-simple-toasts';
 
 
 export default function Signup() {
-	const { user, userContextLoading } = useContext(UserContext);
+	const { user } = useContext(UserContext);
 	//Input states
 	const [firstname, setFirstname] = useState("");
 	const [surname, setSurname] = useState("");
@@ -65,8 +65,14 @@ export default function Signup() {
 		}
 	}, [user.auth, navigate]);
 
-	if(userContextLoading)
-		return <LoadingSpinner />
+	function naviagteForgotPassword() {
+		navigate("/forgotpassword");
+	}
+
+	function naviagteLogin() {
+		navigate("/login");
+	}
+
 	return(
 		<main className="form-container main-signup ma">
 			<form className="signup-form" onSubmit={handleSubmit}>
@@ -101,13 +107,13 @@ export default function Signup() {
 				<button className="form_button" name="request" type="submit">Sign up</button>
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">
-					<a className="form__link" href="forgotpassword" draggable="false">Forgot password?</a>
+					<div className="form__link unselectable" onClick={naviagteForgotPassword}>Forgot password?</div>
 				</div>
 			</form>
 			<div className={popup}>
 				<div className="popup-content">
 					<p>Thank you for signing up to Matcha! An email has been sent to you for verification!</p>
-					<a href="/login" draggable="false"><button className="form_button" type="button">Login!</button></a>
+					<button className="form_button" type="button" onClick={naviagteLogin}>Login!</button>
 				</div>
 			</div>
 		</main>

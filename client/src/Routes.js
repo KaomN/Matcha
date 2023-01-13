@@ -29,9 +29,7 @@ export default function Links() {
 					<Route path="profile" element={<Profile />} >
 						<Route path=":profileID" element={<Profile />} />
 					</Route>
-					<Route path="chat" element={<Chat />} >
-						<Route path=":chatID" element={<Chat />} />
-					</Route>
+					<Route path="chat" element={<Chat />} />
 				</Route>
 				<Route path="*" element={<NotFound />} />
 			</Routes>

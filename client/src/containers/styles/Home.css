@@ -124,6 +124,7 @@
 	font-style: normal;
 	color: darkslategray;
 	transition: color 0.7s ease;
+	cursor: pointer;
 }
 
 .home_username_fontstyle:hover {

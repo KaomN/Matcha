@@ -11,14 +11,17 @@ export const UserProvider = ({ children }) => {
 	useEffect(() => {
 		let mounted = true;
 		if (mounted) {
-			(async () => {
-				setUserContextLoading(true)
-				const response = await fetch('/request/getuserinfo');
-				const data = await response.json()
-				//console.log(data)
-				setUser(data)
-				setUserContextLoading(false)
-			})()
+			setUserContextLoading(true)
+			if(pathname === "/home" || pathname.slice(0, 8) === "/profile" || pathname === "/chat" || pathname === "/completeprofile" || pathname === "/search") {
+				setTimeout(() => {
+					(async () => {
+						const response = await fetch('/request/getuserinfo');
+						const data = await response.json()
+						setUser(data)
+						setUserContextLoading(false)
+					})()
+				}, 300)
+			}
 		}
 		return () => mounted = false;
 	}, [pathname]);

@@ -113,7 +113,9 @@ export default function Header() {
 
 	// Emit updating activity everytime pathname changes
 	useEffect(() => {
-		socket.emit("update_last_active", { path: pathname });
+		if(pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot" && pathname !== "/" && pathname !== "/passwordreset" && pathname !== "/forgotpassword" ) {
+			socket.emit("update_last_active", { path: pathname });
+		}
 	}, [pathname, socket]);
 
 	function fetchLogout() {
@@ -128,16 +130,25 @@ export default function Header() {
 
 	async function handleLogout(event) {
 		event.preventDefault();
-			var response = await trackPromise(fetchLogout());
-			if(response.status) {
-				socket.emit("logout", { userId: user.userid });
-				setUser({})
-				navigate("/login");
-			}
+			// if (socket.disconnected)
+			// 	socket.open()
+			socket.emit("logout", { userId: user.userid });
+			await trackPromise(fetchLogout());
+			setUser({})
+			navigate("/login");
+
 	}
 
 	function handleNavigate() {
 		navigate("/search")
+	}
+
+	function navigateLogin() {
+		navigate("/login")
+	}
+
+	function navigateSignup() {
+		navigate("/signup")
 	}
 
 	useEffect(() => {
@@ -217,8 +228,8 @@ export default function Header() {
 			</div>
 			<nav>
 				<ul>
-					<li><a href="/login" draggable="false" className="login a-links" title="Login">Login</a></li>
-					<li><a href="/signup" draggable="false" className="signup a-links" title="Signup">Signup</a></li>
+					<li><div className="login a-links" onClick={navigateLogin}>Login</div></li>
+					<li><div className="signup a-links" onClick={navigateSignup}>Signup</div></li>
 				</ul>
 			</nav>
 		</header>);

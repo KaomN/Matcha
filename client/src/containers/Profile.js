@@ -56,7 +56,7 @@ export default function Profile() {
 				if(response.status) {
 					socket.emit("online_query", { queryId: response.userid, path: pathname });
 					if(params.profileID) {
-						socket.emit("join_profile_room", { room: params.profileID, path: pathname });
+						socket.emit("join_profile_room", { userid: params.profileID, path: pathname });
 					}
 					socket.emit("send_notification", { username: response.username, userid: response.userid, type: "profile" });
 					setProfile(response);

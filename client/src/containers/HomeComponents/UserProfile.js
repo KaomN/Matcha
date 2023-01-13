@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 import ProfileButtons from "../ProfileComponents/ProfileButtons";
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfile(props) {
 	const [imagePage, setImagePage] = useState(0);
 	const [loading, setLoading] = useState(false);
-	
+	const navigate = useNavigate();
+
 	function nextImage() {
 		setImagePage(imagePage + 1)
 	}
 
 	function previousImage() {
 		setImagePage(imagePage - 1)
+	}
+
+	function handleNaviagteToProfile() {
+		navigate("/profile/" + props.profile.userid)
 	}
 
 	return (
@@ -27,7 +33,7 @@ export default function UserProfile(props) {
 		<div className="home_profile_left_container">
 			<div className="home_profile_picture_container">
 				<div className="flex-center">
-					<a className="home_username_fontstyle" href={"/profile/" + props.profile.userid}>@{props.profile.username}</a>
+					<div className="home_username_fontstyle unselectable" onClick={handleNaviagteToProfile}>@{props.profile.username}</div>
 				</div>
 				<div className="flex-center">
 					<img className="home_user_profile_image" src={props.profile.profilePic} alt="profile" />

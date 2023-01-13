@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./styles/ForgotPassword.css";
+
 
 export default function Login() {
 	//Input states
@@ -7,6 +9,8 @@ export default function Login() {
 	//Error/Success states
 	const [messageEmail, setMessageEmail] = useState("");
 	const [formInputClass, setFormInputClass] = useState("form_message_error");
+	const navigate = useNavigate();
+
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -27,6 +31,14 @@ export default function Login() {
 		}
 	}
 
+	function naviagteLogin() {
+		navigate("/login");
+	}
+
+	function naviagteSignup() {
+		navigate("/signup");
+	}
+
 	return (
 		<main className="form-container ma" id="formLogin">
 			<form className="forgotpassword-form" onSubmit={handleSubmit}>
@@ -45,8 +57,8 @@ export default function Login() {
 				</div>
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">
-					<a className="form__link" href="login" draggable="false"><span>Back To Login</span></a>
-					<a className="form__link" href="/signup" draggable="false"><span>Create New Account</span></a>
+					<div className="form__link unselectable" onClick={naviagteLogin}>Back To Login</div>
+					<div className="form__link unselectable" onClick={naviagteSignup}><span>Create New Account</span></div>
 				</div>
 			</form>
 		</main>

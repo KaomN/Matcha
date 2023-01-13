@@ -2,11 +2,10 @@ import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from "react-router-dom";
 import { trackPromise} from 'react-promise-tracker';
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import "./styles/Login.css";
 
 export default function Login() {
-	const { user, userContextLoading } = useContext(UserContext);
+	const { user } = useContext(UserContext);
 	//Input states
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -59,14 +58,16 @@ export default function Login() {
 		}
 	}
 
+	function naviagteForgotPassword() {
+		navigate("/forgotpassword");
+	}
+
 	useEffect(() => {
 		if(user.auth) {
 			navigate("/home");
 		}
 	}, [user.auth, navigate]);
-	
-	if(userContextLoading === true)
-		return <LoadingSpinner />
+
 	return (
 		<main className="form-container ma main-login" id="formLogin">
 			<form className="login-form" onSubmit={handleSubmit}>
@@ -83,7 +84,7 @@ export default function Login() {
 				<button className="form_button" type="submit">Login</button>
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">
-					<a className="form__link" href="forgotpassword">Forgot password?</a>
+					<div className="form__link unselectable" onClick={naviagteForgotPassword}>Forgot password?</div>
 				</div>
 			</form>
 			<div className={popupNotVerified}>

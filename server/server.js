@@ -26,6 +26,18 @@ const job = new CronJob('00 00 00 * * *', async function() {
 
 job.start();
 
+app.use('/images', express.static(__dirname + '/uploads'));
+
+if (!fs.existsSync(__dirname + "/uploads")){
+	fs.mkdirSync(__dirname + "/uploads");
+}
+// For parsing application/json header
+app.use(bodyParser.json());
+// For file uploads
+app.use(fileUpload());
+app.use(cors({origin: "http://127.0.0.1:3001", credentials:true}));
+//app.use(cors());
+
 // Session middleware
 app.use(sessionMiddleware);
 const httpServer = app.listen(PORT, () => {
@@ -36,6 +48,7 @@ const io = new Server(httpServer, {
 	cors: {
 		origin: 'http://localhost:3000',
 		methods: ['GET', 'POST'],
+		credentials: true
 	},
 });
 
@@ -92,7 +105,8 @@ function getUser(userId) {
 	return null;
 }
 
-// Only allow authenticated users
+//Only allow authenticated users
+
 io.use((socket, next) => {
 	const session = socket.request.session;
 	if (session && session.authenticated) {
@@ -105,11 +119,6 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
 	try {
-		socket.join(socket.request.session.token);
-		socket.to(socket.request.session.token).emit('online_response', {
-			onlineStatus: true
-		});
-
 		socket.on("message", async function (data) {
 			const user = getUser(data.userid);
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
@@ -251,7 +260,7 @@ io.on('connection', (socket) => {
 
 		// Join profile room to listen for updates
 		socket.on("join_profile_room", async function (data) {
-			socket.join(await getUserToken(data.room));
+			socket.join(await getUserToken(data.userid));
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 			socket.to(socket.request.session.token).emit('online_response', {
 				onlineStatus: true
@@ -276,7 +285,7 @@ io.on('connection', (socket) => {
 			});
 		});
 		// Logout user
-		socket.on('logout', async function (data) {
+		socket.on('logout', async function () {
 			// Update last active
 			await updateLastActive(socket.request.session.userid)
 			// Delete user from userStatus array
@@ -287,20 +296,10 @@ io.on('connection', (socket) => {
 		});
 
 	} catch (err) {
+		console.lot (err)
 	}
 });
 
-app.use('/images', express.static(__dirname + '/uploads'));
-
-if (!fs.existsSync(__dirname + "/uploads")){
-	fs.mkdirSync(__dirname + "/uploads");
-}
-// For parsing application/json header
-app.use(bodyParser.json());
-// For file uploads
-app.use(fileUpload());
-app.use(cors({origin: "http://127.0.0.1:3001", credentials:true}));
-app.use(cors());
 // UserController
 app.use('/request', require('./controllers/UserController'));
 // UserController
