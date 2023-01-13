@@ -234,6 +234,13 @@
 	display: none;
 }
 
+.signup_loader {
+	display:flex;
+	align-items:center;
+	justify-content: center;
+	width: 100%;
+}
+
 @media screen and (orientation: landscape) and (max-height: 500px) {
 	body {
 		justify-content: flex-start;

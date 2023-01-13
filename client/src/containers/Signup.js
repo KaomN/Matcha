@@ -1,10 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from '../context/UserContext';
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import "./styles/Signup.css";
 import toast from 'react-simple-toasts';
-
+import { LoadingSpinnerComponent } from '../components/LoadingSpinnerComponent'
 
 export default function Signup() {
 	const { user } = useContext(UserContext);
@@ -24,11 +23,14 @@ export default function Signup() {
 	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
 	// Other states
 	const [popup, setPopup] = useState("popup hide-popup");
+	const [isLoading, setIsLoading] = useState(false)
+
 
 	const navigate = useNavigate();
 
 	async function handleSubmit(event) {
 		event.preventDefault();
+		setIsLoading(true)
 		let response = await fetch('/request/register', {
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
@@ -54,6 +56,7 @@ export default function Signup() {
 				setErrorPassword(response.errorPassword)
 				setErrorPasswordConfirm(response.errorPasswordConfirm)
 			}
+			setIsLoading(false)
 		} else {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 		}
@@ -104,7 +107,14 @@ export default function Signup() {
 					<input type="password" name="passwordConfirm" className="form_input" placeholder="Confirm Password" autoComplete="off" value={passwordConfirm} onChange={function(e) {setPasswordConfirm(e.target.value); setErrorPasswordConfirm("")}}/>
 					<div className="form_input_error_message">{errorPasswordConfirm}</div>
 				</div>
-				<button className="form_button" name="request" type="submit">Sign up</button>
+					{isLoading ?
+					<LoadingSpinnerComponent
+					size={30}
+					class='signup_loader'
+					/>
+					:
+					<button className="form_button" name="request" type="submit">Sign up</button>
+					}
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">
 					<div className="form__link unselectable" onClick={naviagteForgotPassword}>Forgot password?</div>

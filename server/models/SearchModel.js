@@ -22,7 +22,7 @@ const getSearch = async (req) => {
 				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = users.pk_userid) OR (userid2 = ? AND userid1 = users.pk_userid)) AS connected,
 				(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
 				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest,
-				(SELECT COUNT(*) FROM (SELECT * FROM rating WHERE fk_userid = pk_userid LIMIT 100) AS ratings) AS rating
+				(SELECT COUNT(*) FROM (SELECT * FROM rating INNER JOIN users on rating.fk_userid = users.pk_userid WHERE fk_userid = users.pk_userid LIMIT 100) AS ratings) AS rating
 			FROM users
 			WHERE ${tagsQuery}
 			HAVING distance <= ?

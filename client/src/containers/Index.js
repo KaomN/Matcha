@@ -99,7 +99,7 @@ export default function Index() {
 			}
 		}
 		return () => mounted = false;
-	}, [searchParams, responseErrorMsg, responseMsg, pin]);
+	}, [searchParams, responseErrorMsg, responseMsg, pin, navigate]);
 
 	useEffect(() => {
 		if(user.auth && searchParams.get("emailchangerequest") === null && searchParams.get("verification") === null) {
