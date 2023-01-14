@@ -12,7 +12,7 @@ const PORT = process.env.PORT;
 const {sessionMiddleware} = require('./modules/SessionMiddleware')
 const { Server } = require('socket.io')
 const app = express();
-const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, checkConnected, saveMessage } = require('./modules/HelperModules')
+const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, saveMessage, amIBlocked } = require('./modules/HelperModules')
 var CronJob = require('cron').CronJob;
 
 // Cron job to delete ratings older than 7 days
@@ -148,7 +148,7 @@ io.on('connection', (socket) => {
 				channel: data.channel,
 			});
 		});
-
+		// For chat notifications
 		socket.on("message_chat_notification", async function (data) {
 			const user = getUser(data.sendto);
 			if(user) {
@@ -160,7 +160,6 @@ io.on('connection', (socket) => {
 				await saveNotification(data.sentto, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3)
 			}
 		});
-
 		/* Updating connection requests */
 		socket.on("send_connect_request", async function (data) {
 			const user = getUser(data.userid);
@@ -210,7 +209,6 @@ io.on('connection', (socket) => {
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
-
 		// Updating blocked requests
 		socket.on("send_unblocked", async function (data) {
 			const user = getUser(data.userid);
@@ -221,7 +219,6 @@ io.on('connection', (socket) => {
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
-
 		// Notification
 		socket.on("send_notification", async function (data) {
 			// emit notification to user if online
@@ -253,7 +250,7 @@ io.on('connection', (socket) => {
 						});
 					}
 				} else if (data.type === "profile") {
-					if(data.userid !== socket.request.session.userid) {
+					if(data.userid !== socket.request.session.userid && await amIBlocked(data.userid, socket.request.session.userid) === false) {
 						socket.to(user.socketId).emit("receive_notification", {
 							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`, 2),
 							fk_userid: data.userid,
@@ -273,7 +270,6 @@ io.on('connection', (socket) => {
 				}
 			}
 		});
-
 		// Join profile room to listen for updates
 		socket.on("join_profile_room", async function (data) {
 			socket.join(await getUserToken(data.userid));

@@ -275,7 +275,19 @@ async function addRating(userid, fromUserId, type) {
 	} catch (err) {
 		return false;
 	}
+}
 
+async function amIBlocked(userid, targetUserId) {
+	const [res, fields] = await con.execute(
+		`SELECT COUNT(*) AS count
+		FROM blocked
+		WHERE fk_userid = ? AND targetuserid = ?`,
+		[userid, targetUserId])
+	if (res[0].count > 0) {
+		return true
+	} else {
+		return false
+	}
 }
 
 
@@ -295,4 +307,5 @@ module.exports = {
 	getMessages,
 	saveMessage,
 	addRating,
+	amIBlocked,
 };
