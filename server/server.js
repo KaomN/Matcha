@@ -172,7 +172,7 @@ io.on('connection', (socket) => {
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 
 		});
-
+		// Updating disconnect requests
 		socket.on("send_disconnect_request", async function (data) {
 			const user = getUser(data.userid);
 			if(user) {
@@ -186,7 +186,7 @@ io.on('connection', (socket) => {
 				connected: false
 			});
 		});
-		// Check if user is connected
+		// Uppdating connected requests
 		socket.on("send_connected", async function (data) {
 			const user = getUser(data.userid);
 			const status = await checkConnectRequest(data.userid, socket.request.session.userid)
@@ -199,6 +199,27 @@ io.on('connection', (socket) => {
 			socket.emit("receive_connected_request", {
 				connected: status
 			});
+		});
+		// Updating blocked requests
+		socket.on("send_blocked", async function (data) {
+			const user = getUser(data.userid);
+			if (user) {
+				socket.to(user.socketId).emit("receive_blocked_request", {
+					amiblocked: true
+				});
+			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
+		});
+
+		// Updating blocked requests
+		socket.on("send_unblocked", async function (data) {
+			const user = getUser(data.userid);
+			if (user) {
+				socket.to(user.socketId).emit("receive_unblocked_request", {
+					amiblocked: false
+				});
+			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
 
 		// Notification

@@ -15,12 +15,13 @@ const getProfile = async (userID, req) => {
 				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = pk_userid) AS connectRequest,
 				(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = pk_userid) AS connectRequestSent,
 				(SELECT COUNT(*) FROM blocked WHERE fk_userid = ? AND targetuserid = pk_userid) AS blocked,
+				(SELECT COUNT(*) FROM blocked WHERE fk_userid = pk_userid AND targetuserid = ?) AS amiblocked,
 				(SELECT COUNT(*) FROM report WHERE fk_userid = ? AND targetuserid = pk_userid) AS reported,
 				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = pk_userid) OR (userid2 = ? AND userid1 = pk_userid)) AS connected,
 				(SELECT COUNT(*) FROM (SELECT * FROM rating WHERE fk_userid = ? LIMIT 100) AS ratings) AS rating
 			FROM users
 			WHERE pk_userid = ?`,
-			[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, userID, userID])
+			[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid , req.session.userid, req.session.userid, userID, userID])
 		if(rows[0] !== undefined) {
 			// Fetch images
 			var result = await con.execute(
@@ -555,25 +556,23 @@ const disconnect = async (req) => {
 	try {
 		// Create a new connect row with the two users
 		const res = await con.execute(
-				`DELETE 
-				FROM connect
-				WHERE fk_userid = ?
-				AND targetuserid = ?`,
-				[req.session.userid, req.body.userid])
-		if(res && checkConnected(req.session.userid, req.body.userid)) {
-			const res = await con.execute(
-				`DELETE 
-				FROM connected
-				WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
-				[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
-		}
+			`DELETE 
+			FROM connect
+			WHERE fk_userid = ?
+			AND targetuserid = ?`,
+			[req.session.userid, req.body.userid])
 		const res2 = await con.execute(
-				`DELETE
-				FROM notifications
-				WHERE fk_userid = ?
-				AND targetuserid = ?
-				AND notification = ?`,
-				[req.body.userid, req.session.userid, req.body.message])
+			`DELETE 
+			FROM connected
+			WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
+			[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
+		const res3 = await con.execute(
+			`DELETE
+			FROM notifications
+			WHERE fk_userid = ?
+			AND targetuserid = ?
+			AND notification = ?`,
+			[req.body.userid, req.session.userid, req.body.message])
 		return ({status: true, message: "You are now disconnected with " + req.body.username + "!", connectRequest: await checkConnectRequest(req.body.userid, req.session.userid)})
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
@@ -587,6 +586,17 @@ const report = async (req) => {
 				INSERT INTO report (fk_userid, targetuserid)
 				VALUES (?, ?)`,
 				[req.session.userid, req.body.userid])
+		const res = await con.execute(
+			`DELETE 
+			FROM connect
+			WHERE fk_userid = ?
+			AND targetuserid = ?`,
+			[req.session.userid, req.body.userid])
+		const res2 = await con.execute(
+			`DELETE 
+			FROM connected
+			WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
+			[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
 		return ({status: true, message: req.body.username + " reported!"})
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
@@ -614,6 +624,17 @@ const block = async (req) => {
 			INSERT INTO blocked (fk_userid, targetuserid)
 			VALUES (?, ?)`,
 			[req.session.userid, req.body.userid])
+		const res = await con.execute(
+			`DELETE 
+			FROM connect
+			WHERE fk_userid = ?
+			AND targetuserid = ?`,
+			[req.session.userid, req.body.userid])
+		const res2 = await con.execute(
+			`DELETE 
+			FROM connected
+			WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
+			[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
 		return ({status: true, message: req.body.username + " blocked"})
 	} catch (err) {
 		return({status: false, message: "Server connection error"});

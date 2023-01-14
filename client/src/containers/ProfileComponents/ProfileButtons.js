@@ -8,12 +8,14 @@ export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
 	const [connectRequest, setConnectRequest] = useState(false);
 	const [connected, setConnected] = useState(false);
+	const [amIBlocked, setAmIBlocked] = useState(false);
 	const { pathname } = useLocation();
 
 	useEffect(() => {
 		setConnectRequest(props.profile.connectRequest);
 		setConnected(props.profile.connected);
-	}, [props.profile.connected, props.profile.connectRequest]);
+		setAmIBlocked(props.profile.amiblocked);
+	}, [props.profile.connected, props.profile.connectRequest, props.profile.amIBlocked]);
 	
 	useEffect(() => {
 		if (socket.disconnected)
@@ -33,13 +35,25 @@ export default function ProfileButtons(props) {
 		socket.on("receive_connected_request", (data) => {
 			setConnected(data.connected)
 		});
+		if (socket.disconnected)
+			socket.open()
+		socket.on("receive_unblocked_request", (data) => {
+			setAmIBlocked(data.amiblocked)
+		});
+		if (socket.disconnected)
+			socket.open()
+		socket.on("receive_blocked_request", (data) => {
+			setAmIBlocked(data.amiblocked)
+		});
 		return () => {
 			socket.off("receive_connect_request");
 			socket.off("receive_disconnect_request");
 			socket.off("receive_connected_request");
+			socket.off("receive_unblocked_request");
+			socket.off("receive_blocked_request");
 			};
 	}, [socket]);
-	console.log("connected", connected , "\n", "connectRequest", connectRequest)
+
 	async function handleBlock() {
 		try {
 			props.setLoading(true)
@@ -75,7 +89,8 @@ export default function ProfileButtons(props) {
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						if (socket.disconnected)
 							socket.open()
-						socket.emit("update_last_active", { path: pathname })
+						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname})
+						//socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -122,7 +137,8 @@ export default function ProfileButtons(props) {
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						if (socket.disconnected)
 							socket.open()
-						socket.emit("update_last_active", { path: pathname })
+						socket.emit("send_unblocked", {userid: props.profile.userid, path: pathname})
+						//socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -355,13 +371,16 @@ export default function ProfileButtons(props) {
 
 	return (
 			<>
-				{props.profile.canConnect ?
-					props.profile.connectRequestSent ?
-					<i className="material-icons profile_disconnect_btn" title="Disconnect" onClick={handleDisconnect}>star</i>
+				{!amIBlocked ?
+					props.profile.canConnect && !props.profile.blocked ?
+						props.profile.connectRequestSent && !props.profile.blocked ?
+						<i className="material-icons profile_disconnect_btn" title="Disconnect" onClick={handleDisconnect}>star</i>
+						:
+						<i className="material-icons profile_connect_btn" title="Connect"  onClick={handleConnect}>star</i>
 					:
-					<i className="material-icons profile_connect_btn" title="Connect"  onClick={handleConnect}>star</i>
+					null
 				:
-				null
+				<i className="material-icons profile_connect_btn" title={props.profile.username + " has blocked you"}>do_not_disturb_on</i>
 				}
 				{props.profile.blocked ?
 				<i
