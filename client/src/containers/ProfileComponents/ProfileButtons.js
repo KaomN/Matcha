@@ -6,24 +6,27 @@ import { useLocation } from "react-router-dom"
 
 export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
-	const [connectRequest, setConnectRequest] = useState(props.profile.connectRequest);
-	const [connected, setConnected] = useState(props.profile.connected);
+	const [connectRequest, setConnectRequest] = useState(false);
+	const [connected, setConnected] = useState(false);
 	const { pathname } = useLocation();
+
+	useEffect(() => {
+		setConnectRequest(props.profile.connectRequest);
+		setConnected(props.profile.connected);
+	}, [props.profile.connected, props.profile.connectRequest]);
 	
 	useEffect(() => {
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_connect_request", (data) => {
+			console.log(data)
 			setConnectRequest(data.connectRequest)
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_disconnect_request", (data) => {
-			if(data.connected) {
 				setConnected(data.connected)
-			} else {
 				setConnectRequest(data.connectRequest)
-			}
 		});
 		if (socket.disconnected)
 			socket.open()
@@ -36,7 +39,7 @@ export default function ProfileButtons(props) {
 			socket.off("receive_connected_request");
 			};
 	}, [socket]);
-
+	console.log("connected", connected , "\n", "connectRequest", connectRequest)
 	async function handleBlock() {
 		try {
 			props.setLoading(true)
@@ -245,7 +248,7 @@ export default function ProfileButtons(props) {
 								props.setProfile(profile => profile.map((user) => {
 									if(user.userid === props.profile.userid) {
 										return {
-											...user, connectRequestSent: true, connected: true
+											...user, connectRequestSent: true, connected: true, connectRequest: true
 										}
 									} else {
 										return user
@@ -253,7 +256,7 @@ export default function ProfileButtons(props) {
 								}))
 							} else {
 								props.setProfile(profile => ({
-									...profile, connectRequestSent: true, connected: true
+									...profile, connectRequestSent: true, connected: true, connectRequest: true
 								}))
 							}
 						} else {
@@ -318,6 +321,7 @@ export default function ProfileButtons(props) {
 						})
 					})
 					const data = await response.json()
+					console.log(data)
 					if (data.status) {
 						if(props.userProfileIsArray) {
 							props.setProfile(profile => profile.map((user) => {
@@ -381,13 +385,13 @@ export default function ProfileButtons(props) {
 				title="Report"
 				onClick={handleReport}>report</i>
 				}
-				{connectRequest ?
-					connected ?
-					<i className="material-icons profile_connected" title="Connect">star</i>
-					:
-					<i className="material-icons profile_connect_request" draggable="false" title={"Connection request"}>star_half</i>
-				:
-				null
+				{ connectRequest && !connected ?
+				<i className="material-icons profile_connect_request" draggable="false" title={"Connection request"}>star_half</i>
+				: null
+				}
+				{connectRequest && connected ?
+				<i className="material-icons profile_connected" title="Connect">star</i>
+				: null
 				}
 			</>
 	);

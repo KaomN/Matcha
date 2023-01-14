@@ -574,7 +574,7 @@ const disconnect = async (req) => {
 				AND targetuserid = ?
 				AND notification = ?`,
 				[req.body.userid, req.session.userid, req.body.message])
-		return ({status: true, message: "You are now disconnected with " + req.body.username + "!"})
+		return ({status: true, message: "You are now disconnected with " + req.body.username + "!", connectRequest: await checkConnectRequest(req.body.userid, req.session.userid)})
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
 	}
