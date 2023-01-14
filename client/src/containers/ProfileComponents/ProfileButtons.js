@@ -3,7 +3,6 @@ import { SocketContext } from "../../context/SocketContext";
 import { useEffect, useContext, useState } from "react";
 import { useLocation } from "react-router-dom"
 
-
 export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
 	const [connectRequest, setConnectRequest] = useState(false);
@@ -90,7 +89,6 @@ export default function ProfileButtons(props) {
 						if (socket.disconnected)
 							socket.open()
 						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname})
-						//socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
@@ -138,7 +136,6 @@ export default function ProfileButtons(props) {
 						if (socket.disconnected)
 							socket.open()
 						socket.emit("send_unblocked", {userid: props.profile.userid, path: pathname})
-						//socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
 				})();
