@@ -165,7 +165,9 @@ io.on('connection', (socket) => {
 			const user = getUser(data.userid);
 			if(user) {
 				socket.to(user.socketId).emit("receive_connect_request", {
-					connectRequest: true
+					connectRequest: true,
+					usersUserId: user.userId,
+					myUserID: socket.request.session.userid
 				});
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
@@ -178,6 +180,8 @@ io.on('connection', (socket) => {
 				socket.to(user.socketId).emit("receive_disconnect_request", {
 					connectRequest: false,
 					connected: false,
+					usersUserId: user.userId,
+					myUserID: socket.request.session.userid
 				});
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
@@ -191,20 +195,21 @@ io.on('connection', (socket) => {
 			const status = await checkConnectRequest(data.userid, socket.request.session.userid)
 			if (user) {
 				socket.to(user.socketId).emit("receive_connected_request", {
-					connected: status
+					connected: status,
+					usersUserId: user.userId,
+					myUserID: socket.request.session.userid
 				});
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
-			socket.emit("receive_connected_request", {
-				connected: status
-			});
 		});
 		// Updating blocked requests
 		socket.on("send_blocked", async function (data) {
 			const user = getUser(data.userid);
 			if (user) {
 				socket.to(user.socketId).emit("receive_blocked_request", {
-					amiblocked: true
+					amiblocked: true,
+					usersUserId: user.userId,
+					myUserID: socket.request.session.userid
 				});
 				if(data.wasConnected) {
 					socket.to(user.socketId).emit("receive_notification", {
@@ -225,7 +230,9 @@ io.on('connection', (socket) => {
 			const user = getUser(data.userid);
 			if (user) {
 				socket.to(user.socketId).emit("receive_unblocked_request", {
-					amiblocked: false
+					amiblocked: false,
+					usersUserId: user.userId,
+					myUserID: socket.request.session.userid
 				});
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
@@ -233,7 +240,11 @@ io.on('connection', (socket) => {
 		socket.on("send_report", async function (data) {
 			const user = getUser(data.userid);
 			if (user) {
-				socket.to(user.socketId).emit("receive_report_request");
+				socket.to(user.socketId).emit("receive_report_request", {
+					usersUserId: user.userid,
+					myUserID: socket.request.session.userid
+				});
+				
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});

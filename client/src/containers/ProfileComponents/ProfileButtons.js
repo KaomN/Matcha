@@ -20,66 +20,78 @@ export default function ProfileButtons(props) {
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_connect_request", (data) => {
-			setConnectRequest(data.connectRequest)
+			if (data.myUserID === props.profile.userid) {
+				setConnectRequest(data.connectRequest)
+			}
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_disconnect_request", (data) => {
+			if (data.myUserID === props.profile.userid) {
 				setConnected(data.connected)
 				setConnectRequest(data.connectRequest)
+			}
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_connected_request", (data) => {
-			setConnected(data.connected)
+			if (data.myUserID === props.profile.userid) {
+				setConnected(data.connected)
+			}
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_unblocked_request", (data) => {
-			setAmIBlocked(data.amiblocked)
-			if(props.userProfileIsArray) {
-				props.setProfile(profile => profile.map((user) => {
-					if(user.userid === props.profile.userid) {
-						return {
-							...user, amiblocked: false, connectRequestSent: false, connected: false, connectRequest:false
+			if (data.myUserID === props.profile.userid) {
+				setAmIBlocked(data.amiblocked)
+				if(props.userProfileIsArray) {
+					props.setProfile(profile => profile.map((user) => {
+						if(user.userid === props.profile.userid) {
+							return {
+								...user, amiblocked: false, connectRequestSent: false, connected: false, connectRequest:false
+							}
+						} else {
+							return user
 						}
-					} else {
-						return user
-					}
-				}))
-			} else {
-				props.setProfile(profile => ({
-					...profile, amiblocked: false, connectRequestSent: false, connected: false, connectRequest:false
-				}))
+					}))
+				} else {
+					props.setProfile(profile => ({
+						...profile, amiblocked: false, connectRequestSent: false, connected: false, connectRequest:false
+					}))
+				}
 			}
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_blocked_request", (data) => {
-			setAmIBlocked(data.amiblocked)
-			setConnected(false)
-			setConnectRequest(false)
-			if(props.userProfileIsArray) {
-				props.setProfile(profile => profile.map((user) => {
-					if(user.userid === props.profile.userid) {
-						return {
-							...user, amiblocked: true, connectRequestSent: false, connected: false, connectRequest:false
+			if (data.myUserID === props.profile.userid) {
+				setAmIBlocked(data.amiblocked)
+				setConnected(false)
+				setConnectRequest(false)
+				if(props.userProfileIsArray) {
+					props.setProfile(profile => profile.map((user) => {
+						if(user.userid === props.profile.userid) {
+							return {
+								...user, amiblocked: true, connectRequestSent: false, connected: false, connectRequest:false
+							}
+						} else {
+							return user
 						}
-					} else {
-						return user
-					}
-				}))
-			} else {
-				props.setProfile(profile => ({
-					...profile, amiblocked: true, connectRequestSent: false, connected: false, connectRequest:false
-				}))
+					}))
+				} else {
+					props.setProfile(profile => ({
+						...profile, amiblocked: true, connectRequestSent: false, connected: false, connectRequest:false
+					}))
+				}
 			}
 		});
 		if (socket.disconnected)
 			socket.open()
-		socket.on("receive_report_request", () => {
-			setConnected(false)
-			setConnectRequest(false)
+		socket.on("receive_report_request", (data) => {
+			if (data.myUserID === props.profile.userid) {
+				setConnected(false)
+				setConnectRequest(false)
+			}
 		});
 		return () => {
 			socket.off("receive_connect_request");
@@ -90,7 +102,7 @@ export default function ProfileButtons(props) {
 			socket.off("receive_report_request");
 			};
 	// eslint-disable-next-line
-	}, [socket]);
+	}, [socket, props.profile.userid]);
 
 	async function handleBlock() {
 		try {
