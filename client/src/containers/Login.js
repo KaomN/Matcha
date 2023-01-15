@@ -20,7 +20,7 @@ export default function Login() {
 	function fetchLogin() {
 		const promise = new Promise((resolve, reject) => {
 			setTimeout(() => {
-				resolve(fetch('/request/login', {
+				resolve(fetch('http://localhost:3001/request/login', {
 					credentials: "include",
 					method: 'POST',
 					headers: { 'content-type': 'application/json' },

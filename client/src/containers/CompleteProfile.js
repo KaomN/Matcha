@@ -48,7 +48,7 @@ export default function CompleteProfile() {
 	}
 
 	async function getLocationAPI() {
-		let response = await fetch('/request/getlocation', {
+		let response = await fetch('http://localhost:3001/request/getlocation', {
 			credentials: "include",
 			method: "POST",
 		});

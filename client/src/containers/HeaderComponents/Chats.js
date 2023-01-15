@@ -13,7 +13,7 @@ export default function Chats(props) {
 	useEffect(() => {
 		(async function() {
 			setIsLoading(true)
-			const response = await fetch('/chat/chat/', {
+			const response = await fetch('http://localhost:3001/chat/chat/', {
 				credentials: "include",
 				method: 'GET'
 			})

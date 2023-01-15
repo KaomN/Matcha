@@ -23,7 +23,7 @@ export default function Chat() {
 		if(mounted) {
 			if(connectedUser.length > 0) {
 				(async function() {
-					const response = await fetch(`/chat/chat/`, {
+					const response = await fetch(`http://localhost:3001/chat/chat/`, {
 						credentials: "include",
 						method: 'GET'
 					})
@@ -36,7 +36,7 @@ export default function Chat() {
 			} else {
 				(async function() {
 					setIsLoading(true)
-					const response = await fetch(`/chat/chat/`, {
+					const response = await fetch(`http://localhost:3001/chat/chat/`, {
 						credentials: "include",
 						method: 'GET'
 					})

@@ -13,7 +13,7 @@ export default function ProfileImages(props) {
 	}
 
 	async function deleteImage(image) {
-		let response = await fetch('/profile/deleteimage', {
+		let response = await fetch('http://localhost:3001/profile/deleteimage', {
 			credentials: "include",
 			headers: {'Content-Type': 'application/json'},
 			method: "POST",

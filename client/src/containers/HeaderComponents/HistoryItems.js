@@ -4,7 +4,7 @@ export default function HistoryItems(props) {
 	const navigate = useNavigate();
 
 	async function deleteHistory() {
-		const res = await fetch("/user/history", {
+		const res = await fetch("http://localhost:3001/user/history", {
 			credentials: "include",
 			method: "DELETE",
 			headers: {"Content-Type": "application/json"},

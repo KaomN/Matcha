@@ -7,7 +7,7 @@ export default function NotificationItems(props) {
 	async function handleNavigate() {
 		try {
 			if(!props.item.isread) {
-				const response = await fetch("/user/notification/", {
+				const response = await fetch("http://localhost:3001/user/notification/", {
 					method: "PUT",
 					headers: {"Content-Type": "application/json"},
 					body: JSON.stringify({

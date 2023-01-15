@@ -27,7 +27,7 @@ export default function AdvancedSearch() {
 		if(mounted) {
 			(async function() {
 				setIsLoading(true);
-				const response = await fetch("/search/tags", {
+				const response = await fetch("http://localhost:3001/search/tags", {
 					credentials: "include",
 					method: 'GET'
 				});
@@ -58,11 +58,10 @@ export default function AdvancedSearch() {
 
 	async function handleSearch() {
 		setIsSearching(true);
-		const response = await fetch("/search/search", {
+		const response = await fetch("http://localhost:3001/search/search", {
+			credentials: "include",
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers: {"Content-Type": "application/json"},
 			body: JSON.stringify({
 				age: searchAge,
 				rating: searchRating,

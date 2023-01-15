@@ -109,12 +109,10 @@ export default function ProfileButtons(props) {
 			props.setLoading(true)
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch("/profile/block", {
+					const response = await fetch("http://localhost:3001/profile/block", {
 						credentials: "include",
 						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
+						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -156,12 +154,10 @@ export default function ProfileButtons(props) {
 			props.setLoading(true)
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch("/profile/block", {
+					const response = await fetch("http://localhost:3001/profile/block", {
 						credentials: "include",
 						method: "DELETE",
-						headers: {
-							"Content-Type": "application/json"
-						},
+						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -203,12 +199,10 @@ export default function ProfileButtons(props) {
 			props.setLoading(true)
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch("/profile/report", {
+					const response = await fetch("http://localhost:3001/profile/report", {
 						credentials: "include",
 						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
+						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -250,12 +244,10 @@ export default function ProfileButtons(props) {
 			props.setLoading(true)
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch("/profile/report", {
+					const response = await fetch("http://localhost:3001/profile/report", {
 						credentials: "include",
 						method: "DELETE",
-						headers: {
-							"Content-Type": "application/json"
-						},
+						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -297,7 +289,7 @@ export default function ProfileButtons(props) {
 			props.setLoading(true)
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch("/profile/connect", {
+					const response = await fetch("http://localhost:3001/profile/connect", {
 						credentials: "include",
 						method: "POST",
 						headers: {"Content-Type": "application/json"},
@@ -368,14 +360,14 @@ export default function ProfileButtons(props) {
 			
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch(`/profile/disconnect/?userid1=${props.profile.userid}&userid2=${props.user.userid}`)
+					const response = await fetch(`http://localhost:3001/profile/disconnect/?userid1=${props.profile.userid}&userid2=${props.user.userid}`)
 					const data = await response.json()
 					if (data.status) {
 						socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect" });
 					}
 				})();
 				(async function() {
-					const response = await fetch("/profile/disconnect", {
+					const response = await fetch("http://localhost:3001/profile/disconnect", {
 						credentials: "include",
 						method: "DELETE",
 						headers: {"Content-Type": "application/json"},

@@ -19,7 +19,7 @@ export default function Index() {
 			if(mounted) {
 				(async () => {
 					const token = searchParams.get("verification")
-					let response = await fetch('/request/verify', {
+					let response = await fetch('http://localhost:3001/request/verify', {
 						credentials: "include",
 						method: "POST",
 						headers: { 'content-type': 'application/json' },
@@ -55,7 +55,8 @@ export default function Index() {
 				(() => {
 					async function handleSubmit() {
 						const token = searchParams.get("emailchangerequest")
-						let response = await fetch('/request/email', {
+						let response = await fetch('http://localhost:3001/request/email', {
+							credentials: "include",
 							method: "PUT",
 							headers: { 'content-type': 'application/json' },
 							body: JSON.stringify({

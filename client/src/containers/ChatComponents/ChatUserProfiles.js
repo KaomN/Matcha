@@ -13,7 +13,7 @@ export default function ChatUserProfiles(props) {
 				setUnreadMessage(true);
 			}
 			if (data.channel === props.profile.room && props.activeChat.channel === props.profile.room) {
-				await fetch(`/chat/markread`,{
+				await fetch(`http://localhost:3001/chat/markread`,{
 					credentials: "include",
 					method: "PUT",
 					headers: {"Content-Type": "application/json",},
@@ -37,7 +37,7 @@ export default function ChatUserProfiles(props) {
 
 	async function handleOnclick() {
 		props.setComponentIsLoading(true)
-		await fetch(`/chat/markread`,{
+		await fetch(`http://localhost:3001/chat/markread`,{
 			credentials: "include",
 			method: "PUT",
 			headers: {"Content-Type": "application/json",},

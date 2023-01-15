@@ -15,7 +15,7 @@ export default function Profile(props) {
 		(async function() {
 			try {
 				setIsLoading(true)
-				const response = await fetch("/user/history", {
+				const response = await fetch("http://localhost:3001/user/history", {
 					credentials: "include",
 					method: 'GET'
 				})

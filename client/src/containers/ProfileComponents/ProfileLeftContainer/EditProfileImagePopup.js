@@ -45,7 +45,7 @@ export default function EditProfileImagePopup(props) {
 			formdata.append("y", imageSize.y)
 			formdata.append("cropWidth", imageSize.width)
 			formdata.append("cropHeight", imageSize.height)
-			let response = await fetch('/profile/uploadprofileimage', {
+			let response = await fetch('http://localhost:3001/profile/uploadprofileimage', {
 				credentials: "include",
 				method: "POST",
 				body: formdata

@@ -8,7 +8,7 @@ export async function HandleSubmit(props) {
 	if (props.type === "name") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/name', {
+			let response = await fetch('http://localhost:3001/profile/name', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -41,7 +41,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "username") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/username', {
+			let response = await fetch('http://localhost:3001/profile/username', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -71,7 +71,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "dateofbirth") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/dateofbirth', {
+			let response = await fetch('http://localhost:3001/profile/dateofbirth', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -102,7 +102,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "gender") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/gender', {
+			let response = await fetch('http://localhost:3001/profile/gender', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -133,7 +133,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "preference") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/preference', {
+			let response = await fetch('http://localhost:3001/profile/preference', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -184,7 +184,7 @@ export async function HandleSubmit(props) {
 					}, 3000)
 				} else {
 					props.setPromiseTracker(true)
-					const response = await fetch('/profile/interest', {
+					const response = await fetch('http://localhost:3001/profile/interest', {
 						credentials: "include",
 						headers: {'Content-Type': 'application/json'},
 						method: "PUT",
@@ -224,7 +224,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "interestDelete") {
 		try {
 			props.setPromiseTracker2(true)
-			let response = await fetch('/profile/interest', {
+			let response = await fetch('http://localhost:3001/profile/interest', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "DELETE",
@@ -261,7 +261,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "biography") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/biography', {
+			let response = await fetch('http://localhost:3001/profile/biography', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -290,7 +290,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "email") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/email', {
+			let response = await fetch('http://localhost:3001/profile/email', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -317,7 +317,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "password") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/password', {
+			let response = await fetch('http://localhost:3001/profile/password', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
@@ -342,7 +342,7 @@ export async function HandleSubmit(props) {
 	else if (props.type === "position") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('/profile/position', {
+			let response = await fetch('http://localhost:3001/profile/position', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",

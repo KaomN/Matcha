@@ -68,7 +68,7 @@ export default function Notifications(props) {
 		if(mounted) {
 			(async function() {
 				setIsLoading(true)
-				const response = await fetch('/user/notification/', {
+				const response = await fetch('http://localhost:3001/user/notification/', {
 					credentials: "include",
 					method: 'GET'
 				})
@@ -97,7 +97,8 @@ export default function Notifications(props) {
 			setIsLoading(true)
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch("/user/notification/", {
+					const response = await fetch("http://localhost:3001/user/notification/", {
+						credentials: "include",
 						method: "DELETE",
 						headers: {"Content-Type": "application/json"}
 					})

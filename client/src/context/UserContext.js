@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
 			if(pathname === "/home" || pathname.slice(0, 8) === "/profile" || pathname === "/chat" || pathname === "/completeprofile" || pathname === "/search") {
 				setTimeout(() => {
 					(async () => {
-						const response = await fetch('/request/getuserinfo', {
+						const response = await fetch('http://localhost:3001/request/getuserinfo', {
 							credentials: "include",
 							method: 'GET'
 						});

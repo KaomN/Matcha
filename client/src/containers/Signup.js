@@ -31,7 +31,7 @@ export default function Signup() {
 	async function handleSubmit(event) {
 		event.preventDefault();
 		setIsLoading(true)
-		let response = await fetch('/request/register', {
+		let response = await fetch('http://localhost:3001/request/register', {
 			method: "POST",
 			credentials: "include",
 			headers: { 'content-type': 'application/json' },

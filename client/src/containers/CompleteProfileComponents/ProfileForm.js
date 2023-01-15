@@ -62,7 +62,7 @@ export default function ProfileForm(props) {
 			formdata.append("y", imageSize.y)
 			formdata.append("width", imageSize.width)
 			formdata.append("height", imageSize.height)
-			let response = await fetch('/request/completeprofile', {
+			let response = await fetch('http://localhost:3001/request/completeprofile', {
 				credentials: "include",
 				method: "POST",
 				body: formdata

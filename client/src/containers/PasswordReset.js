@@ -17,7 +17,7 @@ export default function PasswordReset() {
 	async function handleSubmit(event) {
 		event.preventDefault();
 
-		let response = await fetch('/request/passwordreset', {
+		let response = await fetch('http://localhost:3001/request/passwordreset', {
 			credentials: "include",
 			method: "POST",
 			headers: { 'content-type': 'application/json' },

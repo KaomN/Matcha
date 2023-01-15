@@ -35,7 +35,11 @@ if (!fs.existsSync(__dirname + "/uploads")){
 app.use(bodyParser.json());
 // For file uploads
 app.use(fileUpload());
-app.use(cors({origin: "http://localhost:3000", credentials:true}));
+app.use(cors({
+	origin: "http://localhost:3000",
+	credentials: true,
+	methods: "GET,PUT,POST,DELETE",
+}));
 
 // Session middleware
 app.use(sessionMiddleware);
@@ -111,6 +115,7 @@ io.use((socket, next) => {
 		next();
 	}
 });
+//serve -s build --listen 8580 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl/private/mykey.key"
 
 io.on('connection', (socket) => {
 	try {
