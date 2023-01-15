@@ -14,13 +14,12 @@ export default function ProfileButtons(props) {
 		setConnectRequest(props.profile.connectRequest);
 		setConnected(props.profile.connected);
 		setAmIBlocked(props.profile.amiblocked);
-	}, [props.profile.connected, props.profile.connectRequest, props.profile.amIBlocked]);
+	}, [props.profile.connected, props.profile.connectRequest, props.profile.amiblocked]);
 	
 	useEffect(() => {
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_connect_request", (data) => {
-			console.log(data)
 			setConnectRequest(data.connectRequest)
 		});
 		if (socket.disconnected)
@@ -59,6 +58,7 @@ export default function ProfileButtons(props) {
 			setTimeout(() => {
 				(async function() {
 					const response = await fetch("/profile/block", {
+						credentials: "include",
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
@@ -74,7 +74,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, blocked: true
+										...user, blocked: true, connectRequestSent: false
 									}
 								} else {
 									return user
@@ -82,7 +82,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, blocked: true
+								...profile, blocked: true, connectRequestSent: true
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -94,7 +94,6 @@ export default function ProfileButtons(props) {
 				})();
 			}, 300)
 		} catch (err) {
-			//console.log(err)
 			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			props.setLoading(false)
 		}
@@ -106,6 +105,7 @@ export default function ProfileButtons(props) {
 			setTimeout(() => {
 				(async function() {
 					const response = await fetch("/profile/block", {
+						credentials: "include",
 						method: "DELETE",
 						headers: {
 							"Content-Type": "application/json"
@@ -121,7 +121,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, blocked: false
+										...user, blocked: false, connectRequestSent: false
 									}
 								} else {
 									return user
@@ -129,7 +129,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, blocked: false
+								...profile, blocked: false, connectRequestSent: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -141,7 +141,6 @@ export default function ProfileButtons(props) {
 				})();
 			}, 300)
 		} catch (err) {
-			//console.log(err)
 			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			props.setLoading(false)
 		}
@@ -153,6 +152,7 @@ export default function ProfileButtons(props) {
 			setTimeout(() => {
 				(async function() {
 					const response = await fetch("/profile/report", {
+						credentials: "include",
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
@@ -168,7 +168,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, reported: true
+										...user, reported: true, connectRequestSent: false
 									}
 								} else {
 									return user
@@ -176,7 +176,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, reported: true
+								...profile, reported: true, connectRequestSent: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -188,7 +188,6 @@ export default function ProfileButtons(props) {
 				})();
 			}, 300)
 		} catch (err) {
-			//console.log(err)
 			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			props.setLoading(false)
 		}
@@ -200,6 +199,7 @@ export default function ProfileButtons(props) {
 			setTimeout(() => {
 				(async function() {
 					const response = await fetch("/profile/report", {
+						credentials: "include",
 						method: "DELETE",
 						headers: {
 							"Content-Type": "application/json"
@@ -215,7 +215,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, reported: false
+										...user, reported: false, connectRequestSent: false
 									}
 								} else {
 									return user
@@ -223,7 +223,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, reported: false
+								...profile, reported: false, connectRequestSent: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -235,7 +235,6 @@ export default function ProfileButtons(props) {
 				})();
 			}, 300)
 		} catch (err) {
-			//console.log(err)
 			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			props.setLoading(false)
 		}
@@ -247,6 +246,7 @@ export default function ProfileButtons(props) {
 			setTimeout(() => {
 				(async function() {
 					const response = await fetch("/profile/connect", {
+						credentials: "include",
 						method: "POST",
 						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
@@ -306,7 +306,6 @@ export default function ProfileButtons(props) {
 				})();
 			}, 300)
 		} catch (err) {
-			//console.log(err)
 			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			props.setLoading(false)
 		}
@@ -325,6 +324,7 @@ export default function ProfileButtons(props) {
 				})();
 				(async function() {
 					const response = await fetch("/profile/disconnect", {
+						credentials: "include",
 						method: "DELETE",
 						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
@@ -334,7 +334,6 @@ export default function ProfileButtons(props) {
 						})
 					})
 					const data = await response.json()
-					console.log(data)
 					if (data.status) {
 						if(props.userProfileIsArray) {
 							props.setProfile(profile => profile.map((user) => {
@@ -360,7 +359,6 @@ export default function ProfileButtons(props) {
 				})();
 			}, 300)
 		} catch (err) {
-			//console.log(err)
 			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			props.setLoading(false)
 		}

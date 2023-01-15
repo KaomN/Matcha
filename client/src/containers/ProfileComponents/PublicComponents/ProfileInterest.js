@@ -9,7 +9,7 @@ export default function ProfileInterest(props) {
 	const [interestClicked, setInterestClicked] = useState("");
 	const [promiseTracker, setPromiseTracker] = useState(false);
 	const [promiseTracker2, setPromiseTracker2] = useState(false);
-	console.log(errorPutInterest)
+	
 	return (
 		<div className="profile-component-items">
 			<div style={{border: "0px", marginBottom: "0.5rem"}}>
@@ -25,8 +25,6 @@ export default function ProfileInterest(props) {
 						value: e.target.value,
 						setPromiseTracker,
 					});
-					setErrorPutInterest("");
-					setErrorDeleteInterest("");
 					}} autoComplete="off" className="profile-interest-input"/>
 					}
 			</div>

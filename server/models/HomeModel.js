@@ -117,7 +117,6 @@ const getUsers = async (req, min, max) => {
 		}
 		return (rows)
 	} catch (err) {
-		console.log(err)
 		return({status: false, message: "Server connection error"});
 	}
 }

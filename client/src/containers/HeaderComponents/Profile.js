@@ -15,7 +15,10 @@ export default function Profile(props) {
 		(async function() {
 			try {
 				setIsLoading(true)
-				const response = await fetch("/user/history")
+				const response = await fetch("/user/history", {
+					credentials: "include",
+					method: 'GET'
+				})
 				const data = await response.json()
 				if (data.status) {
 					setHistory(data.history)

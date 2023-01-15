@@ -13,7 +13,10 @@ export default function Chats(props) {
 	useEffect(() => {
 		(async function() {
 			setIsLoading(true)
-			const response = await fetch(`/chat/chat/`)
+			const response = await fetch('/chat/chat/', {
+				credentials: "include",
+				method: 'GET'
+			})
 			const data = await response.json()
 			if(data.status) {
 				setConnectedUser(data.connectedUsers)

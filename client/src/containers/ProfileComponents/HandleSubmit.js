@@ -9,6 +9,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/name', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ firstname: capitalize(props.firstname), surname:capitalize(props.surname) })
@@ -41,6 +42,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/username', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ username: props.username })
@@ -70,6 +72,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/dateofbirth', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ dateofbirth: props.dateOfBirth, age: props.age })
@@ -100,6 +103,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/gender', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ gender: props.value})
@@ -130,6 +134,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/preference', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ preference: props.value})
@@ -179,13 +184,14 @@ export async function HandleSubmit(props) {
 					}, 3000)
 				} else {
 					props.setPromiseTracker(true)
-					let response = await fetch('/profile/interest', {
+					const response = await fetch('/profile/interest', {
+						credentials: "include",
 						headers: {'Content-Type': 'application/json'},
 						method: "PUT",
 						body: JSON.stringify({ interest: capitalize(props.value)})
 					});
-					response = await response.json()
-					if(response.status) {
+					const data = await response.json()
+					if(data.status) {
 						props.setInterestSuccessMsg("Updated successfully!")
 						setTimeout(() => {
 							props.setInterestSuccessMsg("")
@@ -203,7 +209,7 @@ export async function HandleSubmit(props) {
 						}))
 						props.event.target.value = "";
 					} else {
-						props.setErrorPutInterest(response.err)
+						props.setErrorPutInterest(data.err)
 						setTimeout(() => {
 							props.setErrorPutInterest("")
 						}, 3000)
@@ -219,6 +225,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker2(true)
 			let response = await fetch('/profile/interest', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "DELETE",
 				body: JSON.stringify({ interest: props.interestClicked.tag})
@@ -255,6 +262,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/biography', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ biography: props.biography})
@@ -283,6 +291,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/email', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ email: props.email})
@@ -309,6 +318,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/password', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ currentPassword: props.password, newPassword: props.newPassword, confirmNewPassword: props.confirmNewPassword})
@@ -333,6 +343,7 @@ export async function HandleSubmit(props) {
 		try {
 			props.setPromiseTracker(true)
 			let response = await fetch('/profile/position', {
+				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
 				method: "PUT",
 				body: JSON.stringify({ lat: props.savedPosition.lat, lng: props.savedPosition.lng})

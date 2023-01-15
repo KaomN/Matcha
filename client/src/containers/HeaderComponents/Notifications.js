@@ -68,7 +68,10 @@ export default function Notifications(props) {
 		if(mounted) {
 			(async function() {
 				setIsLoading(true)
-				const response = await fetch(`/user/notification/`)
+				const response = await fetch('/user/notification/', {
+					credentials: "include",
+					method: 'GET'
+				})
 				const data = await response.json()
 				if (data.status) {
 					var res3 = false

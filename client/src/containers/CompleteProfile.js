@@ -49,6 +49,7 @@ export default function CompleteProfile() {
 
 	async function getLocationAPI() {
 		let response = await fetch('/request/getlocation', {
+			credentials: "include",
 			method: "POST",
 		});
 		response = await response.json();

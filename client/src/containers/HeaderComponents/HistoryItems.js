@@ -5,6 +5,7 @@ export default function HistoryItems(props) {
 
 	async function deleteHistory() {
 		const res = await fetch("/user/history", {
+			credentials: "include",
 			method: "DELETE",
 			headers: {"Content-Type": "application/json"},
 			body: JSON.stringify({

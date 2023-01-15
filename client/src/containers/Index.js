@@ -20,6 +20,7 @@ export default function Index() {
 				(async () => {
 					const token = searchParams.get("verification")
 					let response = await fetch('/request/verify', {
+						credentials: "include",
 						method: "POST",
 						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({

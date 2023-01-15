@@ -35,7 +35,7 @@ if (!fs.existsSync(__dirname + "/uploads")){
 app.use(bodyParser.json());
 // For file uploads
 app.use(fileUpload());
-app.use(cors({origin: "http://127.0.0.1:3001", credentials:true}));
+app.use(cors({origin: "http://localhost:3000", credentials:true}));
 
 // Session middleware
 app.use(sessionMiddleware);

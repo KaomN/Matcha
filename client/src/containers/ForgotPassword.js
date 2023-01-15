@@ -15,6 +15,7 @@ export default function Login() {
 	async function handleSubmit(event) {
 		event.preventDefault();
 		let response = await fetch('/request/forgotpassword', {
+			credentials: "include",
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({

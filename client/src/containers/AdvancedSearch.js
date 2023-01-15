@@ -27,7 +27,10 @@ export default function AdvancedSearch() {
 		if(mounted) {
 			(async function() {
 				setIsLoading(true);
-				const response = await fetch("/search/tags");
+				const response = await fetch("/search/tags", {
+					credentials: "include",
+					method: 'GET'
+				});
 				const data = await response.json();
 				if(data.status) {
 					setOptions(data.tags);

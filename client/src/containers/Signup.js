@@ -33,6 +33,7 @@ export default function Signup() {
 		setIsLoading(true)
 		let response = await fetch('/request/register', {
 			method: "POST",
+			credentials: "include",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
 				firstname: firstname,

@@ -18,6 +18,7 @@ export default function PasswordReset() {
 		event.preventDefault();
 
 		let response = await fetch('/request/passwordreset', {
+			credentials: "include",
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({

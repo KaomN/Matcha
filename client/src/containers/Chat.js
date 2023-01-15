@@ -23,7 +23,10 @@ export default function Chat() {
 		if(mounted) {
 			if(connectedUser.length > 0) {
 				(async function() {
-					const response = await fetch(`/chat/chat/`)
+					const response = await fetch(`/chat/chat/`, {
+						credentials: "include",
+						method: 'GET'
+					})
 					const data = await response.json()
 					if(data.status) {
 						setConnectedUser(data.connectedUsers)
@@ -33,7 +36,10 @@ export default function Chat() {
 			} else {
 				(async function() {
 					setIsLoading(true)
-					const response = await fetch(`/chat/chat/`)
+					const response = await fetch(`/chat/chat/`, {
+						credentials: "include",
+						method: 'GET'
+					})
 					const data = await response.json()
 					if(data.status) {
 						setConnectedUser(data.connectedUsers)

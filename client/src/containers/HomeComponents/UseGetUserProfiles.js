@@ -22,6 +22,7 @@ export default function UseGetUserProfiles(profileLimit, setUserProfiles, setHas
 		setError(false)
 		let cancel
 			axios({
+				withCredentials: true,
 				method: 'GET',
 				url: '/home/getusers/',
 				params: { min: profileLimit.min, max: profileLimit.max },

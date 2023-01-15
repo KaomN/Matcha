@@ -14,6 +14,7 @@ export default function ChatUserProfiles(props) {
 			}
 			if (data.channel === props.profile.room && props.activeChat.channel === props.profile.room) {
 				await fetch(`/chat/markread`,{
+					credentials: "include",
 					method: "PUT",
 					headers: {"Content-Type": "application/json",},
 					body: JSON.stringify({channel: props.profile.room})
@@ -37,6 +38,7 @@ export default function ChatUserProfiles(props) {
 	async function handleOnclick() {
 		props.setComponentIsLoading(true)
 		await fetch(`/chat/markread`,{
+			credentials: "include",
 			method: "PUT",
 			headers: {"Content-Type": "application/json",},
 			body: JSON.stringify({channel: props.profile.room})

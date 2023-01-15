@@ -44,7 +44,6 @@ const register = async (req) => {
 			return {errorUsername: "Username taken!", "status": false};
 		}
 	} catch(err) {
-		console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 }
@@ -325,7 +324,6 @@ const completeProfile = async (req, res) => {
 			return (error);
 		}
 	} catch (err) {
-		console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 };

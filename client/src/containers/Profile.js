@@ -51,7 +51,10 @@ export default function Profile() {
 		let mounted = true;
 		if(mounted) {
 			(async function() {
-				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`)
+				let response = await fetch(`/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`, {
+					credentials: "include",
+					method: 'GET'
+				})
 				response = await response.json()
 				if(response.status) {
 					if(socket.disconnected)

@@ -123,7 +123,10 @@ export default function Header() {
 	function fetchLogout() {
 		const promise = new Promise((resolve, reject) => {
 			setTimeout(() => {
-				resolve(fetch('/request/logout')
+				resolve(fetch('/request/logout', {
+					credentials: "include",
+					method: 'GET'
+				})
 				.then((response) => response.json()));
 			}, 150)
 		});
