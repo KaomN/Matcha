@@ -206,6 +206,17 @@ io.on('connection', (socket) => {
 				socket.to(user.socketId).emit("receive_blocked_request", {
 					amiblocked: true
 				});
+				if(data.wasConnected) {
+					socket.to(user.socketId).emit("receive_notification", {
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5),
+						fk_userid: data.userid,
+						targetuserid: socket.request.session.userid,
+						notification: `${socket.request.session.username} has disconnected from you!`,
+						isread: 0,
+					});
+				}
+			} else {
+				await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5)
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});

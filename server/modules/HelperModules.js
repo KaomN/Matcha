@@ -67,7 +67,7 @@ async function checkConnectRequest(user, userid) {
 }
 
 async function checkConnected(user, userid) {
-	// Check if users ar connected
+	// Check if users are connected
 	try {
 		const [connected, fields] = await con.execute(`
 			SELECT *
@@ -273,7 +273,6 @@ async function addRating(userid, fromUserId, type) {
 		}
 		return true
 	} catch (err) {
-		console.log(err)
 		return false;
 	}
 }

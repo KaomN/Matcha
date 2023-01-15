@@ -627,9 +627,9 @@ const block = async (req) => {
 		const res = await con.execute(
 			`DELETE 
 			FROM connect
-			WHERE fk_userid = ?
-			AND targetuserid = ?`,
-			[req.session.userid, req.body.userid])
+			WHERE (fk_userid = ? AND targetuserid = ?)
+			OR (fk_userid = ? AND targetuserid = ?)`,
+			[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
 		const res2 = await con.execute(
 			`DELETE 
 			FROM connected

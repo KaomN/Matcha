@@ -8,14 +8,13 @@ export default function ProfileButtons(props) {
 	const [connectRequest, setConnectRequest] = useState(false);
 	const [connected, setConnected] = useState(false);
 	const [amIBlocked, setAmIBlocked] = useState(false);
-	//const [profile, setProfile] = useState(props.profile)
 	const { pathname } = useLocation();
 
 	useEffect(() => {
 		setConnectRequest(props.profile.connectRequest);
 		setConnected(props.profile.connected);
 		setAmIBlocked(props.profile.amiblocked);
-	}, [props.profile.connected, props.profile.connectRequest, props.profile.amiblocked]);
+	}, [props.profile]);
 	
 	useEffect(() => {
 		if (socket.disconnected)
@@ -42,7 +41,7 @@ export default function ProfileButtons(props) {
 				props.setProfile(profile => profile.map((user) => {
 					if(user.userid === props.profile.userid) {
 						return {
-							...user, amiblocked: false
+							...user, amiblocked: false, connectRequestSent: false, connected: false, connectRequest:false
 						}
 					} else {
 						return user
@@ -50,7 +49,7 @@ export default function ProfileButtons(props) {
 				}))
 			} else {
 				props.setProfile(profile => ({
-					...profile, amiblocked: false
+					...profile, amiblocked: false, connectRequestSent: false, connected: false, connectRequest:false
 				}))
 			}
 		});
@@ -64,7 +63,7 @@ export default function ProfileButtons(props) {
 				props.setProfile(profile => profile.map((user) => {
 					if(user.userid === props.profile.userid) {
 						return {
-							...user, amiblocked: true
+							...user, amiblocked: true, connectRequestSent: false, connected: false, connectRequest:false
 						}
 					} else {
 						return user
@@ -72,7 +71,7 @@ export default function ProfileButtons(props) {
 				}))
 			} else {
 				props.setProfile(profile => ({
-					...profile, amiblocked: true
+					...profile, amiblocked: true, connectRequestSent: false, connected: false, connectRequest:false
 				}))
 			}
 		});
@@ -126,10 +125,10 @@ export default function ProfileButtons(props) {
 								...profile, blocked: true, connectRequestSent: true, connectRequest: false, connected: false
 							}))
 						}
-						toast(data.message, { position: 'top-center', duration: 5000 })
 						if (socket.disconnected)
 							socket.open()
-						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname})
+						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname, wasConnected:connected})
+						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
 					}
 				})();
