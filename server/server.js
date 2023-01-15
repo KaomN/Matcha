@@ -219,6 +219,13 @@ io.on('connection', (socket) => {
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
+		socket.on("send_report", async function (data) {
+			const user = getUser(data.userid);
+			if (user) {
+				socket.to(user.socketId).emit("receive_report_request");
+			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
+		});
 		// Notification
 		socket.on("send_notification", async function (data) {
 			// emit notification to user if online

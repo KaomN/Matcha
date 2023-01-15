@@ -8,6 +8,7 @@ export default function ProfileButtons(props) {
 	const [connectRequest, setConnectRequest] = useState(false);
 	const [connected, setConnected] = useState(false);
 	const [amIBlocked, setAmIBlocked] = useState(false);
+	//const [profile, setProfile] = useState(props.profile)
 	const { pathname } = useLocation();
 
 	useEffect(() => {
@@ -37,11 +38,49 @@ export default function ProfileButtons(props) {
 			socket.open()
 		socket.on("receive_unblocked_request", (data) => {
 			setAmIBlocked(data.amiblocked)
+			if(props.userProfileIsArray) {
+				props.setProfile(profile => profile.map((user) => {
+					if(user.userid === props.profile.userid) {
+						return {
+							...user, amiblocked: false
+						}
+					} else {
+						return user
+					}
+				}))
+			} else {
+				props.setProfile(profile => ({
+					...profile, amiblocked: false
+				}))
+			}
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_blocked_request", (data) => {
 			setAmIBlocked(data.amiblocked)
+			setConnected(false)
+			setConnectRequest(false)
+			if(props.userProfileIsArray) {
+				props.setProfile(profile => profile.map((user) => {
+					if(user.userid === props.profile.userid) {
+						return {
+							...user, amiblocked: true
+						}
+					} else {
+						return user
+					}
+				}))
+			} else {
+				props.setProfile(profile => ({
+					...profile, amiblocked: true
+				}))
+			}
+		});
+		if (socket.disconnected)
+			socket.open()
+		socket.on("receive_report_request", () => {
+			setConnected(false)
+			setConnectRequest(false)
 		});
 		return () => {
 			socket.off("receive_connect_request");
@@ -49,7 +88,9 @@ export default function ProfileButtons(props) {
 			socket.off("receive_connected_request");
 			socket.off("receive_unblocked_request");
 			socket.off("receive_blocked_request");
+			socket.off("receive_report_request");
 			};
+	// eslint-disable-next-line
 	}, [socket]);
 
 	async function handleBlock() {
@@ -74,7 +115,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, blocked: true, connectRequestSent: false
+										...user, blocked: true, connectRequestSent: false, connectRequest: false, connected: false
 									}
 								} else {
 									return user
@@ -82,7 +123,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, blocked: true, connectRequestSent: true
+								...profile, blocked: true, connectRequestSent: true, connectRequest: false, connected: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -121,7 +162,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, blocked: false, connectRequestSent: false
+										...user, blocked: false, connectRequestSent: false, connectRequest: false, connected: false
 									}
 								} else {
 									return user
@@ -129,7 +170,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, blocked: false, connectRequestSent: false
+								...profile, blocked: false, connectRequestSent: false, connectRequest: false, connected: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -168,7 +209,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, reported: true, connectRequestSent: false
+										...user, reported: true, connectRequestSent: false, connectRequest: false, connected: false
 									}
 								} else {
 									return user
@@ -176,13 +217,13 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, reported: true, connectRequestSent: false
+								...profile, reported: true, connectRequestSent: false, connectRequest: false, connected: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						if (socket.disconnected)
 							socket.open()
-						socket.emit("update_last_active", { path: pathname })
+						socket.emit("send_report", {userid: props.profile.userid, path: pathname})
 						props.setLoading(false)
 					}
 				})();
@@ -215,7 +256,7 @@ export default function ProfileButtons(props) {
 							props.setProfile(profile => profile.map((user) => {
 								if(user.userid === props.profile.userid) {
 									return {
-										...user, reported: false, connectRequestSent: false
+										...user, reported: false, connectRequestSent: false, connectRequest: false, connected: false
 									}
 								} else {
 									return user
@@ -223,7 +264,7 @@ export default function ProfileButtons(props) {
 							}))
 						} else {
 							props.setProfile(profile => ({
-								...profile, reported: false, connectRequestSent: false
+								...profile, reported: false, connectRequestSent: false, connectRequest: false, connected: false
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
@@ -404,7 +445,7 @@ export default function ProfileButtons(props) {
 				: null
 				}
 				{connectRequest && connected ?
-				<i className="material-icons profile_connected" title="Connect">star</i>
+				<i className="material-icons profile_connected" title="Connected">star</i>
 				: null
 				}
 			</>

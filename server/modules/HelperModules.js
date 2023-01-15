@@ -273,6 +273,7 @@ async function addRating(userid, fromUserId, type) {
 		}
 		return true
 	} catch (err) {
+		console.log(err)
 		return false;
 	}
 }

@@ -17,7 +17,7 @@ export default function ProfileLeftContainer(props) {
 
 	return (
 		<div className="padding05 profile-left-container flex-col">
-			{!props.profile.isOwn ? props.onlineStatus ?
+			{props.profile.amiblocked ? null : !props.profile.isOwn ? props.onlineStatus ?
 			<i className="material-icons profile_online" title={"Online"}>radio_button_checked</i>
 			:
 			<i className="material-icons profile_offline" title={parseDate(props.profile.lastactive)}>radio_button_checked</i>
@@ -43,7 +43,10 @@ export default function ProfileLeftContainer(props) {
 					user={props.user}
 					/>
 				}
-				{(props.profile.profile === true) ?
+				{props.profile.amiblocked ?
+				<img className="profile-view-image" src={"http://localhost:3001/images/defaultProfile.png"} alt={"profileImage"}></img>
+				:
+				props.profile.profile ?
 					<img className="profile-view-image" src={props.profile.profileSrc} alt={"profileImage"}></img>
 					:
 					<img className="profile-view-image" src={"http://localhost:3001/images/defaultProfile.png"} alt={"profileImage"}></img>
@@ -57,19 +60,19 @@ export default function ProfileLeftContainer(props) {
 
 			<div className="padding05 flex-center flex-col">
 				{/* <div>Date of birth: {profile.dateofbirth}</div> */}
-				<div>Age: {props.profile.age}</div>
-				<div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.gender}>{props.profile.gender}</i></div>
+				{props.profile.amiblocked ? <div>Blocked</div> : <div>Age: {props.profile.age}</div>}
+				{props.profile.amiblocked ? null : <div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.gender}>{props.profile.gender}</i></div>}
 				{(props.profile.isOwn === true) ?
 					null
 					:
-					<div>{props.profile.distance} km away</div>
+					props.profile.amiblocked ? null : <div>{props.profile.distance + " km away"}</div>
 				}
-				<div>Rating: {props.profile.rating}</div>
-				<div className="profile-interest-container ">
+				{props.profile.amiblocked ? null : <div>Rating: {props.profile.rating}</div>}
+				{props.profile.amiblocked ? null : <div className="profile-interest-container ">
 				{props.profile.interest.map(interests => (
 						<div className="profile-interest-components" key={interests.id} data-key={interests.id} >#{interests.tag}</div>
 				))}
-				</div>
+				</div>}
 			</div>
 		</div>
 	);

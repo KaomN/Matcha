@@ -1,4 +1,4 @@
-export default function ProfileSTatusFalse() {
+export default function ProfileStatusFalse() {
 	return (
 		<main className="ma">
 			<div className="flex-center flex-col">

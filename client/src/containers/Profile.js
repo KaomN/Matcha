@@ -124,7 +124,7 @@ export default function Profile() {
 				<div className="flex-center flex-col">
 					<div className="flex-col profile-biography-container">
 						<div className="profile-view-font">About</div>
-						<div className="margin-auto profile-biography">{profile.biography}</div>
+						{profile.amiblocked ? <div className="margin-auto profile-biography">Blocked</div> : <div className="margin-auto profile-biography">{profile.biography}</div>}
 					</div>
 					{(profile.isOwn === true)
 					?
