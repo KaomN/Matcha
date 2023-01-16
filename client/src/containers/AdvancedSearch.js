@@ -5,7 +5,7 @@ import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
 import StyledSliderComponent from "./HomeComponents/StyledSlider";
 import Maps from "./SearchComponents/Maps";
 import { UserContext } from "../context/UserContext";
-import Select from "./SearchComponents/src/index";
+import Select from "../components/Select";
 import "./styles/Search.css";
 
 export default function AdvancedSearch() {

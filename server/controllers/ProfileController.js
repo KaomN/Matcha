@@ -76,22 +76,17 @@ router.put("/preference", async (req, res) => {
 });
 
 router.put("/interest", async (req, res) => {
-	var error = {}
-	if(Validator.checkInterest(req, error)) {
-		res.send(await ProfileModel.updateInterest(req))
-	} else {
-		res.send(error)
-	}
+	res.send(await ProfileModel.updateInterest(req))
 });
 
-router.delete("/interest", async (req, res) => {
-	var error = {}
-	if(Validator.checkInterest(req, error)) {
-		res.send(await ProfileModel.deleteInterest(req))
-	} else {
-		res.send(error)
-	}
-});
+// router.delete("/interest", async (req, res) => {
+// 	var error = {}
+// 	if(Validator.checkInterest(req, error)) {
+// 		res.send(await ProfileModel.deleteInterest(req))
+// 	} else {
+// 		res.send(error)
+// 	}
+// });
 
 router.put("/biography", async (req, res) => {
 	var error = {}

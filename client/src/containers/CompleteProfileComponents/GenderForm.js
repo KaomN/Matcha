@@ -13,16 +13,16 @@ export default function GenderForm(props) {
 							</div>
 							<div className="flex-column-completeprofile">
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
-									<input type="radio" name="gender" id="genderMale" onClick={function(e) {props.setGender("male")}}/>
-									<label style={{fontSize: "23px"}} htmlFor="genderMale">Female</label>
+									<input type="radio" name="gender" style={{border: "0px", height: "1.5em", width: "1.5em"}}  id="genderMale" defaultChecked={props.gender === "male" ? true : false } onClick={function(e) {props.setGender("male")}}/>
+									<label style={{fontSize: "23px"}} defaultChecked={props.gender === "male" ? true : false }  htmlFor="genderMale">Male</label>
 								</div>
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
-									<input type="radio" name="gender" id="genderFemale" onClick={function(e) {props.setGender("female")}}/>
-									<label style={{fontSize: "23px"}} htmlFor="genderFemale">Male</label>
+									<input type="radio" name="gender" style={{border: "0px", height: "1.5em", width: "1.5em"}}  id="genderFemale" onClick={function(e) {props.setGender("female")}}/>
+									<label style={{fontSize: "23px"}} htmlFor="genderFemale">Female</label>
 								</div>
 							</div>
 							<div className="center-gap">
-								<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; props.setShowForm("genderForm");}}>Previous</button>
+								<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; props.setShowForm("ageForm");}}>Previous</button>
 								<button className="complete-form-button" onClick={() => {
 										if(!document.getElementById('genderMale').checked && !document.getElementById('genderFemale').checked) {
 											document.querySelector('.form_message_error').innerHTML = "Empty field!"

@@ -44,7 +44,6 @@ const register = async (req) => {
 			return {errorUsername: "Username taken!", "status": false};
 		}
 	} catch(err) {
-		console.log(err)
 		return ({status: false, message: "Server connection error"});
 	}
 }
@@ -65,7 +64,7 @@ const login = async (req) => {
 			} else {
 				const match = await bcrypt.compare(password, rows[0].password)
 				if(match) {
-					var [result, fields] = await con.execute(`SELECT tag
+					var [result, fields] = await con.execute(`SELECT pk_tagid as 'value', tag as 'label'
 															FROM tag
 															INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
 															WHERE tagitem.fk_userid = ?`,
@@ -264,42 +263,18 @@ const completeProfile = async (req, res) => {
 		}
 		//Interest
 		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			const interestArr = interest.split(' ')
-			for (const interest of interestArr) {
-				var [rows, fields] = await con.execute(`SELECT *
-														FROM tag
-														WHERE tag = ?`,
-														[interest])
-				if (!rows[0]) {
-					var result = await con.execute(`INSERT INTO tag (tag)
-													VALUES (?)`,
-													[interest])
-					var result = await con.execute(`INSERT INTO tagitem (fk_userid, fk_tagid)
-													VALUES (?, ?)
-													ON DUPLICATE KEY UPDATE tagitem.fk_tagid = tagitem.fk_tagid`,
-													[req.session.userid, result[0].insertId])
-					req.session.interest.push({tag: interest})
-					if (!result) {
-						Object.assign(error, {error: "Something went wrong!"});
-					}
-				} else {
-					var [check,fields] = await con.execute(`SELECT tag, pk_tagid as 'id'
-															FROM tag
-															INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
-															WHERE tagitem.fk_userid = ?
-															AND tag.tag = ?`,
-															[req.session.userid, interest])
-					if(!check[0]) {
-						var result = await con.execute(`INSERT INTO tagitem (fk_userid, fk_tagid)
-														VALUES (?, ?)`,
-														[req.session.userid, rows[0].pk_tagid])
-						req.session.interest.push({tag: interest})
-						if (!result) {
-							Object.assign(error, {error: "Something went wrong!"});
-						} 
-					}
-				}
+			var result = await con.execute(
+				`DELETE
+				FROM tagitem
+				WHERE fk_userid = ?`,
+				[req.session.userid])
+			for (const interests of interest) {
+				var result = await con.execute(
+					`INSERT INTO tagitem (fk_tagid, fk_userid)
+					VALUES (?, ?)`,
+					[interests.value, req.session.userid])
 			}
+			req.session.interest = interest;
 		} else {
 			return (error);
 		}

@@ -37,7 +37,7 @@ if (!fs.existsSync(__dirname + "/uploads")){
 // For parsing application/json header
 app.use(bodyParser.json());
 // For file uploads
-app.use(fileUpload());
+app.use(fileUpload()); 
 app.use(cors({
 	origin: "http://localhost:3000",
 	credentials: true,

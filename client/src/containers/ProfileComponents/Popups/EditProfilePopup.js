@@ -25,6 +25,7 @@ export default function EditProfilePopup(props) {
 	const [interest, setInterest] = useState([]);
 	const [biography, setBiography] = useState("");
 	const [newBiography, setNewBiography] = useState("");
+	const [tagOptions, setTagOptions] = useState([]);
 	// Success states for Profile Settings
 	const [nameSuccessMsg, setNameSuccessMsg] = useState("");
 	const [usernameSuccessMsg, setUsernameSuccessMsg] = useState("");
@@ -51,6 +52,8 @@ export default function EditProfilePopup(props) {
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 	const [isLocationVisible, setIsLocationVisible] = useState(false);
 
+
+
 	useEffect(() => {
 		setFirstname(props.profile.firstname)
 		setSurname(props.profile.surname)
@@ -59,14 +62,7 @@ export default function EditProfilePopup(props) {
 		setAge(props.profile.age)
 		setGender(props.profile.gender)
 		setPreference(props.profile.preference)
-		if(props.profile.interest !== undefined) {
-			let interestId = 0;
-			const interestCopy = props.profile.interest.slice()
-			interestCopy.map(interest => (
-				interest.id = interestId++
-			))
-			setInterest(interestCopy)
-		}
+		setInterest(props.profile.interest)
 		setBiography(props.profile.biography)
 		setNewBiography(props.profile.biography)
 	}, [props.profile]);
@@ -140,6 +136,7 @@ export default function EditProfilePopup(props) {
 								setSurname={setSurname}
 								firstname={firstname}
 								surname={surname}
+								setProfile={props.setProfile}
 								/>
 								:
 								null
@@ -156,6 +153,7 @@ export default function EditProfilePopup(props) {
 								setUsername={setUsername}
 								setUsernameSuccessMsg={setUsernameSuccessMsg}
 								profileUsername={props.profile.username}
+								setProfile={props.setProfile}
 								/>
 								:
 								null
@@ -174,6 +172,7 @@ export default function EditProfilePopup(props) {
 								setAge={setAge}
 								dateOfBirth={dateOfBirth}
 								setDateOfBirth={setDateOfBirth}
+								setProfile={props.setProfile}
 								/>
 								:
 								null
@@ -189,6 +188,7 @@ export default function EditProfilePopup(props) {
 								gender={gender}
 								setGender={setGender}
 								setGenderSuccessMsg={setGenderSuccessMsg}
+								setProfile={props.setProfile}
 								/>
 								:
 								null
@@ -204,6 +204,7 @@ export default function EditProfilePopup(props) {
 								preference={preference}
 								setPreference={setPreference}
 								setPreferenceSuccessMsg={setPreferenceSuccessMsg}
+								setProfile={props.setProfile}
 								/>
 								:
 								null
@@ -219,6 +220,8 @@ export default function EditProfilePopup(props) {
 								setInterestSuccessMsg={setInterestSuccessMsg}
 								interest={interest}
 								setInterest={setInterest}
+								tagOptions={props.tagOptions}
+								setProfile={props.setProfile}
 								/>
 								:
 								null
@@ -234,6 +237,7 @@ export default function EditProfilePopup(props) {
 								setNewBiography={setNewBiography}
 								setBiographySuccessMsg={setBiographySuccessMsg}
 								setUser={props.setUser}
+								setProfile={props.setProfile}
 								/>
 								:
 								null

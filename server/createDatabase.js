@@ -58,7 +58,6 @@ async function createDatabase() {
 		}
 		return false
 	} catch (err) {
-		console.log(err)
 	}
 }
 

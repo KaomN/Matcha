@@ -70,7 +70,7 @@ export default function ProfileLeftContainer(props) {
 				{props.profile.amiblocked ? null : <div>Rating: {props.profile.rating}</div>}
 				{props.profile.amiblocked ? null : <div className="profile-interest-container ">
 				{props.profile.interest.map(interests => (
-						<div className="profile-interest-components" key={interests.id} data-key={interests.id} >#{interests.tag}</div>
+						<div className="profile-interest-components" key={interests.value} data-key={interests.value} >#{interests.label}</div>
 				))}
 				</div>}
 			</div>

@@ -7,6 +7,7 @@ import { useEditProfileVisible } from "./ProfileComponents/UsePopupVisibility";
 import ProfileButtons from "./ProfileComponents/ProfileButtons";
 import { SocketContext } from "../context/SocketContext";
 import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
+import toast from 'react-simple-toasts';
 
 
 // Popups Components
@@ -22,13 +23,15 @@ import ProfileLeftContainer from "./ProfileComponents/ProfileLeftContainer/Profi
 
 export default function Profile() {
 	const socket = useContext(SocketContext);
-	const navigate = useNavigate();
+	const navigate = useNavigate()
 	// Custom States for popups
 	const { refEditProfile, isEditProfileVisible, setIsEditProfileVisible } = useEditProfileVisible(false);
 	// User context
 	const { user, setUser } = useContext(UserContext);
 	// Profile states
-	const [profile, setProfile] = useState("loading");
+	const [profile, setProfile] = useState([]);
+	const [tagOptions, setTagOptions] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
 	// states for Uploading images
 	const [loading, setLoading] = useState(false);
 	const [onlineStatus, setOnlineStatus] = useState(false);
@@ -46,20 +49,20 @@ export default function Profile() {
 
 
 	let params = useParams()
-
 	useEffect(() => {
 		let mounted = true;
 		if(mounted) {
 			(async function() {
-				let response = await fetch(`http://localhost:3001/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`, {
+				setIsLoading(true);
+				const response = await fetch(`http://localhost:3001/profile/profile/?id=${params.profileID === undefined ? user.userid : params.profileID}`, {
 					credentials: "include",
 					method: 'GET'
 				})
-				response = await response.json()
-				if(response.status) {
+				const data = await response.json()
+				if(data.status) {
 					if(socket.disconnected)
 						socket.open()
-					socket.emit("online_query", { queryId: response.userid, path: pathname });
+					socket.emit("online_query", { queryId: data.userid, path: pathname });
 					if(params.profileID) {
 						if(socket.disconnected)
 							socket.open()
@@ -67,13 +70,28 @@ export default function Profile() {
 					}
 					if(socket.disconnected)
 						socket.open()
-					socket.emit("send_notification", { username: response.username, userid: response.userid, type: "profile" });
-					setProfile(response);
+					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile" });
+					setProfile(data);
+					if(data.isOwn) {
+						const response = await fetch("http://localhost:3001/search/tags", {
+							credentials: "include",
+							method: 'GET'
+						});
+						const data = await response.json();
+						if(data.status) {
+							setTagOptions(data.tags);
+						} else {
+							toast("Something went wrong! Error loading tags, please refresh the page!", { position: 'top-center', duration: 5000 })
+						}
+					}
+				} else {
+					toast("Something went wrong! Error loading Profile, please refresh the page!", { position: 'top-center', duration: 5000 })
 				}
+				setIsLoading(false);
 			})();
 		}
 		return () => {mounted = false};
-	}, [user, params, socket, pathname]);
+	}, [params, socket, pathname]);
 
 	useEffect(() => {
 		if(socket.disconnected)
@@ -84,7 +102,7 @@ export default function Profile() {
 		return () => {socket.off("online_response");};
 	}, [socket]);
 
-	if (profile === "loading") {
+	if (isLoading) {
 		return <LoadingSpinner />
 	} else if (profile.status) {
 		return (
@@ -144,6 +162,7 @@ export default function Profile() {
 					setIsEditProfileVisible={setIsEditProfileVisible}
 					isEditProfileVisible={isEditProfileVisible}
 					refEditProfile={refEditProfile}
+					tagOptions={tagOptions}
 				/>
 				}
 			</main>

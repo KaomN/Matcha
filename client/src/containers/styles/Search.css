@@ -81,12 +81,6 @@
 	user-select: none;
 }
 
-.search_select {
-	width: 200px;
-	height: 85px;
-	font-size: 13px;
-	overflow-y: hidden;
-}
 
 .search_interest_input {
 	text-align: center;

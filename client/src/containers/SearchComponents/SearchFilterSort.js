@@ -5,7 +5,7 @@ import RatingSortButton from "../HomeComponents/Buttons/RatingSortButton";
 import DistanceSortButton from "../HomeComponents/Buttons/DistanceSortButton";
 import InterestSortButton from "../HomeComponents/Buttons/InterestSortButton";
 import UserProfile from "./UserProfile";
-import Select from "./src/index";
+import Select from "../../components/Select";
 
 
 export default function SearchFilterSort(props) {

@@ -25,6 +25,11 @@ export async function HandleSubmit(props) {
 					firstname: capitalize(props.firstname),
 					surname: capitalize(props.surname)
 				}))
+				props.setProfile(user => ( {
+					...user,
+					firstname: capitalize(props.firstname),
+					surname: capitalize(props.surname)
+				}))
 			} else {
 				props.setErrorFirstname(response.errorFirstname)
 				props.setErrorSurname(response.errorSurname)
@@ -36,6 +41,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "username") {
@@ -57,6 +63,10 @@ export async function HandleSubmit(props) {
 					...user,
 					username: props.username
 				}))
+				props.setProfile(user => ( {
+					...user,
+					username: props.username
+				}))
 			} else {
 				props.setErrorUsername(response.err)
 				setTimeout(() => {
@@ -66,6 +76,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "dateofbirth") {
@@ -88,6 +99,11 @@ export async function HandleSubmit(props) {
 					birthdate: props.dateOfBirth,
 					age: props.age
 				}))
+				props.setProfile(user => ( {
+					...user,
+					birthdate: props.dateOfBirth,
+					age: props.age
+				}))
 			} else {
 				props.setErrorDate(response.err)
 				setTimeout(() => {
@@ -97,6 +113,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "gender") {
@@ -119,6 +136,10 @@ export async function HandleSubmit(props) {
 					...user,
 					gender: props.value
 				}))
+				props.setProfile(user => ( {
+					...user,
+					gender: props.value
+				}))
 			} else {
 				props.setErrorGender(response.err)
 				setTimeout(() => {
@@ -128,6 +149,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "preference") {
@@ -150,6 +172,10 @@ export async function HandleSubmit(props) {
 					...user,
 					preference: props.value
 				}))
+				props.setProfile(user => ( {
+					...user,
+					preference: props.value
+				}))
 			} else {
 				props.setErrorPreference(response.err)
 				setTimeout(() => {
@@ -158,104 +184,45 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
+			console.log(err)
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "interestPut") {
 		try {
-			const reInterest = /^[A-Za-z-]+$/;
-			if(props.event.key === " ")
-				props.event.preventDefault()
-			else if(props.event.key === "Enter") {
-				if(props.value.length > 25 ) {
-					props.setErrorPutInterest("Error! Interest tags max length 25!")
-					setTimeout(() => {
-						props.setErrorPutInterest("")
-					}, 3000)
-				} else if(props.value.trim().length === 0) {
-					props.setErrorPutInterest("Error! Interest tags cant be empty!")
-					setTimeout(() => {
-						props.setErrorPutInterest("")
-					}, 3000)
-				} else if(!reInterest.test(props.value.trim())) {
-					props.setErrorPutInterest("Error! Interest tags can only contain '-' and letters!")
-					setTimeout(() => {
-						props.setErrorPutInterest("")
-					}, 3000)
-				} else {
-					props.setPromiseTracker(true)
-					const response = await fetch('http://localhost:3001/profile/interest', {
-						credentials: "include",
-						headers: {'Content-Type': 'application/json'},
-						method: "PUT",
-						body: JSON.stringify({ interest: capitalize(props.value)})
-					});
-					const data = await response.json()
-					if(data.status) {
-						props.setInterestSuccessMsg("Updated successfully!")
-						setTimeout(() => {
-							props.setInterestSuccessMsg("")
-						}, 3000)
-						// Update Interest state
-						const interestCopy = props.interest.slice()
-						interestCopy.push({tag: capitalize(props.value), id: props.interest.length})
-						props.setInterest(interestCopy)
-						// Update User.interest state
-						const userInterestCopy = props.user.interest.slice()
-						userInterestCopy.push({tag: capitalize(props.value)})
-						props.setUser(user => ( {
-							...user,
-							interest: userInterestCopy
-						}))
-						props.event.target.value = "";
-					} else {
-						props.setErrorPutInterest(data.err)
-						setTimeout(() => {
-							props.setErrorPutInterest("")
-						}, 3000)
-					}
-					props.setPromiseTracker(false)
-				} 
-			}
-		} catch (err) {
-			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
-		}
-	}
-	else if (props.type === "interestDelete") {
-		try {
-			props.setPromiseTracker2(true)
-			let response = await fetch('http://localhost:3001/profile/interest', {
+			props.setPromiseTracker(true)
+			const response = await fetch('http://localhost:3001/profile/interest', {
 				credentials: "include",
 				headers: {'Content-Type': 'application/json'},
-				method: "DELETE",
-				body: JSON.stringify({ interest: props.interestClicked.tag})
-			});
-			response = await response.json()
-			if (response.status) {
-				props.setInterestSuccessMsg("Updated successfully!")
-				setTimeout(() => {
-					props.setInterestSuccessMsg("")
-				}, 3000)
-				props.setInterest(
-					props.interest.filter(a =>
-					a.id !== parseInt(props.interestClicked.id)
-					)
-				);
-				const userInterestCopy = props.user.interest.filter(a =>a.tag !== props.interestClicked.tag)
-				props.setUser(user => ( {
-					...user,
-					interest: userInterestCopy
-				}))
-				props.setInterestClicked("")
-			} else {
-				props.setErrorDeleteInterest(response.err)
-				setTimeout(() => {
-					props.setErrorDeleteInterest("")
-				}, 3000)
-			}
-			props.setPromiseTracker2(false)
+				method: "PUT",
+				body: JSON.stringify({ interest: props.interest})
+		});
+		const data = await response.json()
+		if (data.status) {
+			props.setInterestSuccessMsg("Updated successfully!")
+			setTimeout(() => {
+				props.setInterestSuccessMsg("")
+			}, 3000)
+			props.setUser(user => ( {
+				...user,
+				interest: props.interest
+			}))
+			props.setProfile(user => ( {
+				...user,
+				interest: props.interest
+			}))
+		} else {
+			props.setErrorPutInterest(data.err)
+			setTimeout(() => {
+				props.setErrorPutInterest("")
+			}, 3000)
+		}
+		props.setPromiseTracker(false)
 		} catch (err) {
+			console.log(err)
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "biography") {
@@ -279,12 +246,17 @@ export async function HandleSubmit(props) {
 					...user,
 					biography: props.biography
 				}))
+				props.setProfile(user => ( {
+					...user,
+					biography: props.biography
+				}))
 			} else {
 				props.setErrorBiography(response.err)
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "email") {
@@ -312,6 +284,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "password") {
@@ -337,6 +310,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 	else if (props.type === "position") {
@@ -368,6 +342,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			props.setPromiseTracker(false)
 		}
 	}
 }

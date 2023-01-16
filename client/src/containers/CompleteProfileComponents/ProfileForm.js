@@ -51,17 +51,15 @@ export default function ProfileForm(props) {
 			formdata.append("biography", props.biography);
 			formdata.append("locationLat", props.locationLat);
 			formdata.append("locationLng", props.locationLng);
-			var interestString = "";
-			props.interest.map(interests => (
-				interestString += interests.name + " "
-			));
-			interestString = interestString.trim();
-			formdata.append("interest", interestString);
+			formdata.append("tags", props.tags);
 			formdata.append("profilePicture", props.profilePicture);
 			formdata.append("x", imageSize.x)
 			formdata.append("y", imageSize.y)
 			formdata.append("width", imageSize.width)
 			formdata.append("height", imageSize.height)
+			for (let i = 0; i < props.tags.length; i++) {
+				formdata.append("interest", props.tags[i].label);
+			}
 			let response = await fetch('http://localhost:3001/request/completeprofile', {
 				credentials: "include",
 				method: "POST",
@@ -81,9 +79,6 @@ export default function ProfileForm(props) {
 			}
 		}
 	}
-
-	//Helsinki. This is a test Biography.
-	//I dont know what to write here please help
 
 	return (<main className="form-container ma">
 				<div className="complete-profile-form">

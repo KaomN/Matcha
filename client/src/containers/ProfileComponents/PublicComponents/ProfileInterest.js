@@ -1,60 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HandleSubmit } from "../HandleSubmit";
 import { LoadingSpinnerPromiseComponent } from "../../../components/LoadingSpinnerPromiseComponent";
+import Select from "../../../components/Select";
 
 export default function ProfileInterest(props) {
 
-	const [errorPutInterest, setErrorPutInterest] = useState("");
-	const [errorDeleteInterest, setErrorDeleteInterest] = useState("");
-	const [interestClicked, setInterestClicked] = useState("");
+	// const [errorPutInterest, setErrorPutInterest] = useState("");
+	// const [errorDeleteInterest, setErrorDeleteInterest] = useState("");
+	// const [interestClicked, setInterestClicked] = useState("");
+	// const [promiseTracker, setPromiseTracker] = useState(false);
 	const [promiseTracker, setPromiseTracker] = useState(false);
-	const [promiseTracker2, setPromiseTracker2] = useState(false);
-	
+
+	// async function handleSubmit() {
+	// 	try {
+	// 		const response = await fetch('http://localhost:3001/profile/interest', {
+	// 			credentials: "include",
+	// 			headers: {'Content-Type': 'application/json'},
+	// 			method: "PUT",
+	// 			body: JSON.stringify({ interest: props.interest})
+	// 	});
+	// 	const data = await response.json()
+	// 	if (data.status) {
+	// 		props.setInterestSuccessMsg("Updated successfully!")
+	// 		setTimeout(() => {
+	// 			props.setInterestSuccessMsg("")
+	// 		}, 3000)
+	// 		props.setUser(user => ( {
+	// 			...user,
+	// 			interest: props.interest
+	// 		}))
+	// 	} else {
+	// 		props.setErrorPutInterest(data.err)
+	// 		setTimeout(() => {
+	// 			props.setErrorPutInterest("")
+	// 		}, 3000)
+	// 	}
+	// 	} catch (err) {
+	// 		//toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+	// 	}
+	// }
+
 	return (
 		<div className="profile-component-items">
-			<div style={{border: "0px", marginBottom: "0.5rem"}}>
-				{promiseTracker ?
-				<LoadingSpinnerPromiseComponent/>
-				:
-				<input type="text" onKeyDown={(e) => {
-					HandleSubmit({
-						...props,
-						type: "interestPut",
-						setErrorPutInterest,
-						event: e,
-						value: e.target.value,
-						setPromiseTracker,
-					});
-					}} autoComplete="off" className="profile-interest-input"/>
-					}
-			</div>
-			<div>Interests added:</div>
-			<div style={{border: "0px", marginBottom: "0.5rem"}} >
-				<select multiple id="interestSelect" className="text-align-center profile-interest-select">
-					{props.interest.map(interest => (
-					<option key={interest.id} onClick={() => { setInterestClicked({id:interest.id, tag:interest.tag})}}>{interest.tag}</option>
-					))}
-				</select>
-			</div>
-			<div className="profile-input-error">{errorPutInterest}</div>
-			<div className="profile-input-error">{errorDeleteInterest}</div>
-			{promiseTracker2 ?
-			<LoadingSpinnerPromiseComponent/>
+			<Select
+			multi
+			options={props.tagOptions}
+			onChange={(values) => {
+				props.setInterest(values)
+			}}
+			max={5}
+			className="complete_select"
+			color="#2f4f4f"
+			placeholder="Select Tags..."
+			dropdownHeight="125px"
+			separator={true}
+			clearable={true}
+			dropdownGap={-1}
+			values={props.interest}
+			/>
+			{promiseTracker ?
+			<LoadingSpinnerPromiseComponent />
 			:
-			interestClicked !== "" ?
-			<button className="complete-form-button delete-btn" onClick={() => {
+			<button className="complete-form-button profile_save_btn" onClick={() => {
 				HandleSubmit({
 					...props,
-					type: "interestDelete",
-					setErrorDeleteInterest,
-					interestClicked,
-					setInterestClicked,
-					setPromiseTracker2,
+					type: "interestPut",
+					setPromiseTracker,
 				}
-				)}}>Delete Interest</button>
-			:
-			null
-			}
+			)}}>Save Tags</button>}
+			
 		</div>
 		);
 }

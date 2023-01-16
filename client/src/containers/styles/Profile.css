@@ -253,6 +253,14 @@
 	transition: color 0.7s ease;
 }
 
+.profile_save_btn {
+	margin-top: 5px;
+	width: 50%;
+	transition: color 0.7s ease;
+	-webkit-user-select: none;
+	user-select: none;
+	cursor: pointer;
+}
 
 .reactEasyCrop_Container  {
 	border-radius: var(--border-radius);

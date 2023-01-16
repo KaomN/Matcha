@@ -52,7 +52,7 @@ const getProfile = async (userID, req) => {
 			Object.assign(rows[0], {images: imagesArr})
 			// Fetch Interests
 			var result = await con.execute(
-				`SELECT tag, pk_tagid as 'id'
+				`SELECT pk_tagid as 'value', tag as 'label'
 				FROM tag
 				INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
 				WHERE tagitem.fk_userid = ?`,
@@ -313,87 +313,26 @@ const updatePreference = async (req) => {
 const updateInterest = async (req) => {
 	try {
 		const { interest } = req.body;
-		var [result, fields] = await con.execute(
-			`SELECT tag, pk_tagid as 'id'
-			FROM tag
-			INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
-			WHERE tagitem.fk_userid = ?
-			AND tag.tag = ?`,
-			[req.session.userid, interest])
-		if(result[0]) {
-			return ({ status: false, err: "Interest already added" })
-		} else {
-			// Tag  exists in the database
-			var [result, fields] = await con.execute(
-				`SELECT tag, pk_tagid as 'id'
-				FROM tag
-				WHERE tag.tag = ?`,
-				[interest])
-			if(result[0]) {
-				res = await con.execute(
-					`INSERT
-					INTO tagitem
+		var result = await con.execute(
+			`DELETE
+			FROM tagitem
+			WHERE fk_userid = ?`,
+			[req.session.userid])
+		if(result) {
+			for (const interests of interest) {
+				var result = await con.execute(
+					`INSERT INTO tagitem (fk_tagid, fk_userid)
 					VALUES (?, ?)`,
-					[req.session.userid, result[0].id])
-				if(res) {
-					req.session.interest.push({tag: interest})
-					return ({ status: true })
-				} else {
-					return ({ status: false, err: "Something went wrong!" })
-				}
-			} else {
-				// Tag does not exist in the database
-				result = await  con.execute(
-					`INSERT
-					INTO tag(tag)
-					VALUES (?)`,
-					[interest])
-				if(result) {
-					res = await con.execute(
-						`INSERT
-						INTO tagitem
-						VALUES (?, ?)`,
-						[req.session.userid, result[0].insertId])
-					if(res) {
-						req.session.interest.push({tag: interest})
-						return ({ status: true,  tagid: result[0].insertId})
-					} else {
-						return ({ status: false, err: "Something went wrong!" })
-					}
-				}
+					[interests.value, req.session.userid])
 			}
-		}
-	} catch(err) {
-		return ({ status: false, err: "Something went wrong!" })
-	}
-}
-
-const deleteInterest = async (req) => {
-	try {
-		const { interest } = req.body;
-		var [result, fields] = await con.execute(
-			`SELECT tag, pk_tagid as 'id'
-			FROM tag
-			INNER JOIN tagitem ON tagitem.fk_tagid = tag.pk_tagid
-			WHERE tagitem.fk_userid = ?
-			AND tag.tag = ?`,
-			[req.session.userid, interest])
-		if (result[0]) {
-			var res = await con.execute(
-				`DELETE 
-				FROM tagitem
-				WHERE fk_userid = ?
-				AND fk_tagid = ?
-				LIMIT 1`,
-				[req.session.userid, result[0].id])
-			if (res) {
-				req.session.interest.splice(req.session.interest.findIndex(item => item.tag === interest), 1)
-				return ({status: true})
+			if(result) {
+				req.session.interest = interest
+				return ({ status: true })
 			} else {
-				return ({status: false, err: "Interest deletion failed!"})
+				return ({ status: false, err: "Something went wrong!" })
 			}
 		} else {
-			return ({status: false, err: "Interest deletion failed!"})
+			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
@@ -680,7 +619,7 @@ module.exports = {
 	updateGender,
 	updatePreference,
 	updateInterest,
-	deleteInterest,
+	// deleteInterest,
 	updateBiography,
 	sendEmailChangeRequest,
 	updatePassword,

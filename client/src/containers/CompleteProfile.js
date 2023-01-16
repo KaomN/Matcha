@@ -10,10 +10,14 @@ import PreferenceForm from "./CompleteProfileComponents/PreferenceForm";
 import BiographyForm from "./CompleteProfileComponents/BiographyForm";
 import InterestForm from "./CompleteProfileComponents/InterestForm";
 import ProfileForm from "./CompleteProfileComponents/ProfileForm";
+import { LoadingSpinner } from "../components/LoadingSpinner";
+import toast from 'react-simple-toasts';
 
 export default function CompleteProfile() {
 	const { user } = useContext(UserContext);
 	const [age, setAge] = useState("");
+	const [tagOptions, setTagOptions] = useState([]);
+	const [isLoading, setIsLoading] = useState("");
 	const [dateOfBirth, setDateOfBirth] = useState(undefined);
 	const [gender, setGender] = useState("");
 	const [preference, setPreference] = useState("");
@@ -24,7 +28,29 @@ export default function CompleteProfile() {
 	const [locationLng, setLocationLng] = useState("")
 	const [profilePicture, setProfilePicture] = useState({});
 	const [profilePictureSrc, setProfilePictureSrc] = useState("")
+	const [tags, setTags] = useState([]);
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		let mounted = true;
+		if(mounted) {
+			(async function() {
+				setIsLoading(true);
+				const response = await fetch("http://localhost:3001/search/tags", {
+					credentials: "include",
+					method: 'GET'
+				});
+				const data = await response.json();
+				if(data.status) {
+					setTagOptions(data.tags);
+				} else {
+					toast("Something went wrong! Error loading tags, please refresh the page!", { position: 'top-center', duration: 5000 })
+				}
+				setIsLoading(false);
+			})();
+		}
+		return () => {mounted = false};
+	}, [])
 
 	function getLocation() {
 		if (navigator.geolocation) {
@@ -69,6 +95,10 @@ export default function CompleteProfile() {
 		}
 	}, [navigate, user]);
 
+	if(isLoading) {
+		<LoadingSpinner/>
+	}
+
 	if(showform === "ageForm")
 		return <AgeForm
 				date={dateOfBirth}
@@ -99,6 +129,9 @@ export default function CompleteProfile() {
 				setInterest={setInterest}
 				interest={interest}
 				setShowForm={setShowForm}
+				tagOptions={tagOptions}
+				tags={tags}
+				setTags={setTags}
 				/>
 	else if(showform === "profileForm")
 		return <ProfileForm
@@ -114,6 +147,6 @@ export default function CompleteProfile() {
 				biography={biography}
 				locationLat={locationLat}
 				locationLng={locationLng}
-				interest={interest}
+				tags={tags}
 				/>
 }

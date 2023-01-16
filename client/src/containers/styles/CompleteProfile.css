@@ -51,13 +51,6 @@
 	height: 100%;
 }
 
-/* .flex-center {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	flex-direction: column;
-} */
-
 .complete-form-img {
 	object-fit: contain;
 	max-width: 300px;
@@ -73,11 +66,13 @@
 
 .complete-profile-form {
 	display: flex;
+	align-items: center;
+	justify-content: center;
 	flex-direction: column;
 	padding: 1.5rem !important;
-	width: calc(100% - 3rem);
+	width: calc(100% - 3rem - 4px);
 	max-width: calc(400px - 3rem);
-	min-width: calc(260px - 3rem);
+	min-width: calc(240px - 3rem);
 	margin: auto;
 	padding-bottom: 0.5rem;
 	border-radius: var(--border-radius);
@@ -160,8 +155,24 @@
 
 .flex-column-completeprofile {
 	display: flex;
+	width: 100%;
 	flex-direction: column;
 	align-items: flex-start;
+}
+
+.flex-column-completeprofile-select {
+	width: 100%;
+}
+
+.flex-column-completeprofile-select > div {
+	width: 100% !important;
+	padding-bottom: 1.75rem;
+	padding-top: 0.5rem;
+}
+
+.complete_select {
+	width: 100% !important;
+	font-size: 16px;
 }
 
 #interest {

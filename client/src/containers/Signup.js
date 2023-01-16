@@ -31,7 +31,7 @@ export default function Signup() {
 	async function handleSubmit(event) {
 		event.preventDefault();
 		setIsLoading(true)
-		let response = await fetch('http://localhost:3001/request/register', {
+		const response = await fetch('http://localhost:3001/request/register', {
 			method: "POST",
 			credentials: "include",
 			headers: { 'content-type': 'application/json' },
@@ -44,20 +44,18 @@ export default function Signup() {
 				passwordConfirm: passwordConfirm,
 			})
 		});
-		console.log(response)
 		if(response.status === 200) {
-			response = await response.json();
-			console.log(response)
-			if (response.status) {
+			const data = await response.json();
+			if (data.status) {
 				// Successful signup
 				setPopup("popup show-popup")
 			} else {
-				setErrorFirstname(response.errorFirstname)
-				setErrorSurname(response.errorSurname)
-				setErrorUsername(response.errorUsername)
-				setErrorEmail(response.errorEmail)
-				setErrorPassword(response.errorPassword)
-				setErrorPasswordConfirm(response.errorPasswordConfirm)
+				setErrorFirstname(data.errorFirstname)
+				setErrorSurname(data.errorSurname)
+				setErrorUsername(data.errorUsername)
+				setErrorEmail(data.errorEmail)
+				setErrorPassword(data.errorPassword)
+				setErrorPasswordConfirm(data.errorPasswordConfirm)
 			}
 			setIsLoading(false)
 		} else {
