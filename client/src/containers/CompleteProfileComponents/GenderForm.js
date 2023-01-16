@@ -6,20 +6,25 @@ export default function GenderForm(props) {
 						<h1 className="title">Complete your profile</h1>
 					</div>
 					<div className="complete-form-container">
-						<div id="genderForm">
+						<div id="preferenceForm">
 							<div style={{fontSize: "23px", marginBottom: "0.5rem"}}>
 								<label style={{fontSize: "23px", marginBottom: "0.5rem"}}>Gender</label>
 								<div className="form_message_error"></div>
 							</div>
-							<select className="completeprofile_select" id="genderSelect" style={{border: "0px", marginBottom: "1.5rem"}} onChange={function(e) {props.setGender(e.target.value)}} defaultValue={props.gender}>
-								<option value="" >Gender</option>
-								<option value="male" >Male</option>
-								<option value="female">Female</option>
-							</select>
+							<div className="flex-column-completeprofile">
+								<div style={{border: "0px", marginBottom: "0.5rem"}}>
+									<input type="radio" name="gender" id="genderMale" onClick={function(e) {props.setGender("male")}}/>
+									<label style={{fontSize: "23px"}} htmlFor="genderMale">Female</label>
+								</div>
+								<div style={{border: "0px", marginBottom: "0.5rem"}}>
+									<input type="radio" name="gender" id="genderFemale" onClick={function(e) {props.setGender("female")}}/>
+									<label style={{fontSize: "23px"}} htmlFor="genderFemale">Male</label>
+								</div>
+							</div>
 							<div className="center-gap">
-								<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; props.setShowForm("ageForm");}}>Previous</button>
+								<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; props.setShowForm("genderForm");}}>Previous</button>
 								<button className="complete-form-button" onClick={() => {
-										if(document.getElementById('genderSelect').value === "") {
+										if(!document.getElementById('genderMale').checked && !document.getElementById('genderFemale').checked) {
 											document.querySelector('.form_message_error').innerHTML = "Empty field!"
 										} else {
 											document.querySelector('.form_message_error').innerHTML = ""

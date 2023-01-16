@@ -37,13 +37,33 @@ async function createDatabase() {
 				con.query("ALTER TABLE notifications ADD FOREIGN KEY (fk_userid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 				con.query("ALTER TABLE notifications ADD FOREIGN KEY (targetuserid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 				con.query("ALTER TABLE rating ADD FOREIGN KEY (fk_userid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
-				con.query("ALTER TABLE rating ADD FOREIGN KEY (fk_targetuserid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
+				con.query("ALTER TABLE rating ADD FOREIGN KEY (fk_fromuserid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
+				
 			])
+			//const interests = [
+			//	"Games", "Food", "Movies", "Cars", "Music", "Traveling", "Sports", "Art", "Fashion",
+			//	"Technology", "Books", "Animals", "Nature", "Cooking", "Dancing", "Gaming", "Gardening",
+			//	"Hiking", "Hunting", "Meditation", "Photography", "Reading", "Singing", "Skiing", "Swimming",
+			//	"Writing", "Yoga", "Camping", "Fishing", "Horseback-Riding", "Painting", "Sailing", "Surfing",
+			//	"Tennis", "Volleyball", "Walking", "Wine-Tasting", "Working-Out", "Baking", "Biking", "Boating",
+			//	"Climbing", "Golfing", "Motorcycling", "Rock-Climbing", "Running", "Scuba-Diving", "Shopping", "Snowboarding",]
+			//for (const tag of interests) {
+			//	var [rows, fields] = await con.execute('SELECT * FROM tag WHERE tag = ?', [tag])
+			//	if (!rows[0]) {
+			//		await con.execute('INSERT INTO tag (tag) VALUES (?)', [tag])
+			//	}
+			//}
+			await con.end();
+			return true
 		}
-		await con.end();
+		return false
 	} catch (err) {
-
+		console.log(err)
 	}
 }
 
-module.exports = { createDatabase };
+async function insertTags(con) {
+	await con.execute("INSERT INTO tag (tag) VALUES ('Movies'), ('Cars'), ('Music'), ('Traveling'), ('Sports'), ('Art'), ('Fashion'), ('Technology'), ('Books'), ('Animals'), ('Nature'), ('Cooking'), ('Dancing'), ('Dancing'), ('Gaming'), ('Gardening'), ('Hiking'), ('Hunting'), ('Meditation'), ('Photography'), ('Reading'), ('Singing'), ('Skiing'), ('Skiing'), ('Writing'), ('Yoga'), ('Camping'), ('Fishing'), ('Horseback-Riding'), ('Painting'), ('Sailing'), ('Surfing'), ('Tennis'), ('Volleyball'), ('Walking'), ('Wine-Tasting'), ('Working-Out'), ('Baking'), ('Biking'), ('Boating'), ('Climbing'), ('Golfing'), ('Motorcycling'), ('Rock-Climbing'), ('Running'), ('Scuba-Diving'), ('Shopping'), ('Snowboarding')")
+}
+
+module.exports = { createDatabase, insertTags };

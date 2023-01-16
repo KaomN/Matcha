@@ -1,10 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { createDatabase }= require("./createDatabase");
+const { createDatabase, insertTags }= require("./createDatabase");
 const fileUpload = require('express-fileupload');
 const cors = require('cors')
 const con = require("./setup").pool;
-createDatabase();
+(async function() { 
+	if(await createDatabase())
+		await insertTags(con);
+})();
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});

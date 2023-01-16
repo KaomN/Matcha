@@ -44,8 +44,10 @@ export default function Signup() {
 				passwordConfirm: passwordConfirm,
 			})
 		});
+		console.log(response)
 		if(response.status === 200) {
 			response = await response.json();
+			console.log(response)
 			if (response.status) {
 				// Successful signup
 				setPopup("popup show-popup")
