@@ -3,7 +3,7 @@ const fs = require('fs');
 
 async function insert() {
 	try {
-		var interests = [
+		const interests = [
 			"Games", "Food", "Movies", "Cars", "Music", "Traveling", "Sports", "Art", "Fashion",
 			"Technology", "Books", "Animals", "Nature", "Cooking", "Dancing", "Gaming", "Gardening",
 			"Hiking", "Hunting", "Meditation", "Photography", "Reading", "Singing", "Skiing", "Swimming",
