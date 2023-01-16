@@ -91,7 +91,7 @@ export default function Profile() {
 			})();
 		}
 		return () => {mounted = false};
-	}, [params, socket, pathname]);
+	}, [params, socket, pathname, user.userid]);
 
 	useEffect(() => {
 		if(socket.disconnected)

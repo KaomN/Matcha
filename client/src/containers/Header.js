@@ -161,6 +161,14 @@ export default function Header() {
 	}, [pathname]);
 
 	useEffect(() => {
+		if (path[1] === "home" || path[1] === "profile" || path[1] === "chat" || path[1] === "search") {
+			if(user.profile === false) {
+				navigate("/completeprofile")
+			}
+		}
+	}, [user.profile, navigate, path])
+
+	useEffect(() => {
 		setTimeout(() => {
 			(async function() {
 				try {

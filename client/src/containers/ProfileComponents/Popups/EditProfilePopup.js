@@ -25,7 +25,6 @@ export default function EditProfilePopup(props) {
 	const [interest, setInterest] = useState([]);
 	const [biography, setBiography] = useState("");
 	const [newBiography, setNewBiography] = useState("");
-	const [tagOptions, setTagOptions] = useState([]);
 	// Success states for Profile Settings
 	const [nameSuccessMsg, setNameSuccessMsg] = useState("");
 	const [usernameSuccessMsg, setUsernameSuccessMsg] = useState("");
