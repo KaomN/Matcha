@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles/ForgotPassword.css";
-
+import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
 
 export default function Login() {
 	//Input states
@@ -10,26 +10,34 @@ export default function Login() {
 	const [messageEmail, setMessageEmail] = useState("");
 	const [formInputClass, setFormInputClass] = useState("form_message_error");
 	const navigate = useNavigate();
+	const [isLoading, setIsLoading] = useState(false);
 
-
-	async function handleSubmit(event) {
-		event.preventDefault();
-		let response = await fetch('http://localhost:3001/request/forgotpassword', {
+	async function handleSubmit() {
+		setIsLoading(true)
+		const response = await fetch('http://localhost:3001/request/forgotpassword', {
 			credentials: "include",
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
 				email: email
-			})
+		})
 		});
-		response = await response.json();
-		if(response.status) {
+		const data = await response.json();
+		if(data.status) {
 			setFormInputClass("form_message_success")
-			setMessageEmail(response.message)
+			setMessageEmail(data.message)
+			setTimeout(() => {
+				setMessageEmail("")
+			}, 5000)
+			
 		} else {
 			setFormInputClass("form_message_error")
-			setMessageEmail(response.errorEmail)
+			setMessageEmail(data.errorEmail)
+			setTimeout(() => {
+				setMessageEmail("")
+			}, 5000)
 		}
+		setIsLoading(false)
 	}
 
 	function naviagteLogin() {
@@ -42,7 +50,7 @@ export default function Login() {
 
 	return (
 		<main className="form-container ma" id="formLogin">
-			<form className="forgotpassword-form" onSubmit={handleSubmit}>
+			<form className="forgotpassword-form" >
 				<div className="lock-image-container">
 					<i className="material-icons lock">lock</i>
 				</div>
@@ -54,7 +62,13 @@ export default function Login() {
 					<div></div>
 				</div>
 				<div className="button_container">
-					<button type="submit" className="form_button2">Send Link</button>
+					{isLoading ?
+					<LoadingSpinnerComponent
+					size={30}
+					/>
+					:
+					<button type="submit" className="form_button2" onClick={handleSubmit}>Send Link</button>}
+					
 				</div>
 				<div className="seperator"><div></div><div>OR</div><div></div></div>
 				<div className="center">

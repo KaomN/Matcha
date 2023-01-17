@@ -51,8 +51,6 @@ export default function EditProfilePopup(props) {
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 	const [isLocationVisible, setIsLocationVisible] = useState(false);
 
-
-
 	useEffect(() => {
 		setFirstname(props.profile.firstname)
 		setSurname(props.profile.surname)

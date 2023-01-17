@@ -34,6 +34,10 @@
 	z-index: 4;
 }
 
+.profile-form-container {
+	width: 100%;
+}
+
 .profile-background {
 	position: relative;
 	width: calc(100vw - 4rem);
@@ -52,6 +56,12 @@
 	max-width: 200px;
 	max-height: 200px;
 	overflow: auto;
+}
+
+.profile_image_left_button {
+	width: 100%;
+	display: flex;
+	justify-content: center;
 }
 
 .profile-interest-container::-webkit-scrollbar {
@@ -171,7 +181,6 @@
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	max-height: 380px;
 	border-radius: var(--border-radius);
 	background-color: #05e7c16e;
 	border: 1px solid var(--color-primary-darker);

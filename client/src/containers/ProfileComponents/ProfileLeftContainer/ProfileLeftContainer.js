@@ -23,14 +23,13 @@ export default function ProfileLeftContainer(props) {
 			:
 			null
 			}
-			
+			{props.profile.isOwn ?
+			<i className="pos-absolute-top-right material-icons profile-file-btn" onClick={ () => setIsEditProfileImageVisible(true) } title="Edit" >edit</i>
+			:
+			null
+			}
 			<div className="pos-relative profile-image-container">
-				{props.profile.isOwn
-				?
-				<i className="pos-absolute-top-right material-icons profile-file-btn" onClick={ () => setIsEditProfileImageVisible(true) } title="Edit" >edit</i>
-				:
-				null
-				}
+				
 				{/* Edit Profile Image Popup */}
 				{!isEditProfileImageVisible ?
 					null
@@ -40,6 +39,8 @@ export default function ProfileLeftContainer(props) {
 					setIsEditProfileImageVisible={setIsEditProfileImageVisible}
 					setUser={props.setUser}
 					user={props.user}
+					profile={props.profile}
+					setProfile={props.setProfile}
 					/>
 				}
 				{props.profile.profile ?

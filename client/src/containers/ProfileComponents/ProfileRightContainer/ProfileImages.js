@@ -28,15 +28,8 @@ export default function ProfileImages(props) {
 	}
 
 	return (
-
 			<div className="profile-images-container">
 				<div className="pt-2rem pos-relative">
-				{(props.isOwn === true)
-					?
-					<i className="profile-edit-images-button material-icons" onClick={ () => props.setIsEditImageVisible(true) } title="Edit">edit</i>
-					:
-					null
-				}
 				<img src={props.profile.images[imagePage].imageSrc} className="rounded-corners" alt="images"/>
 				{(props.isOwn === true)
 					?

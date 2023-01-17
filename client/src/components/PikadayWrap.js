@@ -31,7 +31,7 @@ export default class PikadayWrap extends React.Component {
 
 	render () {
 		return	<div>
-					<input type='text' id={this.props.page === "profile" ? 'profile' : 'date'} className={this.props.page === "profile" ? 'text-align-center profile-pikaday' : 'text-align-center'} ref={this.myRef} autoComplete="off" defaultValue={this.props.value} readOnly/>
+					<input type='text' id={this.props.page === "profile" ? 'profile' : 'date'} className={this.props.page === "profile" ? 'text-align-center profile-pikaday' : 'text-align-center'} ref={this.myRef} autoComplete="off" placeholder={this.props.value} readOnly/>
 				</div>
 	}
 }

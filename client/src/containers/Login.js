@@ -3,6 +3,8 @@ import { UserContext } from '../context/UserContext';
 import { useNavigate } from "react-router-dom";
 import { trackPromise} from 'react-promise-tracker';
 import "./styles/Login.css";
+import toast from 'react-simple-toasts';
+import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
 
 export default function Login() {
 	const { user } = useContext(UserContext);
@@ -15,6 +17,9 @@ export default function Login() {
 	const [error, setError] = useState("");
 	//Other states
 	const [popupNotVerified, setPopupNotVerified] = useState("popup hide-popup");
+	const [userId, setUserId] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const [messageVerification, setMessageVerification] = useState("");
 	const navigate = useNavigate();
 	
 	function fetchLogin() {
@@ -53,6 +58,7 @@ export default function Login() {
 			if("error" in response) {
 				setError(response.error)
 			} else if("verified" in response) {
+				setUserId(response.userid)
 				setPopupNotVerified("popup show-popup")
 			}
 		}
@@ -67,6 +73,34 @@ export default function Login() {
 			navigate("/home");
 		}
 	}, [user.auth, navigate]);
+
+	async function handleResendEmail() {
+		setIsLoading(true)
+		if(userId !== "") {
+			const response = await fetch('http://localhost:3001/request/resendverification', {
+				credentials: "include",
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({
+					userid: userId,
+				})
+			})
+			const data = await response.json()
+			if(data.status) {
+				setMessageVerification(data.message)
+				setIsLoading(false)
+				setTimeout(() => {
+					setMessageVerification("")
+				}, 3000)
+			} else {
+				toast("Something went wrong! Please refresh the page!", { position: 'top-center', duration: 5000 })
+				setIsLoading(false)
+			}
+		} else {
+			setIsLoading(false)
+			toast("Something went wrong! Please refresh the page!", { position: 'top-center', duration: 5000 })
+		}
+	}
 
 	return (
 		<main className="form-container ma main-login" id="formLogin">
@@ -91,10 +125,15 @@ export default function Login() {
 				<div className="popup-content">
 					<form className="form" id="resendVerifyForm">
 						<p>Your account has not been verified! If you did not receive a link when you registered, press the button below to re-send the link.</p>
-						<div className="form_message"></div>
+						<div className="form_message_success">{messageVerification}</div>
 						<div className="flex-center flex-row">
 							<button type="button" className="form_button_verify mr" onClick={() => {setPopupNotVerified("popup hide-popup")}}>Back to Login</button>
-							<button type="button" className="form_button_verify" id="resendVerificationBtn">Re-send verification link</button>
+							{isLoading ?
+							<LoadingSpinnerComponent
+							size={30}
+							/>
+							:
+							<button type="button" className="form_button_verify" id="resendVerificationBtn" onClick={handleResendEmail}>Re-send verification link</button>}
 						</div>
 					</form>
 				</div>

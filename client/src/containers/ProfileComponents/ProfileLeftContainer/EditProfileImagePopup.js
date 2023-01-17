@@ -20,7 +20,6 @@ export default function EditProfileImagePopup(props) {
 		setProfilePictureSrc(URL.createObjectURL(event.target.files[0]))
 		setProfilePicture(event.target.files[0])
 	}
-
 	useEffect(() => {
 		if (profilePicture && Object.keys(profilePicture).length === 0 && Object.getPrototypeOf(profilePicture) === Object.prototype) {
 			setProfileImageFileInput(<div className="flex-center">
@@ -56,6 +55,10 @@ export default function EditProfileImagePopup(props) {
 					...user,
 					imageSrc: response.imageSrc
 				}))
+				props.setProfile(profile => ( {
+					...profile,
+					profileSrc: response.imageSrc
+				}))
 				props.setIsEditProfileImageVisible(false)
 				toast("Profile Image Updated!", { position: 'top-center', duration: 5000 })
 				setPromiseTracker(false)
@@ -65,7 +68,6 @@ export default function EditProfileImagePopup(props) {
 			}
 		}
 	}
-
 	return (
 		<div className="popup-profile">
 			<div ref={props.refEditProfileImage} className="popup-content-profile pos-relative">

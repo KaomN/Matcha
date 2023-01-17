@@ -1,11 +1,55 @@
 import { useState } from "react";
-import { HandleSubmit } from "../HandleSubmit";
 import { LoadingSpinnerPromiseComponent } from "../../../components/LoadingSpinnerPromiseComponent";
+import { SocketContext } from "../../../context/SocketContext";
+import { useContext } from "react";
+import { useLocation } from "react-router-dom"
+import toast from 'react-simple-toasts';
+
 
 export default function ProfileGender(props) {
-
+	const socket = useContext(SocketContext);
+	const { pathname } = useLocation();
 	const [errorGender, setErrorGender] = useState("");
 	const [promiseTracker, setPromiseTracker] = useState(false);
+
+	async function handleSubmit(e) {
+		try {
+			setPromiseTracker(true)
+			let response = await fetch('http://localhost:3001/profile/gender', {
+						credentials: "include",
+						headers: { 'content-type': 'application/json' },
+						method: "PUT",
+						body: JSON.stringify({ gender: e.target.value})
+					});
+					response = await response.json()
+					if (response.status) {
+						props.setGenderSuccessMsg("Updated successfully!")
+						setTimeout(() => {
+							props.setGenderSuccessMsg("")
+						}, 3000)
+						props.setGender(e.target.value)
+						props.setUser(user => ( {
+							...user,
+							gender: e.target.value
+						}))
+						props.setProfile(user => ( {
+							...user,
+							gender: e.target.value
+						}))
+						socket.emit("gender_preference_change", { path: pathname, gender: e.target.value, preference: props.user.preference, username: props.user.username})
+					} else {
+						setErrorGender(response.err)
+						setTimeout(() => {
+							setErrorGender("")
+						}, 3000)
+					}
+					setPromiseTracker(false)
+		} catch (err) {
+			console.log(err)
+			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+			setPromiseTracker(false)
+		}
+	}
 
 	return (
 		<div className="profile-component-items">
@@ -15,25 +59,11 @@ export default function ProfileGender(props) {
 			<div className="flex-col">
 				<div className="flex-row">
 					<label htmlFor ="genderMale" className="profile-gender-label">Male:</label>
-					<input name="gender" value="male" type="radio" id="genderMale" defaultChecked={props.gender === "male" ? true : false} onChange={(e) => {
-						HandleSubmit({
-							...props,
-							type: "gender",
-							value: e.target.value,
-							setErrorGender,
-							setPromiseTracker,
-						})}}></input>
+					<input name="gender" value="male" type="radio" id="genderMale" defaultChecked={props.gender === "male" ? true : false} onChange={handleSubmit}></input>
 				</div>
 				<div className="flex-row">
 					<label htmlFor="genderFemale" className="profile-gender-label" >Female:</label>
-					<input name="gender" value="female" type="radio" id="genderFemale" defaultChecked={props.gender === "female" ? true : false} onChange={(e) => {
-						HandleSubmit({
-							...props,
-							type: "gender",
-							value: e.target.value,
-							setErrorGender,
-							setPromiseTracker
-						})}}></input>
+					<input name="gender" value="female" type="radio" id="genderFemale" defaultChecked={props.gender === "female" ? true : false} onChange={handleSubmit}></input>
 				</div>
 				<div className="profile-input-error">{errorGender}</div>
 			</div>

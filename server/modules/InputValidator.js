@@ -83,6 +83,7 @@ const forgotPassword = (req, error) => {
 }
 
 const passwordReset = (req, error) => {
+	const rePassword = /\d|[A-Z]/;
 	const { password, passwordConfirm } = req.body;
 	if(password.trim().length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
@@ -168,7 +169,7 @@ const checkUsername = (req, error) => {
 	else if(!reUsername.test(username))
 		Object.assign(error, {"err": "Username only 'a-z', '0-9', '-' and '_'"});
 	else if(username.trim() === req.session.username)
-		Object.assign(error, {"errorUsername": "Same as old username!"});
+		Object.assign(error, {"err": "Same as old username!"});
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		return true;
 	} else {
@@ -273,7 +274,7 @@ const checkPassword = (req, error) => {
 		Object.assign(error, {"errorConfirmNewPassword": "Password confirm too long! Max 255 characters!"});
 	else if (confirmNewPassword.length < 8)
 		Object.assign(error, {"errorConfirmNewPassword": "Password confirm minimum length of 8!"});
-	else if(!rePassword.test(ConfirmNewPassword))
+	else if(!rePassword.test(confirmNewPassword))
 		Object.assign(error, {"errorConfirmNewPassword": "Password needs to include atleast an uppercase letter or number!"});
 	if(newPassword !== confirmNewPassword) {
 		Object.assign(error, {"errorNewPassword": "Password did not match!"});

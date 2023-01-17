@@ -15,7 +15,7 @@ const PORT = process.env.PORT;
 const {sessionMiddleware} = require('./modules/SessionMiddleware')
 const { Server } = require('socket.io')
 const app = express();
-const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, saveMessage, amIBlocked } = require('./modules/HelperModules')
+const { updateLastActive, getUserToken, saveNotification, checkConnectRequest, saveMessage, amIBlocked, deleteConnections } = require('./modules/HelperModules')
 var CronJob = require('cron').CronJob;
 
 // Cron job to delete ratings older than 7 days
@@ -244,6 +244,7 @@ io.on('connection', (socket) => {
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
+		// Updating report request
 		socket.on("send_report", async function (data) {
 			const user = getUser(data.userid);
 			if (user) {
@@ -253,6 +254,10 @@ io.on('connection', (socket) => {
 				});
 				
 			}
+			updateUserStatus(socket.request.session.userid, socket.id, data.path)
+		});
+		socket.on("gender_preference_change", async function (data) {
+			await deleteConnections(socket.request.session.userid, socket, getUser, data)
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
 		// Notification
@@ -265,9 +270,9 @@ io.on('connection', (socket) => {
 			// 4. connected
 			// 5. disconnect
 			const user = getUser(data.userid);
-			if(user) {
-				if (data.type === "connect") {
-					const type = await checkConnectRequest(data.userid, socket.request.session.userid)
+			if (data.type === "connect") {
+				const type = await checkConnectRequest(data.userid, socket.request.session.userid)
+				if(user) {
 					if(type) {
 						socket.to(user.socketId).emit("receive_notification", {
 							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`, 4),
@@ -285,7 +290,15 @@ io.on('connection', (socket) => {
 							isread: 0,
 						});
 					}
-				} else if (data.type === "profile") {
+				} else {
+					if(type) {
+						await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`, 4)
+					} else {
+						await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a connection request!`, 1)
+					}
+				}
+			} else if (data.type === "profile") {
+				if(user) {
 					if(data.userid !== socket.request.session.userid && await amIBlocked(data.userid, socket.request.session.userid) === false) {
 						socket.to(user.socketId).emit("receive_notification", {
 							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`, 2),
@@ -295,7 +308,11 @@ io.on('connection', (socket) => {
 							isread: 0,
 						});
 					}
-				} else if (data.type === "disconnect") {
+				} else {
+					await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`, 2)
+				}
+			} else if (data.type === "disconnect") {
+				if(user) {
 					socket.to(user.socketId).emit("receive_notification", {
 						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5),
 						fk_userid: data.userid,
@@ -303,8 +320,11 @@ io.on('connection', (socket) => {
 						notification: `${socket.request.session.username} has disconnected from you!`,
 						isread: 0,
 					});
+				} else {
+					await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5)
 				}
 			}
+
 		});
 		// Join profile room to listen for updates
 		socket.on("join_profile_room", async function (data) {
@@ -342,12 +362,9 @@ io.on('connection', (socket) => {
 				onlineStatus: false
 			});
 		});
-
 	} catch (err) {
-		console.lot (err)
 	}
 });
-
 // UserController
 app.use('/request', require('./controllers/UserController'));
 // UserController

@@ -7,6 +7,12 @@ export default function ProfileRightContainer(props) {
 	
 	return (
 		<div className="padding05 profile-right-container pos-relative">
+			{(props.profile.isOwn === true)
+			?
+			<i className="profile-edit-images-button material-icons" onClick={ () => setIsEditImageVisible(true) } title="Edit">edit</i>
+			:
+			null
+			}
 			{!isEditImageVisible ?
 			null
 			:
@@ -28,12 +34,6 @@ export default function ProfileRightContainer(props) {
 			/>
 			:
 			<div>
-			{(props.profile.isOwn === true)
-			?
-			<i className="profile-edit-images-button material-icons" onClick={ () => setIsEditImageVisible(true) } title="Edit">edit</i>
-			:
-			null
-			}
 			No images uploaded
 			</div>
 			}

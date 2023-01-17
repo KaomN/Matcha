@@ -3,7 +3,6 @@ const con = require("../setup").pool;
 const emailTransporter =  require("../setup").emailTransporter;
 var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const ImageProcessing = require('../modules/ImageProcessing');
 
 // Register request
 const register = async (req) => {
@@ -60,7 +59,7 @@ const login = async (req) => {
 			return ({status: false, error: "Incorrect username/password"});
 		} else {
 			if(rows[0].verified === 0) {
-				return ({"status": false, "verified": false});
+				return ({"status": false, "verified": false, userid: rows[0].pk_userid});
 			} else {
 				const match = await bcrypt.compare(password, rows[0].password)
 				if(match) {
@@ -382,6 +381,30 @@ const deleteHistory = async (req) => {
 	}
 }
 
+const resendVerification = async (req) => {
+	try {
+		const [rows, fields] = await con.execute(
+			`SELECT token, email
+			FROM users
+			WHERE pk_userid = ?`,
+			[req.body.userid])
+		if(rows) {
+			const mailOptions = {
+				from: 'kaom.n.92@gmail.com',
+				to: rows[0].email,
+				subject: 'Matcha account confirmation',
+				text: 'Please follow the link below to verify your account.\n' + 'http://localhost:3000?verification=' + rows[0].token
+			};
+			result = await emailTransporter.sendMail(mailOptions);
+			return({status: true, message: "Verification email re-sent!"});
+		}
+		return({status: false, message: "Server connection error"});
+	} catch (err) {
+		return({status: false, message: "Server connection error"});
+	}
+}
+resendVerification
+
 module.exports = {
 	register,
 	login,
@@ -397,4 +420,5 @@ module.exports = {
 	deleteNotification,
 	getHistory,
 	deleteHistory,
+	resendVerification,
 }

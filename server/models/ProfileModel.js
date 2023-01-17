@@ -268,6 +268,7 @@ const updateDate = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
+		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -411,6 +412,7 @@ const sendEmailChangeRequest = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
+		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -468,24 +470,39 @@ const updatePosition = async (req) => {
 
 const connect = async (req) => {
 	try {
-		// Create a new connect row with the two users
-		const [connect, fields] = await con.execute(`
-			INSERT INTO connect (fk_userid, targetuserid)
-			VALUES (?, ?)`,
-			[req.session.userid, req.body.userid])
-		await addRating( req.body.userid, req.session.userid, "connect")
-			// Check if the target user has already sent a connect request to the current user
-		if(await checkConnectRequest(req.body.userid, req.session.userid)) {
-			// If so, create a new connected row with the two users
-			const pk_id =  uuidv4() + "-" + uuidv4()
-			const [connect, fields] = await con.execute(`
-				INSERT INTO connected (pk_id, userid1, userid2)
-				VALUES (?, ?, ?)`,
-				[pk_id, req.session.userid, req.body.userid])
-			await addRating( req.body.userid, req.session.userid, "connected")
-			return ({status: true, message: "You are now connected with " + req.body.username + "!", connected: true})
+		//Check that the users can connect with each other
+		const [rows, fieldRows] = await con.execute(
+			`SELECT genderpreference as 'preference', gender
+			FROM users
+			WHERE pk_userid = ?`,
+			[req.body.userid])
+		if(rows) {
+			if(canConnect(req.session.preference, rows[0].preference, req.session.gender, rows[0].gender)) {
+				// Create a new connect row with the two users
+				await con.execute(`
+					INSERT INTO connect (fk_userid, targetuserid)
+					VALUES (?, ?)`,
+					[req.session.userid, req.body.userid])
+				await addRating( req.body.userid, req.session.userid, "connect")
+					// Check if the target user has already sent a connect request to the current user
+				if(await checkConnectRequest(req.body.userid, req.session.userid)) {
+					// If so, create a new connected row with the two users
+					const pk_id =  uuidv4() + "-" + uuidv4()
+					await con.execute(`
+						INSERT INTO connected (pk_id, userid1, userid2)
+						VALUES (?, ?, ?)`,
+						[pk_id, req.session.userid, req.body.userid])
+					await addRating( req.body.userid, req.session.userid, "connected")
+					return ({status: true, message: "You are now connected with " + req.body.username + "!", connected: true})
+				}
+			return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
+			} else {
+				return ({ status: false, err: "Something went wrong!" })
+			}
+		} else {
+			return ({ status: false, err: "Something went wrong!" })
 		}
-		return ({status: true, message: "Connect request sent to " + req.body.username + "!"})
+		return ({ status: false, err: "Something went wrong!" })
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
 	}
@@ -493,7 +510,7 @@ const connect = async (req) => {
 
 const disconnect = async (req) => {
 	try {
-		// Create a new connect row with the two users
+		//Create a new connect row with the two users
 		const res = await con.execute(
 			`DELETE 
 			FROM connect

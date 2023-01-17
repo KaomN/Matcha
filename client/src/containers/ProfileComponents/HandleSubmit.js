@@ -5,6 +5,7 @@ function capitalize(s) {
 }
 
 export async function HandleSubmit(props) {
+
 	if (props.type === "name") {
 		try {
 			props.setPromiseTracker(true)
@@ -116,42 +117,6 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		}
 	}
-	else if (props.type === "gender") {
-		try {
-			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/gender', {
-				credentials: "include",
-				headers: { 'content-type': 'application/json' },
-				method: "PUT",
-				body: JSON.stringify({ gender: props.value})
-			});
-			response = await response.json()
-			if (response.status) {
-				props.setGenderSuccessMsg("Updated successfully!")
-				setTimeout(() => {
-					props.setGenderSuccessMsg("")
-				}, 3000)
-				props.setGender(props.value)
-				props.setUser(user => ( {
-					...user,
-					gender: props.value
-				}))
-				props.setProfile(user => ( {
-					...user,
-					gender: props.value
-				}))
-			} else {
-				props.setErrorGender(response.err)
-				setTimeout(() => {
-					props.setErrorGender("")
-				}, 3000)
-			}
-			props.setPromiseTracker(false)
-		} catch (err) {
-			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
-			props.setPromiseTracker(false)
-		}
-	}
 	else if (props.type === "preference") {
 		try {
 			props.setPromiseTracker(true)
@@ -163,6 +128,7 @@ export async function HandleSubmit(props) {
 			});
 			response = await response.json()
 			if (response.status) {
+				props.socket.emit("gender_preference_change", {userid: props.profile.userid, path: props.pathname})
 				props.setPreferenceSuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setPreferenceSuccessMsg("")
@@ -184,6 +150,7 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
+			console.log(err)
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			props.setPromiseTracker(false)
 		}

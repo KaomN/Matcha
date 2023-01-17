@@ -42,6 +42,10 @@ router.get("/logout", (req, res) => {
 	}
 });
 // Verify account request
+router.post("/resendverification", async (req, res) => {
+	res.send(await UserModel.resendVerification(req))
+});
+// Verify account request
 router.post("/verify", async (req, res) => {
 	res.send(await UserModel.verify(req))
 });

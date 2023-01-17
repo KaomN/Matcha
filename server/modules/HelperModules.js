@@ -290,6 +290,64 @@ async function amIBlocked(userid, targetUserId) {
 	}
 }
 
+async function deleteConnections(userid, socket, getUser, data) {
+	try {
+		const [rows, fields] = await con.execute(
+			`SELECT genderpreference as 'preference', gender, pk_userid as 'userid',
+				(SELECT COUNT(*) FROM connected WHERE (userid1 = ? AND userid2 = pk_userid) OR (userid2 = ? AND userid1 = pk_userid)) AS connected,
+				(SELECT COUNT(*) FROM connect WHERE fk_userid = ? AND targetuserid = users.pk_userid) AS connectRequestSent,
+				(SELECT COUNT(*) FROM connect WHERE targetuserid = ? AND fk_userid = users.pk_userid) AS connectRequest
+			FROM users
+			WHERE NOT users.pk_userid = ?
+			HAVING connected > 0 OR connectRequestSent > 0 OR connectRequest > 0
+			`,
+			[userid, userid, userid, userid, userid])
+		if(rows) {
+			for (const user of rows) {
+				if(!canConnect(data.preference, user.preference, data.gender, user.gender)) {
+					if(user.connected) {
+						await con.execute(
+							`DELETE
+							FROM connected
+							WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)
+							`,[userid, user.userid, user.userid, userid])
+						await con.execute(
+							`DELETE
+							FROM connect
+							WHERE (fk_userid = ? AND targetuserid = ?) OR (fk_userid = ? AND targetuserid = ?)
+							`,[userid, user.userid, user.userid, userid])
+						const userIsOnline = getUser(rows[0].userid);
+						if(userIsOnline){
+							socket.to(userIsOnline.socketId).emit("receive_notification", {
+								pk_id: await saveNotification(user.userid, userid, `${data.username} has disconnected with you!`, 5),
+								fk_userid: user.userid,
+								targetuserid: userid,
+								notification: `${data.username} has disconnected from you!`,
+								isread: 0,
+							});
+						} else {
+							await saveNotification(user.userid, userid, `${data.username} has disconnected with you!`, 5)
+						}
+					} else if(user.connectRequest) {
+						await con.execute(
+							`DELETE
+							FROM connect
+							WHERE (fk_userid = ? AND targetuserid = ?)
+							`,[user.userid, userid])
+					} else if(user.connectRequestSent) {
+						await con.execute(
+							`DELETE
+							FROM connect
+							WHERE (fk_userid = ? AND targetuserid = ?)
+							`,[userid, user.userid])
+					}
+				}
+			}
+		}
+	} catch (err) {
+	}
+}
+
 
 module.exports = {
 	getUserInterests,
@@ -308,4 +366,5 @@ module.exports = {
 	saveMessage,
 	addRating,
 	amIBlocked,
+	deleteConnections,
 };

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { GoogleMap, LoadScript, Marker,  } from "@react-google-maps/api"
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api"
 
 const containerStyle = {
 	width: '100%',
@@ -8,7 +8,11 @@ const containerStyle = {
 
 function GoogleMaps({position, setSavedPosition}) {
 	const [markerPos, setMarkerPos] = useState(position)
-
+	const [ initialPosition ] = useState(position)
+	const { isLoaded } = useJsApiLoader({
+		googleMapsApiKey: process.env.REACT_APP_API_KEY,
+	});
+	
 	async function handleChange(event) {
 		const newPosition = event.latLng.toJSON();
 		setSavedPosition(newPosition);
@@ -16,12 +20,10 @@ function GoogleMaps({position, setSavedPosition}) {
 	}
 	
 	return (
-		<LoadScript
-		googleMapsApiKey={process.env.REACT_APP_API_KEY}
-		>
-			<GoogleMap
+		<>
+		{isLoaded && <GoogleMap
 			mapContainerStyle={containerStyle}
-			center={position}
+			center={initialPosition}
 			zoom={10}
 			clickableIcons={false}
 			options={{ mapTypeControl: false, fullscreenControl: false, streetViewControl: false}}
@@ -31,8 +33,8 @@ function GoogleMaps({position, setSavedPosition}) {
 					position={markerPos}
 				>
 				</Marker>
-			</GoogleMap>
-		</LoadScript>
+			</GoogleMap>}
+		</>
 	)
 }
 

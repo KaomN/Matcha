@@ -295,7 +295,6 @@ export default function ProfileButtons(props) {
 						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
-							username: props.profile.username
 						})
 					})
 					const data = await response.json()
@@ -346,6 +345,9 @@ export default function ProfileButtons(props) {
 							socket.emit("send_connect_request", { userid: props.profile.userid , path: pathname});
 							props.setLoading(false)
 						// }, 1300)
+					} else {
+						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+						props.setLoading(false)
 					}
 				})();
 			}, 300)

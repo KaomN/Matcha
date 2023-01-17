@@ -49,7 +49,6 @@ router.put("/username", async (req, res) => {
 
 router.put("/dateofbirth", async (req, res) => {
 	var error = {}
-	
 	if(Validator.checkDate(req, error)) {
 		res.send(await ProfileModel.updateDate(req))
 	} else {

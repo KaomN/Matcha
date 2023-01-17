@@ -15,50 +15,64 @@ export default function Notifications(props) {
 		function checkNotificationArray(pk_id) {
 			for (let i = 0; i < notification.length; i++) {
 				if(notification[i].pk_id === pk_id) {
-					return true
+					return i
 				}
 			}
-			return false
+			return -1
 		}
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_notification", (data) => {
-			if(checkNotificationArray(data.pk_id)) {
-				return
-			}
-			const notificationCopy = notification.slice()
-			notificationCopy.unshift(data)
-			var res1 = false
-			for (let i = 0; i < notificationCopy.length; i++) {
-				if(notificationCopy[i].isread === 0) 
-					res1 = true
-			}
-			if(res1) {
+			const index = checkNotificationArray(data.pk_id)
+			if(index > -1) {
+				const notificationCopy = notification.slice()
+				const newNotification = notificationCopy.splice(index, 1)
+				newNotification[0].isread = false
+				notificationCopy.unshift(newNotification[0])
 				setIsRead(false)
+				setNotification(notificationCopy)
 			} else {
-				setIsRead(true)
+				const notificationCopy = notification.slice()
+				notificationCopy.unshift(data)
+				var res1 = false
+				for (let i = 0; i < notificationCopy.length; i++) {
+					if(notificationCopy[i].isread === 0) 
+						res1 = true
+				}
+				if(res1) {
+					setIsRead(false)
+				} else {
+					setIsRead(true)
+				}
+				setNotification(notificationCopy)
 			}
-			setNotification(notificationCopy)
 		});
 		if (socket.disconnected)
 			socket.open()
 		socket.on("receive_message_notitifaction", (data) => {
-			if(checkNotificationArray(data.pk_id)) {
-				return
-			}
-			const notificationCopy = notification.slice()
-			notificationCopy.unshift(data)
-			var res2 = false
-			for (let i = 0; i < notificationCopy.length; i++) {
-				if(notificationCopy[i].isread === 0) 
-					res2 = true
-			}
-			if(res2) {
+			const index = checkNotificationArray(data.pk_id)
+			if(index > -1) {
+				const notificationCopy = notification.slice()
+				const newNotification = notificationCopy.splice(index, 1)
+				newNotification[0].isread = false
+				notificationCopy.unshift(newNotification[0])
 				setIsRead(false)
+				setNotification(notificationCopy)
 			} else {
-				setIsRead(true)
+				const notificationCopy = notification.slice()
+				notificationCopy.unshift(data)
+				var res2 = false
+				for (let i = 0; i < notificationCopy.length; i++) {
+					if(notificationCopy[i].isread === 0) 
+						res2 = true
+				}
+				if(res2) {
+					setIsRead(false)
+				} else {
+					setIsRead(true)
+				}
+				setNotification(notificationCopy)
 			}
-			setNotification(notificationCopy)
 		});
 		return () => {socket.off("receive_message_notitifaction");socket.off("receive_notification");};
 	}, [socket, notification]);

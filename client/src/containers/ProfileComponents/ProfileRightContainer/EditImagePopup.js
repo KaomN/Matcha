@@ -79,14 +79,14 @@ export default function EditImagePopup(props) {
 				<div className="wh-100p">
 					<div className="flex-center wh-100p flex-col flex-justify-content-start profile-position-relative">
 						<div>
-							<div className="complete-form-container">
+							<div className="profile-form-container">
 								<div id="pictureForm">
 									<div className="flex flex-col flex-align-center">
 										<div className="flex flex-col flex-align-center">
 											<p className="m-0">Choose pictures to upoad to your profile!</p>
 										</div>
 									</div>
-									<div className="flex-column-completeprofile pb-1rem">
+									<div className="profile_image_left_button pb-1rem">
 										{imageFileInput}
 									</div>
 									{pictures.length < 1 ?

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./styles/PasswordReset.css";
+import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
 
 export default function PasswordReset() {
 
@@ -11,13 +12,12 @@ export default function PasswordReset() {
 	const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
 	const [message, setMessage] = useState("");
 	const [messageType, setMessageType] = useState("");
-
+	const [isLoading, setIsLoading] = useState(false);
 	const [searchParams] = useSearchParams();
 
-	async function handleSubmit(event) {
-		event.preventDefault();
-
-		let response = await fetch('http://localhost:3001/request/passwordreset', {
+	async function handleSubmit() {
+		setIsLoading(true)
+		const response = await fetch('http://localhost:3001/request/passwordreset', {
 			credentials: "include",
 			method: "POST",
 			headers: { 'content-type': 'application/json' },
@@ -27,25 +27,31 @@ export default function PasswordReset() {
 				token: searchParams.get("token"),
 			})
 		});
-		response = await response.json();
-
-		if(response.status) {
+		const data = await response.json();
+		if(data.status) {
 			setMessageType("form_message_success");
-			setMessage(response.message);
+			setMessage(data.message);
+			setTimeout(() => {
+				setMessage("");
+			}, 3000)
 		} else {
-			if ("error" in response) {
+			if ("error" in data) {
 				setMessageType("form_message_error");
-				setMessage(response.error);
+				setMessage(data.error);
+				setTimeout(() => {
+					setMessage("");
+				}, 3000)
 			} else {
-				setErrorPassword(response.errorPassword);
-				setErrorPasswordConfirm(response.errorPasswordConfirm);
+				setErrorPassword(data.errorPassword);
+				setErrorPasswordConfirm(data.errorPasswordConfirm);
 			}
 		}
+		setIsLoading(false)
 	}
 
 	return (
 		<main className="password_reset_main ma">
-			<form onSubmit={handleSubmit}>
+			<form>
 				<div className="lock-image-container">
 					<i className="material-icons lock-reset">lock_reset</i>
 				</div>
@@ -62,7 +68,12 @@ export default function PasswordReset() {
 					<div className="form_input_error_message">{errorPasswordConfirm}</div>
 				</div>
 				<div className="button_container">
-					<button type="submit" className="form_button">Submit</button>
+					{isLoading ?
+					<LoadingSpinnerComponent
+					size={30}
+					/>
+					:
+					<button type="submit" className="form_button" onClick={handleSubmit}>Submit</button>}
 				</div>
 			</form>
 		</main>

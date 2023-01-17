@@ -73,6 +73,10 @@
 	justify-content: center;
 }
 
+.form_message_success {
+	color: var(--color-sucess);
+}
+
 @media all and (min-width: 480px) {
 	.Login {
 		padding: 60px 0;

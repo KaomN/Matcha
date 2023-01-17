@@ -22,7 +22,7 @@ async function insert() {
 		var verified = 1
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -45,7 +45,7 @@ async function insert() {
 		rating = 1
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -68,7 +68,7 @@ async function insert() {
 		rating = 22
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -91,7 +91,7 @@ async function insert() {
 		rating = 43
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -114,7 +114,7 @@ async function insert() {
 		rating = 74
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -137,7 +137,7 @@ async function insert() {
 		rating = 25
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -160,7 +160,7 @@ async function insert() {
 		rating = 66
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -183,7 +183,7 @@ async function insert() {
 		rating = 37
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -206,7 +206,7 @@ async function insert() {
 		rating = 18
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -228,7 +228,7 @@ async function insert() {
 		rating = 0
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -249,7 +249,7 @@ async function insert() {
 		rating = 21
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -270,7 +270,7 @@ async function insert() {
 		rating = 42
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -291,7 +291,7 @@ async function insert() {
 		rating = 83
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -312,7 +312,7 @@ async function insert() {
 		rating = 54
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -333,7 +333,7 @@ async function insert() {
 		rating = 45
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -354,7 +354,7 @@ async function insert() {
 		rating = 36
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -375,7 +375,7 @@ async function insert() {
 		rating = 87
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -396,7 +396,7 @@ async function insert() {
 		rating = 28
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Hunting'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
@@ -986,8 +986,8 @@ async function insert() {
 		rating = 0
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1007,8 +1007,8 @@ async function insert() {
 		rating = 17
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1028,8 +1028,8 @@ async function insert() {
 		rating = 22
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1049,8 +1049,8 @@ async function insert() {
 		rating = 33
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1070,8 +1070,8 @@ async function insert() {
 		rating = 46
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1091,8 +1091,8 @@ async function insert() {
 		rating = 35
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1112,8 +1112,8 @@ async function insert() {
 		rating = 26
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1133,8 +1133,8 @@ async function insert() {
 		rating = 17
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
@@ -1154,8 +1154,8 @@ async function insert() {
 		rating = 58
 
 		result = await con.execute("INSERT INTO users (firstname, surname, username, email, password, token, gender, age, dateofbirth, genderpreference, biography, latitude, longitude, rating, profile, verified) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", [firstname, lastname, username, email, password, token, gender, age, dateofbirth, preference, biography, latitude, longitude, rating, profile, verified])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Games'))", [result[0].insertId])
-		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Food'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Gaming'))", [result[0].insertId])
+		await con.execute("INSERT INTO tagitem (fk_userid, fk_tagid) VALUES (?, (SELECT pk_tagid from tag WHERE tag = 'Cooking'))", [result[0].insertId])
 		if (!fs.existsSync(__dirname.slice(0, -5) + "server/uploads/" + username)){
 			fs.mkdirSync(__dirname.slice(0, -5) + "server/uploads/" + username)
 			fs.cpSync(__dirname.slice(0, -5) + "Tests/images/" + "Penny" + "/profile.jpg", __dirname.slice(0, -5) + "server/uploads/" + username + "/profile.jpg")
