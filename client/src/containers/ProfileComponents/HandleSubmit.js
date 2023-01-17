@@ -184,7 +184,6 @@ export async function HandleSubmit(props) {
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
-			console.log(err)
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			props.setPromiseTracker(false)
 		}
@@ -220,7 +219,6 @@ export async function HandleSubmit(props) {
 		}
 		props.setPromiseTracker(false)
 		} catch (err) {
-			console.log(err)
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			props.setPromiseTracker(false)
 		}
