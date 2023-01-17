@@ -17,7 +17,8 @@ export default function ProfileRightContainer(props) {
 			setProfile={props.setProfile}
 			/>
 			}
-			{props.profile.images.length > 0 ?
+			{ props.profile.amiblocked ? <div>Blocked</div> :
+			props.profile.images.length > 0 ?
 			<ProfileImages
 			refEditImage={refEditImage}
 			setIsEditImageVisible={setIsEditImageVisible}

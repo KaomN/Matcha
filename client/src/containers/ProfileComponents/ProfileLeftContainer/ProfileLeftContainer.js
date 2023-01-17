@@ -42,14 +42,11 @@ export default function ProfileLeftContainer(props) {
 					user={props.user}
 					/>
 				}
-				{props.profile.amiblocked ?
-				<img className="profile-view-image" src={"http://localhost:3001/images/defaultProfile.png"} alt={"profileImage"}></img>
+				{props.profile.profile ?
+				<img className="profile-view-image" src={props.profile.profileSrc} alt={"profileImage"}></img>
 				:
-				props.profile.profile ?
-					<img className="profile-view-image" src={props.profile.profileSrc} alt={"profileImage"}></img>
-					:
-					<img className="profile-view-image" src={"http://localhost:3001/images/defaultProfile.png"} alt={"profileImage"}></img>
-					}
+				<img className="profile-view-image" src={"http://localhost:3001/images/defaultProfile.png"} alt={"profileImage"}></img>
+				}
 			</div>
 
 			<div className="padding05">

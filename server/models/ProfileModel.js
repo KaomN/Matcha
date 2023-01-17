@@ -559,17 +559,17 @@ const unreport = async (req) => {
 
 const block = async (req) => {
 	try {
-		const [block, fields] = await con.execute(`
+		await con.execute(`
 			INSERT INTO blocked (fk_userid, targetuserid)
 			VALUES (?, ?)`,
 			[req.session.userid, req.body.userid])
-		const res = await con.execute(
+		 await con.execute(
 			`DELETE 
 			FROM connect
 			WHERE (fk_userid = ? AND targetuserid = ?)
 			OR (fk_userid = ? AND targetuserid = ?)`,
 			[req.session.userid, req.body.userid, req.body.userid, req.session.userid])
-		const res2 = await con.execute(
+		await con.execute(
 			`DELETE 
 			FROM connected
 			WHERE (userid1 = ? AND userid2 = ?) OR (userid1 = ? AND userid2 = ?)`,
@@ -619,7 +619,6 @@ module.exports = {
 	updateGender,
 	updatePreference,
 	updateInterest,
-	// deleteInterest,
 	updateBiography,
 	sendEmailChangeRequest,
 	updatePassword,
