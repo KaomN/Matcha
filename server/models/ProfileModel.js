@@ -268,7 +268,6 @@ const updateDate = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -412,7 +411,6 @@ const sendEmailChangeRequest = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }

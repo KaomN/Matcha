@@ -1,12 +1,14 @@
 import { useEffect, useState, useContext } from "react";
 import { SocketContext } from '../../context/SocketContext';
 import { useLocation } from "react-router-dom";
+import { UserContext } from '../../context/UserContext';
 
 
 const useChat = (activeChat) => {
 	const [messages, setMessages] = useState([]);
 	const socket = useContext(SocketContext);
 	const { pathname } = useLocation();
+	const { user } = useContext(UserContext);
 
 	useEffect(() => {
 		setMessages([])
@@ -22,7 +24,8 @@ const useChat = (activeChat) => {
 				channel: message.channel,
 				userid: message.userid,
 				sendto: message.sentto,
-				path: pathname
+				path: pathname,
+				username: user.username
 			});
 			if(message.channel === activeChat.channel) {
 				delete message.channel
@@ -43,7 +46,8 @@ const useChat = (activeChat) => {
 		message: messageBody.message,
 		channel: messageBody.channel,
 		userid: messageBody.userid,
-		path: pathname
+		path: pathname,
+		username: user.username
 		});
 	};
 

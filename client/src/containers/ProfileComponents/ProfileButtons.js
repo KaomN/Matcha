@@ -2,6 +2,7 @@ import toast from 'react-simple-toasts';
 import { SocketContext } from "../../context/SocketContext";
 import { useEffect, useContext, useState } from "react";
 import { useLocation } from "react-router-dom"
+import { UserContext } from '../../context/UserContext';
 
 export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
@@ -9,6 +10,7 @@ export default function ProfileButtons(props) {
 	const [connected, setConnected] = useState(false);
 	const [amIBlocked, setAmIBlocked] = useState(false);
 	const { pathname } = useLocation();
+	const { user } = useContext(UserContext);
 
 	useEffect(() => {
 		setConnectRequest(props.profile.connectRequest);
@@ -137,7 +139,7 @@ export default function ProfileButtons(props) {
 						}
 						if (socket.disconnected)
 							socket.open()
-						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname, wasConnected:connected})
+						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname, wasConnected:connected, username: user.username})
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
 					}
@@ -336,7 +338,7 @@ export default function ProfileButtons(props) {
 						// setTimeout(() => {
 							if (socket.disconnected)
 								socket.open()
-							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname});
+							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname, username: user.username});
 							if (socket.disconnected)
 								socket.open()
 							socket.emit("send_connected", { userid: props.profile.userid, path: pathname});
@@ -365,7 +367,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch(`http://localhost:3001/profile/disconnect/?userid1=${props.profile.userid}&userid2=${props.user.userid}`)
 					const data = await response.json()
 					if (data.status) {
-						socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect" });
+						socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect", username: user.username});
 					}
 				})();
 				(async function() {

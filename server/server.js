@@ -136,7 +136,7 @@ io.on('connection', (socket) => {
 					});
 				} else {
 					socket.to(user.socketId).emit("receive_message_notitifaction", {
-						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3),
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${data.username} has sent you a message!`, 3),
 						fk_userid: data.userid,
 						targetuserid: socket.request.session.userid,
 						notification: `${socket.request.session.username} has sent you a message!`,
@@ -145,7 +145,7 @@ io.on('connection', (socket) => {
 					});
 				}
 			} else {
-				await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3)
+				await saveNotification(data.userid, socket.request.session.userid, `${data.username} has sent you a message!`, 3)
 			}
 			socket.emit("receive_message", {
 				message: data.message,
@@ -164,7 +164,7 @@ io.on('connection', (socket) => {
 					isread: false,
 				});
 			} else {
-				await saveNotification(data.sentto, socket.request.session.userid, `${socket.request.session.username} has sent you a message!`, 3)
+				await saveNotification(data.sentto, socket.request.session.userid, `${data.username} has sent you a message!`, 3)
 			}
 		});
 		/* Updating connection requests */
@@ -220,15 +220,15 @@ io.on('connection', (socket) => {
 				});
 				if(data.wasConnected) {
 					socket.to(user.socketId).emit("receive_notification", {
-						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5),
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${data.username} has disconnected with you!`, 5),
 						fk_userid: data.userid,
 						targetuserid: socket.request.session.userid,
-						notification: `${socket.request.session.username} has disconnected from you!`,
+						notification: `${data.username} has disconnected from you!`,
 						isread: 0,
 					});
 				}
 			} else {
-				await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5)
+				await saveNotification(data.userid, socket.request.session.userid, `${data.username} has disconnected with you!`, 5)
 			}
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)
 		});
@@ -275,53 +275,53 @@ io.on('connection', (socket) => {
 				if(user) {
 					if(type) {
 						socket.to(user.socketId).emit("receive_notification", {
-							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`, 4),
+							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${data.username} has connected with you!`, 4),
 							fk_userid: data.userid,
 							targetuserid: socket.request.session.userid,
-							notification: `${socket.request.session.username} has connected with you!`,
+							notification: `${data.username} has connected with you!`,
 							isread: 0,
 						});
 					} else {
 						socket.to(user.socketId).emit("receive_notification", {
-							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a connection request!`, 1),
+							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${data.username} has sent you a connection request!`, 1),
 							fk_userid: data.userid,
 							targetuserid: socket.request.session.userid,
-							notification: `${socket.request.session.username} has sent you a connection request!`,
+							notification: `${data.username} has sent you a connection request!`,
 							isread: 0,
 						});
 					}
 				} else {
 					if(type) {
-						await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has connected with you!`, 4)
+						await saveNotification(data.userid, socket.request.session.userid, `${data.username} has connected with you!`, 4)
 					} else {
-						await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has sent you a connection request!`, 1)
+						await saveNotification(data.userid, socket.request.session.userid, `${data.username} has sent you a connection request!`, 1)
 					}
 				}
 			} else if (data.type === "profile") {
 				if(user) {
 					if(data.userid !== socket.request.session.userid && await amIBlocked(data.userid, socket.request.session.userid) === false) {
 						socket.to(user.socketId).emit("receive_notification", {
-							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`, 2),
+							pk_id: await saveNotification(data.userid, socket.request.session.userid, `${data.username} checked your profile!`, 2),
 							fk_userid: data.userid,
 							targetuserid: socket.request.session.userid,
-							notification: `${socket.request.session.username} checked your profile!`,
+							notification: `${data.username} checked your profile!`,
 							isread: 0,
 						});
 					}
 				} else {
-					await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} checked your profile!`, 2)
+					await saveNotification(data.userid, socket.request.session.userid, `${data.username} checked your profile!`, 2)
 				}
 			} else if (data.type === "disconnect") {
 				if(user) {
 					socket.to(user.socketId).emit("receive_notification", {
-						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5),
+						pk_id: await saveNotification(data.userid, socket.request.session.userid, `${data.username} has disconnected with you!`, 5),
 						fk_userid: data.userid,
 						targetuserid: socket.request.session.userid,
-						notification: `${socket.request.session.username} has disconnected from you!`,
+						notification: `${data.username} has disconnected from you!`,
 						isread: 0,
 					});
 				} else {
-					await saveNotification(data.userid, socket.request.session.userid, `${socket.request.session.username} has disconnected with you!`, 5)
+					await saveNotification(data.userid, socket.request.session.userid, `${data.username} has disconnected with you!`, 5)
 				}
 			}
 

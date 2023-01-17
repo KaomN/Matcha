@@ -70,7 +70,7 @@ export default function Profile() {
 					}
 					if(socket.disconnected)
 						socket.open()
-					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile" });
+					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile", username: user.username });
 					setProfile(data);
 					if(data.isOwn) {
 						const response = await fetch("http://localhost:3001/search/tags", {

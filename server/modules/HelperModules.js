@@ -344,7 +344,9 @@ async function deleteConnections(userid, socket, getUser, data) {
 				}
 			}
 		}
+		return true
 	} catch (err) {
+		return false
 	}
 }
 
