@@ -70,7 +70,7 @@ export default function Profile() {
 					}
 					if(socket.disconnected)
 						socket.open()
-					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile", username: user.username });
+					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile", usernameUser: user.username });
 					setProfile(data);
 					if(data.isOwn) {
 						const response = await fetch("http://localhost:3001/search/tags", {
@@ -91,7 +91,7 @@ export default function Profile() {
 			})();
 		}
 		return () => {mounted = false};
-	}, [params, socket, pathname, user.userid]);
+	}, [params, socket, pathname, user.userid, user.username]);
 
 	useEffect(() => {
 		if(socket.disconnected)

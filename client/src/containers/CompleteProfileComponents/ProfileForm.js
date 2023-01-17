@@ -53,26 +53,30 @@ export default function ProfileForm(props) {
 			formData.append("y", imageSize.y)
 			formData.append("width", imageSize.width)
 			formData.append("height", imageSize.height)
-			var response = await fetch('http://localhost:3001/completeprofile/saveprofilepicture', {
+			const response1 = await fetch('http://localhost:3001/completeprofile/saveprofilepicture', {
 				credentials: "include",
 				method: "POST",
 				body: formData
 			});
-			var data = await response.json();
-			if(data.status) {
+			const data1 = await response1.json();
+			if(data1.status) {
 				setUser(user => ( {
 					...user,
-					imageSrc: response.imageSrc,
+					imageSrc: response1.imageSrc,
 				}))
-				var response = await fetch('http://localhost:3001/completeprofile/saveinterests', {
+				const response2 = await fetch('http://localhost:3001/completeprofile/saveinterests', {
 					headers: { 'content-type': 'application/json' },
 					credentials: "include",
 					method: "POST",
 					body: JSON.stringify({interest: props.tags})
 				});
-				var data = await response.json();
-				if(data.status) {
-					var response = await fetch('http://localhost:3001/completeprofile/saveuserinfo', {
+				const data2 = await response2.json();
+				if(data2.status) {
+					setUser(user => ( {
+						...user,
+						interest: props.tags,
+					}))
+					const response3 = await fetch('http://localhost:3001/completeprofile/saveuserinfo', {
 						headers: { 'content-type': 'application/json' },
 						credentials: "include",
 						method: "POST",
@@ -86,8 +90,8 @@ export default function ProfileForm(props) {
 							locationLng: props.locationLng,
 						})
 					});
-					var data = await response.json();
-					if(data.status) {
+					const data3 = await response3.json();
+					if(data3.status) {
 						setUser(user => ( {
 							...user,
 							profile: true

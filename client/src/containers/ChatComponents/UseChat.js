@@ -37,7 +37,7 @@ const useChat = (activeChat) => {
 		});
 
 		return () => {socket.off("receive_message");};
-	}, [activeChat, pathname, socket]);
+	}, [activeChat, pathname, socket, user.username]);
 
 	const sendMessage = (messageBody) => {
 		if (socket.disconnected)

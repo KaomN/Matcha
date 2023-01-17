@@ -338,7 +338,7 @@ export default function ProfileButtons(props) {
 						// setTimeout(() => {
 							if (socket.disconnected)
 								socket.open()
-							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname, username: user.username});
+							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname, usernameUser: user.username});
 							if (socket.disconnected)
 								socket.open()
 							socket.emit("send_connected", { userid: props.profile.userid, path: pathname});
@@ -367,7 +367,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch(`http://localhost:3001/profile/disconnect/?userid1=${props.profile.userid}&userid2=${props.user.userid}`)
 					const data = await response.json()
 					if (data.status) {
-						socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect", username: user.username});
+						socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect", usernameUser: user.username});
 					}
 				})();
 				(async function() {
