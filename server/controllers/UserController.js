@@ -14,7 +14,6 @@ router.post("/register", async (req, res) => {
 		res.send(error)
 	}
 });
-
 //Login request
 router.post("/login", async (req, res) => {
 	var error = {}
@@ -24,7 +23,6 @@ router.post("/login", async (req, res) => {
 		res.send(error)
 	}
 });
-
 // Get login status
 router.get("/getuserinfo", async (req, res) => {
 	if (req.session.username !== undefined) {
@@ -33,8 +31,6 @@ router.get("/getuserinfo", async (req, res) => {
 	else
 		res.send({ auth: false, username: "", isLoading: false, imageSrc: "http://localhost:3001/images/defaultProfile.png"})
 });
-
-
 // Logout
 router.get("/logout", (req, res) => {
 	try {
@@ -45,12 +41,10 @@ router.get("/logout", (req, res) => {
 
 	}
 });
-
 // Verify account request
 router.post("/verify", async (req, res) => {
 	res.send(await UserModel.verify(req))
 });
-
 // Forgot password request
 router.post("/forgotpassword", async (req, res) => {
 	var error = {}
@@ -60,7 +54,6 @@ router.post("/forgotpassword", async (req, res) => {
 		res.send(error)
 	}
 });
-
 // Password reset request
 router.post("/passwordreset", async (req, res) => {
 	var error = {}
@@ -70,7 +63,6 @@ router.post("/passwordreset", async (req, res) => {
 		res.send(error)
 	}
 });
-
 // Google Location API
 router.post("/getlocation", async (req, res) => {
 	try {
@@ -85,20 +77,9 @@ router.post("/getlocation", async (req, res) => {
 	}
 });
 
-// Complete profile on First login.
-router.post("/completeprofile", async (req, res) => {
-	var error = {}
-	if(Validator.checkImage(req, error)) {
-		res.send(await UserModel.completeProfile(req))
-	} else {
-		res.send(error)
-	}
-});
-
 router.get("/getprofileimage", async (req, res) => {
 	res.send(await UserModel.getProfileImage(req))
 });
-
 
 router.put("/email", async (req, res) => {
 	var error = {}
@@ -108,7 +89,6 @@ router.put("/email", async (req, res) => {
 		res.send(error)
 	}
 });
-
 
 router.get("/notification", async (req, res) => {
 	try {
@@ -128,10 +108,6 @@ router.delete("/notification", async (req, res) => {
 	} catch (e) {
 		res.send({ status: false, err: "Something went wrong!" })
 	}
-});
-
-router.get("/test", async (req, res) => {
-	res.send(await UserModel.test(req))
 });
 
 router.get("/history", async (req, res) => {

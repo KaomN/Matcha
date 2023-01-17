@@ -10,7 +10,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/name', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ firstname: capitalize(props.firstname), surname:capitalize(props.surname) })
 			});
@@ -49,7 +49,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/username', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ username: props.username })
 			});
@@ -84,7 +84,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/dateofbirth', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ dateofbirth: props.dateOfBirth, age: props.age })
 			});
@@ -121,7 +121,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/gender', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ gender: props.value})
 			});
@@ -157,7 +157,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/preference', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ preference: props.value})
 			});
@@ -194,7 +194,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			const response = await fetch('http://localhost:3001/profile/interest', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ interest: props.interest})
 		});
@@ -230,7 +230,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/biography', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ biography: props.biography})
 			});
@@ -264,7 +264,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/email', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ email: props.email})
 			});
@@ -292,7 +292,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/password', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ currentPassword: props.password, newPassword: props.newPassword, confirmNewPassword: props.confirmNewPassword})
 			});
@@ -318,7 +318,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(true)
 			let response = await fetch('http://localhost:3001/profile/position', {
 				credentials: "include",
-				headers: {'Content-Type': 'application/json'},
+				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ lat: props.savedPosition.lat, lng: props.savedPosition.lng})
 			});

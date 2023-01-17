@@ -100,7 +100,7 @@ export default function Notifications(props) {
 					const response = await fetch("http://localhost:3001/user/notification/", {
 						credentials: "include",
 						method: "DELETE",
-						headers: {"Content-Type": "application/json"}
+						headers: { 'content-type': 'application/json' },
 					})
 					const data = await response.json()
 					if (data.status) {

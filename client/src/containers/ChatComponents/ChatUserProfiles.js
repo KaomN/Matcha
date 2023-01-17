@@ -16,7 +16,7 @@ export default function ChatUserProfiles(props) {
 				await fetch(`http://localhost:3001/chat/markread`,{
 					credentials: "include",
 					method: "PUT",
-					headers: {"Content-Type": "application/json",},
+					headers: { 'content-type': 'application/json' },
 					body: JSON.stringify({channel: props.profile.room})
 				})
 			}
@@ -40,7 +40,7 @@ export default function ChatUserProfiles(props) {
 		await fetch(`http://localhost:3001/chat/markread`,{
 			credentials: "include",
 			method: "PUT",
-			headers: {"Content-Type": "application/json",},
+			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({channel: props.profile.room})
 		})
 		setUnreadMessage(false);

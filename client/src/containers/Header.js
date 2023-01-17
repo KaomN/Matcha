@@ -8,6 +8,7 @@ import { SocketContext } from "../context/SocketContext";
 import Notifications from "./HeaderComponents/Notifications";
 import Chats from "./HeaderComponents/Chats";
 import Profile from "./HeaderComponents/Profile";
+import toast from 'react-simple-toasts';
 
 
 function useProfileVisible(profileInitialIsVisible) {
@@ -110,6 +111,8 @@ export default function Header() {
 	const { refChat, isChatVisible, setIsChatVisible } = useChatVisible(false);
 	const { refNotification, isNotificationVisible, setIsNotificationVisible } = useNotificationVisible(false);
 	const [state, setState] = useState("loading");
+	const [history, setHistory] = useState([])
+	const [isLoading, setIsLoading] = useState(false)
 
 	//Emit updating activity everytime pathname changes
 	useEffect(() => {
@@ -119,6 +122,34 @@ export default function Header() {
 			socket.emit("update_last_active", { path: pathname });
 		}
 	}, [pathname, socket]);
+
+	useEffect(() => {
+		let mounted = true;
+		if(mounted) {
+			if(pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot" && pathname !== "/" && pathname !== "/passwordreset" && pathname !== "/forgotpassword" ) {
+				setIsLoading(true)
+				setTimeout(() => {
+					(async function() {
+						try {
+							const response = await fetch("http://localhost:3001/user/history", {
+								credentials: "include",
+								method: 'GET'
+							})
+							const data = await response.json()
+							if (data.status) {
+								setHistory(data.history)
+							}
+							setIsLoading(false)
+						} catch (error) {
+							toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+							setIsLoading(false)
+						}
+					})();
+				}, 500);
+			}
+		}
+		return () => {mounted = false};
+	}, [pathname]);
 
 	function fetchLogout() {
 		const promise = new Promise((resolve, reject) => {
@@ -210,6 +241,9 @@ export default function Header() {
 						</li>
 						<li>
 							<Profile
+							history={history}
+							setHistory={setHistory}
+							isLoading={isLoading}
 							refProfile={refProfile}
 							isProfileVisible={isProfileVisible}
 							setIsProfileVisible={setIsProfileVisible}

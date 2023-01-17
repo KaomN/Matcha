@@ -9,7 +9,7 @@ export default function NotificationItems(props) {
 			if(!props.item.isread) {
 				const response = await fetch("http://localhost:3001/user/notification/", {
 					method: "PUT",
-					headers: {"Content-Type": "application/json"},
+					headers: { 'content-type': 'application/json' },
 					body: JSON.stringify({
 						notificationid: props.item.pk_id
 					})

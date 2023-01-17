@@ -118,7 +118,6 @@ io.use((socket, next) => {
 		next();
 	}
 });
-//serve -s build --listen 8580 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl/private/mykey.key"
 
 io.on('connection', (socket) => {
 	try {
@@ -353,6 +352,8 @@ io.on('connection', (socket) => {
 app.use('/request', require('./controllers/UserController'));
 // UserController
 app.use('/user', require('./controllers/UserController'));
+// CompleteProfileController
+app.use('/completeprofile', require('./controllers/CompleteProfileController'));
 // ChatController
 app.use('/chat', require('./controllers/ChatController'));
 // ProfileController

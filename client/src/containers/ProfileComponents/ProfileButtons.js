@@ -112,7 +112,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch("http://localhost:3001/profile/block", {
 						credentials: "include",
 						method: "POST",
-						headers: {"Content-Type": "application/json"},
+						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -157,7 +157,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch("http://localhost:3001/profile/block", {
 						credentials: "include",
 						method: "DELETE",
-						headers: {"Content-Type": "application/json"},
+						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -202,7 +202,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch("http://localhost:3001/profile/report", {
 						credentials: "include",
 						method: "POST",
-						headers: {"Content-Type": "application/json"},
+						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -247,7 +247,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch("http://localhost:3001/profile/report", {
 						credentials: "include",
 						method: "DELETE",
-						headers: {"Content-Type": "application/json"},
+						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -292,7 +292,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch("http://localhost:3001/profile/connect", {
 						credentials: "include",
 						method: "POST",
-						headers: {"Content-Type": "application/json"},
+						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username
@@ -370,7 +370,7 @@ export default function ProfileButtons(props) {
 					const response = await fetch("http://localhost:3001/profile/disconnect", {
 						credentials: "include",
 						method: "DELETE",
-						headers: {"Content-Type": "application/json"},
+						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({
 							userid: props.profile.userid,
 							username: props.profile.username,

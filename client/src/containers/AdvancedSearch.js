@@ -61,7 +61,7 @@ export default function AdvancedSearch() {
 		const response = await fetch("http://localhost:3001/search/search", {
 			credentials: "include",
 			method: "POST",
-			headers: {"Content-Type": "application/json"},
+			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
 				age: searchAge,
 				rating: searchRating,

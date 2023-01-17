@@ -14,7 +14,6 @@ export default function ProfileLeftContainer(props) {
 	if(props.profile.lastactive) {
 		parseDate(props.profile.lastactive)
 	}
-
 	return (
 		<div className="padding05 profile-left-container flex-col">
 			{props.profile.amiblocked ? null : !props.profile.isOwn ? props.onlineStatus ?
@@ -62,6 +61,14 @@ export default function ProfileLeftContainer(props) {
 				{/* <div>Date of birth: {profile.dateofbirth}</div> */}
 				{props.profile.amiblocked ? <div>Blocked</div> : <div>Age: {props.profile.age}</div>}
 				{props.profile.amiblocked ? null : <div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.gender}>{props.profile.gender}</i></div>}
+				{props.profile.amiblocked ? null : <div className="home_profile_gender_container">Preference: {
+					props.profile.preference === "both" ?
+					<div className="flex-center">
+						<i className="material-icons home_profile_gender_icon" draggable="false" title="male">male</i> &
+						<i className="material-icons home_profile_gender_icon" draggable="false" title="female">female</i>
+					</div>
+					 : 
+					 <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.preference}>{props.profile.preference}</i>}</div>}
 				{(props.profile.isOwn === true) ?
 					null
 					:

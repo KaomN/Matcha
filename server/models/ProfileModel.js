@@ -4,7 +4,7 @@ var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
 const emailTransporter =  require("../setup").emailTransporter;
-const { checkConnectRequest, checkConnected, updateHistory, canConnect, addRating } = require("../modules/HelperModules");
+const { checkConnectRequest, updateHistory, canConnect, addRating } = require("../modules/HelperModules");
 
 // Get user profile
 const getProfile = async (userID, req) => {

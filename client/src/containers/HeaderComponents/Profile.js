@@ -1,35 +1,10 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {LoadingSpinnerComponent} from "../../components/LoadingSpinnerComponent";
 import HistoryItems from "./HistoryItems";
-import toast from 'react-simple-toasts';
 
 
 export default function Profile(props) {
 	const navigate = useNavigate();
-	const [history, setHistory] = useState([])
-	const [isLoading, setIsLoading] = useState(false)
-	const { pathname } = useLocation();
-
-	useEffect(() => {
-		(async function() {
-			try {
-				setIsLoading(true)
-				const response = await fetch("http://localhost:3001/user/history", {
-					credentials: "include",
-					method: 'GET'
-				})
-				const data = await response.json()
-				if (data.status) {
-					setHistory(data.history)
-				}
-				setIsLoading(false)
-			} catch (error) {
-				toast("Something went wrong!", { position: 'top-center', duration: 5000 })
-				setIsLoading(false)
-			}
-		})();
-	}, [pathname]);
 
 	return (
 		<>
@@ -46,18 +21,18 @@ export default function Profile(props) {
 							<div className="profile_history_font_size">Profile history</div>
 						</div>
 						<div className="profile_history_container">
-						{isLoading ?
+						{props.isLoading ?
 							<LoadingSpinnerComponent
 							class={"header_notification_loading_spinner"}
 							/>
 							:
-							history.length > 0 ?
-							history.map((history, index) => {
+							props.history.length > 0 ?
+							props.history.map((history, index) => {
 								return (
 									<div className="header_history_item" key={index}>
 										<HistoryItems
 										id={history.id}
-										setHistory={setHistory}
+										setHistory={props.setHistory}
 										username={history.username}
 										imageSrc={ "http://localhost:3001/images/" + history.username + "/" + history.image}
 										userid={history.pk_userid}

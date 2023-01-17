@@ -211,99 +211,6 @@ const passwordReset = async (req) => {
 	}
 };
 
-// Complete profile on First login.
-const completeProfile = async (req, res) => {
-	const { age, birthDate, gender, preference, biography, locationLat, locationLng, interest} = req.body;
-	var error = {};
-
-	try {
-		// Pictures
-		var profileImageName = uuidv4() + ".jpg"
-		var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + profileImageName
-		// Check if user has a profile image
-		var [rows, fields] = await con.execute(`SELECT imagename
-												FROM images
-												WHERE fk_userid = ?`,
-												[req.session.userid])
-		if (rows[0] !== undefined) {
-			// Get old profile image name
-			const targetFile = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
-			// Process image with Sharp and save it in the server
-			if(await ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req.body)) {
-				// Update profile image on database
-				result = await con.execute(`UPDATE images
-										SET imagename = ?
-										WHERE imagename = ?`,
-										[ profileImageName, rows[0].imagename ])
-				if (!result) {
-					// If database update fails delete new image
-					fs.unlinkSync(profileImageName)
-					Object.assign(error, {error: "Something went wrong!"});
-				}
-				// Delete old profile image from server
-				if (fs.existsSync(targetFile)) {
-					fs.unlinkSync(targetFile)
-				}
-			} else {
-				Object.assign(error, {error: "Something went wrong!"});
-			}
-		// User does not have a Profile iamge set on their profile
-		} else {
-			if(await ImageProcessing.uploadImage(req.files['profilePicture'].data, profileImagePath, req.body)) {
-				var profileId = 1;
-				var result = await con.execute(`INSERT INTO images(fk_userid, profilepic, imagename)
-												VALUES (?, ?, ?)`,
-												[req.session.userid, profileId, profileImageName])
-				if (!result) {
-					Object.assign(error, {error: "Something went wrong!"});
-				}
-			} else {
-				Object.assign(error, {error: "Something went wrong!"});
-			}
-		}
-		//Interest
-		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			var result = await con.execute(
-				`DELETE
-				FROM tagitem
-				WHERE fk_userid = ?`,
-				[req.session.userid])
-			for (const interests of interest) {
-				var result = await con.execute(
-					`INSERT INTO tagitem (fk_tagid, fk_userid)
-					VALUES (?, ?)`,
-					[interests.value, req.session.userid])
-			}
-			req.session.interest = interest;
-		} else {
-			return (error);
-		}
-		if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-			var result = await con.execute(`UPDATE users
-											SET users.gender = ?, users.age = ?, users.dateofbirth = ?, users.genderpreference = ?, users.biography = ?, users.latitude = ?, users.longitude = ?, users.profile = 1
-											WHERE users.pk_userid = ?`,
-											[gender, age, birthDate, preference, biography, locationLat, locationLng, req.session.userid])
-			if (!result) {
-				Object.assign(error, {error: "Something went wrong!"});
-			} else {
-				req.session.gender = gender
-				req.session.preference = preference
-				req.session.latitude = locationLat
-				req.session.longitude = locationLng
-				req.session.age = age
-				req.session.biography = biography
-				req.session.birthdate = birthDate
-				req.session.profile = true;
-				return ({status:true, imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + profileImageName})
-			}
-		} else {
-			return (error);
-		}
-	} catch (err) {
-		return ({status: false, message: "Server connection error"});
-	}
-};
-
 const getUserInfo = async (req) => {
 	try {
 		var [rows, fields] = await con.execute(
@@ -481,7 +388,6 @@ module.exports = {
 	verify,
 	forgotPassword,
 	passwordReset,
-	completeProfile,
 	getUserInfo,
 	getProfileImage,
 	changeEmail,

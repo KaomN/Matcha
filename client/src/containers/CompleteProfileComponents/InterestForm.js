@@ -3,6 +3,7 @@ import Select from "../../components/Select";
 
 export default function InterestForm(props) {
 	const [tagsOptions, setTagOptions] = useState(props.tagOptions);
+	const [interestError, setInterestError] = useState("");
 
 	useEffect(() => {
 		setTagOptions(props.tagOptions)
@@ -17,10 +18,12 @@ export default function InterestForm(props) {
 						<div id="interestForm">
 							<div className="center">
 								<label style={{fontSize: "23px"}}>Interests</label>
+								<div className="form_message_error">{interestError}</div>
 							</div>
 							<div className="flex-column-completeprofile-select">
 								<Select
 								multi
+								values={props.tags}
 								options={tagsOptions}
 								onChange={(values) => {
 									props.setTags(values);
@@ -36,10 +39,10 @@ export default function InterestForm(props) {
 								/>
 							</div>
 							<div className="center-gap">
-								<button className="complete-form-button" onClick={() => {document.querySelector('.form_message_error').innerHTML = ""; props.setShowForm("biographyForm");;}}>Previous</button>
+								<button className="complete-form-button" onClick={() => {setInterestError(""); props.setShowForm("biographyForm");;}}>Previous</button>
 								<button className="complete-form-button" onClick={() => {
 										if(props.tags.length === 0) {
-											document.querySelector('.form_message_error').innerHTML = "Empty field!"
+											setInterestError("Empty field!")
 										} else {
 											props.setShowForm("profileForm");
 										}

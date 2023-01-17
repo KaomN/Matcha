@@ -7,7 +7,7 @@ export default function HistoryItems(props) {
 		const res = await fetch("http://localhost:3001/user/history", {
 			credentials: "include",
 			method: "DELETE",
-			headers: {"Content-Type": "application/json"},
+			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
 				id: props.id,
 			})

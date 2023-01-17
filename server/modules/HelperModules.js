@@ -92,13 +92,13 @@ async function updateHistory(user, userid) {
 			[user, userid])
 		if (history.length > 0) {
 			// If so, update date
-			const [updateHistory, fields] = await con.execute(
+			await con.execute(
 				`UPDATE history SET date = NOW() WHERE fk_userid = ? AND targetuserid = ?`,
 				[user, userid])
 			return (true)
 		}
 		// If not, insert into history
-		const [insertHistory, fieldsInsertHistory] = await con.execute(
+		await con.execute(
 			`INSERT INTO history (fk_userid, targetuserid) VALUES (?, ?)`,
 			[user, userid])
 		return (true)

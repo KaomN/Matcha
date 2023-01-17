@@ -1,8 +1,9 @@
-import { useState, useCallback , useContext} from "react";
+import { useState, useCallback , useContext, useEffect} from "react";
 import { UserContext } from '../../context/UserContext';
 import Cropper from 'react-easy-crop'
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import toast from "react-simple-toasts";
 
 export default function ProfileForm(props) {
 	const { setUser } = useContext(UserContext);
@@ -10,72 +11,100 @@ export default function ProfileForm(props) {
 	const [crop, setCrop] = useState({ x: 0, y: 0 })
 	const [zoom, setZoom] = useState(1)
 	const [imageSize, setImageSize] = useState("")
+	const [btn, setBtn] = useState("")
+	const [fileInput, setFileInput] = useState("")
 	const navigate = useNavigate();
 
 	const onCropComplete = useCallback((croppedArea) => {
 		setImageSize(croppedArea)
 	}, 	[setImageSize])
 
-	function saveProfilePicture(event) {
-		props.setProfilePictureSrc(URL.createObjectURL(event.target.files[0]))
-		props.setProfilePicture(event.target.files[0])
-	}
-
-	var fileInput, btn
-	if (props.profilePicture && Object.keys(props.profilePicture).length === 0 && Object.getPrototypeOf(props.profilePicture) === Object.prototype) {
-		btn = ""
-		fileInput = <div className="flex-column-completeprofile ">
-							<div style={{border: "0px", marginBottom: "0.5rem"}}>
-								<input type="file" id="profilePic" accept="image/*" name="profile" onChange={saveProfilePicture}/>
-								<i className="material-icons completeprofile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
-							</div>
-						</div>
-	} else {
-		btn = <button className="complete-form-button" onClick={() => {
-			props.setProfilePicture({});
-			props.setProfilePictureSrc("");
-		}}>Delete</button>
-		fileInput = ""
-	}
+	useEffect(() => {
+		function saveProfilePicture(event) {
+			props.setProfilePictureSrc(URL.createObjectURL(event.target.files[0]))
+			props.setProfilePicture(event.target.files[0])
+		}
+		
+		if (props.profilePicture && Object.keys(props.profilePicture).length === 0 && Object.getPrototypeOf(props.profilePicture) === Object.prototype) {
+			setBtn("")
+			setFileInput(<div className="flex-column-completeprofile-profilepicture">
+								<div style={{border: "0px", marginBottom: "0.5rem"}}>
+									<input type="file" id="profilePic" accept="image/*" name="profile" onChange={saveProfilePicture}/>
+									<i className="material-icons completeprofile-file-btn" onClick={() => {document.getElementById('profilePic').click();}}>add_photo_alternate</i>
+								</div>
+							</div>)
+		} else {
+			setBtn(<button className="complete-form-button" onClick={() => {
+				props.setProfilePicture({});
+				props.setProfilePictureSrc("");
+			}}>Delete</button>)
+			setFileInput("")
+		}
+	}, [props.profilePicture, props])
 
 	async function handleSubmit() {
 		if(document.getElementById('profilePic') != null) {
 			document.querySelector('.form_message_error').innerHTML = "Please choose a profile picture!"
 		} else {
 			setIsLoading(true)
-			const formdata = new FormData();
-			formdata.append("age", props.age);
-			formdata.append("birthDate", props.dateOfBirth);
-			formdata.append("gender", props.gender);
-			formdata.append("preference", props.preference);
-			formdata.append("biography", props.biography);
-			formdata.append("locationLat", props.locationLat);
-			formdata.append("locationLng", props.locationLng);
-			formdata.append("tags", props.tags);
-			formdata.append("profilePicture", props.profilePicture);
-			formdata.append("x", imageSize.x)
-			formdata.append("y", imageSize.y)
-			formdata.append("width", imageSize.width)
-			formdata.append("height", imageSize.height)
-			for (let i = 0; i < props.tags.length; i++) {
-				formdata.append("interest", props.tags[i].label);
-			}
-			let response = await fetch('http://localhost:3001/request/completeprofile', {
+			const formData = new FormData();
+			formData.append("profilePicture", props.profilePicture);
+			formData.append("x", imageSize.x)
+			formData.append("y", imageSize.y)
+			formData.append("width", imageSize.width)
+			formData.append("height", imageSize.height)
+			var response = await fetch('http://localhost:3001/completeprofile/saveprofilepicture', {
 				credentials: "include",
 				method: "POST",
-				body: formdata
+				body: formData
 			});
-			response = await response.json();
-			if (response.status) {
-				setTimeout(() => {
-					setUser(user => ( {
-						...user,
-						imageSrc: response.imageSrc,
-						profile: true
-					}))
+			var data = await response.json();
+			if(data.status) {
+				setUser(user => ( {
+					...user,
+					imageSrc: response.imageSrc,
+				}))
+				var response = await fetch('http://localhost:3001/completeprofile/saveinterests', {
+					headers: { 'content-type': 'application/json' },
+					credentials: "include",
+					method: "POST",
+					body: JSON.stringify({interest: props.tags})
+				});
+				var data = await response.json();
+				if(data.status) {
+					var response = await fetch('http://localhost:3001/completeprofile/saveuserinfo', {
+						headers: { 'content-type': 'application/json' },
+						credentials: "include",
+						method: "POST",
+						body: JSON.stringify({
+							age: props.age,
+							birthDate: props.dateOfBirth,
+							gender: props.gender,
+							preference: props.preference,
+							biography: props.biography,
+							locationLat: props.locationLat,
+							locationLng: props.locationLng,
+						})
+					});
+					var data = await response.json();
+					if(data.status) {
+						setUser(user => ( {
+							...user,
+							profile: true
+						}))
+						setIsLoading(false)
+						navigate("/home");
+					} else {
+						setIsLoading(false)
+						toast("Something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+					}
+				} else {
 					setIsLoading(false)
-					navigate("/home");
-				}, 500)
+					toast("Something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+				}
+			} else {
+				setIsLoading(false)
+				toast("Something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			}
 		}
 	}

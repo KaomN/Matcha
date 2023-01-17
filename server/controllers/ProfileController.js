@@ -79,15 +79,6 @@ router.put("/interest", async (req, res) => {
 	res.send(await ProfileModel.updateInterest(req))
 });
 
-// router.delete("/interest", async (req, res) => {
-// 	var error = {}
-// 	if(Validator.checkInterest(req, error)) {
-// 		res.send(await ProfileModel.deleteInterest(req))
-// 	} else {
-// 		res.send(error)
-// 	}
-// });
-
 router.put("/biography", async (req, res) => {
 	var error = {}
 	if(Validator.checkBiography(req, error)) {

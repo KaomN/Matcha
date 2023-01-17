@@ -59,6 +59,15 @@ export default function UserProfile(props) {
 					<span>{props.profile.firstname} {props.profile.surname}</span> {/* <i className="material-icons profile-button-disabled" draggable="false">female</i>*/}
 					<div>Age: {props.profile.age}</div>
 					<div className="home_profile_gender_container">Gender: <i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.gender}>{props.profile.gender}</i></div>
+					<div className="home_profile_gender_container">Preference: 
+					{props.profile.preference === "both" ?
+						<div className="flex-center">
+							<i className="material-icons home_profile_gender_icon" draggable="false" title="male">male</i> &
+							<i className="material-icons home_profile_gender_icon" draggable="false" title="female">female</i>
+						</div>
+						: 
+						<i className="material-icons home_profile_gender_icon" draggable="false" title={props.profile.preference}>{props.profile.preference}</i>}
+					 </div>
 					<div>{props.profile.distance} km away</div>
 					<div>Rating: {props.profile.rating}</div>
 					<div className="home_interest_container">
