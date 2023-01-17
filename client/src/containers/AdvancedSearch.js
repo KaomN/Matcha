@@ -18,7 +18,6 @@ export default function AdvancedSearch() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSearching, setIsSearching] = useState(false);
 	const [hasSearched, setHasSearched] = useState(false);
-	const [toggleSearch, setToggleSearch] = useState(true);
 	const [sort, setSort] = useState("distanceAsc");
 	const [location, setLocation] = useState({lat: parseFloat(user.latitude), lng: parseFloat(user.longitude)});
 
@@ -81,20 +80,16 @@ export default function AdvancedSearch() {
 		setIsSearching(false);
 	}
 
-	function handleToggleSearch() {
-		setToggleSearch(!toggleSearch);
-	}
-
 	return (
 		<main className="ma search_main_container">
 			<div className="search_container_middle">
 				<div className="search_container ma">
 					<div className="toggle_search_container">
 						<div className="toggle_search_line"></div>
-						<i className="material-icons search_icon" title="Search" onClick={handleToggleSearch}>search</i>
+						<i className="material-icons search_icon" title="Search">search</i>
 						<div className="toggle_search_line"></div>
 					</div>
-					<div className={toggleSearch ? "search_item_container" : "search_item_container_hidden"}>
+					<div className="search_item_container">
 						<div className="flex-col filter_input_container">
 							<div className="flex-row filter_slider pos-relative">
 								<span className="age_slider_label unselectable">Age</span>

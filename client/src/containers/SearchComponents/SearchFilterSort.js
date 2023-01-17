@@ -13,7 +13,6 @@ export default function SearchFilterSort(props) {
 	const [filterRating, setFilterRating] = useState(props.searchRating);
 	const [filterDistance, setFilterDistance] = useState({min: 0, max: 50});
 	const [filterTags, setFilterTags] = useState([]);
-	const [toggleFilter, setToggleFilter] = useState(true);
 	const onAgeFilter = useCallback((value) => {
 		setFilterAge({min: value[0], max: value[1]});
 	}, [])
@@ -80,20 +79,9 @@ export default function SearchFilterSort(props) {
 		})
 	}
 
-	function handleToggleFilter() {
-		setToggleFilter(!toggleFilter);
-	}
-
 	return (
 		<div className="search_sort_filter_container">
-			{toggleFilter && <i className="material-icons search_hide_filter" draggable="false" onClick={handleToggleFilter}>expand_more</i>}
-			{!toggleFilter && <i className="material-icons search_unhide_filter" draggable="false" onClick={handleToggleFilter}>expand_less</i>}
-			{!toggleFilter && <div className="search_filter_toggle_container">
-				<div className="filter_line"></div>
-				<div className="filter_text">Filter</div>
-				<div className="filter_line"></div>
-			</div>}
-			<div className={toggleFilter ? "search_filter_container" : "search_filter_container_hidden"}>
+			<div className="search_filter_container">
 				<div className="home_sort_button_container">
 					<div className="home_sort_button_left_container">
 						<div className="home_sort_button_left">
