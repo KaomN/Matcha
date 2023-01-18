@@ -69,13 +69,7 @@ export default function Profile() {
 					if(params.profileID) {
 						socket.emit("join_profile_room", { userid: params.profileID, path: pathname });
 					}
-<<<<<<< HEAD
-					if(socket.disconnected)
-						socket.open()
-					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile", usernameUser: user.username });
-=======
 					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile" });
->>>>>>> development
 					setProfile(data);
 					if(data.isOwn) {
 						const response = await fetch("http://localhost:3001/search/tags", {
@@ -96,11 +90,7 @@ export default function Profile() {
 			})();
 		}
 		return () => {mounted = false};
-<<<<<<< HEAD
-	}, [params, socket, pathname, user.userid, user.username]);
-=======
 	}, [params, socket, pathname]);
->>>>>>> development
 
 	useEffect(() => {
 		socket.on("online_response", data => {
