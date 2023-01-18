@@ -38,8 +38,8 @@ header {
 	padding: 0.5rem;
 	border-radius: var(--border-radius);
 	border: 2px solid var(--color-primary-darker);
-	bottom: calc(-80vh + 3rem - 2px);
-	height: calc(80vh - 4rem);
+	bottom: calc(-100vh + 5rem - 4px);
+	height: calc(100vh - 6rem + 2px);
 	overflow-y: auto;
 	overflow-x: hidden;
 }
@@ -51,7 +51,7 @@ header {
 	justify-content: flex-start;
 	width: calc(100% - 1rem);
 	height: 55px;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.3rem;
 	border-radius: var(--border-radius);
 	border: 2px solid var(--color-primary-darker);
 	background-color: #00b997;
@@ -186,7 +186,6 @@ header {
 .header-material-icons {
 	z-index: 2;
 	font-size: 30px;
-
 	cursor: pointer;
 	color: darkslategray;
 	transition: color 0.7s ease;
@@ -284,8 +283,8 @@ header {
 	width: calc(80vw + 1rem);
 	border-radius: var(--border-radius);
 	border: 2px solid var(--color-primary-darker);
-	bottom: calc(-80vh + 3rem - 12px);
-	height: calc(80vh - 3rem);
+	bottom: calc(-100vh + 4.5rem - 5px);
+	height: calc(100vh - 5rem + 2px);
 	overflow-y: auto;
 	overflow-x: hidden;
 }
@@ -435,4 +434,30 @@ header {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
+}
+
+.header_tabs_buttons_container {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	margin-bottom: 0.2rem;
+}
+
+.header_tabs_buttons {
+	font-size: 30px;
+	color: darkslategray;
+	transition: color 0.7s ease;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+.header_tabs_buttons:hover {
+	cursor: pointer;
+	transition: color 0.7s ease;
+	color: var(--color-primary-dark);
+}
+
+.header_tabs_buttons:active {
+	transform: scale(0.98);
 }

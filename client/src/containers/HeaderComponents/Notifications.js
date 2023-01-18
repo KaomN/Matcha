@@ -20,8 +20,6 @@ export default function Notifications(props) {
 			}
 			return -1
 		}
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_notification", (data) => {
 			const index = checkNotificationArray(data.pk_id)
 			if(index > -1) {
@@ -47,8 +45,6 @@ export default function Notifications(props) {
 				setNotification(notificationCopy)
 			}
 		});
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_message_notitifaction", (data) => {
 			const index = checkNotificationArray(data.pk_id)
 			if(index > -1) {

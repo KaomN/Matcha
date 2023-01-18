@@ -117,6 +117,7 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		}
 	}
+<<<<<<< HEAD
 	else if (props.type === "preference") {
 		try {
 			props.setPromiseTracker(true)
@@ -154,6 +155,8 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		}
 	}
+=======
+>>>>>>> development
 	else if (props.type === "interestPut") {
 		try {
 			props.setPromiseTracker(true)

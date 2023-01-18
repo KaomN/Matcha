@@ -89,7 +89,6 @@ const login = async (req) => {
 					} else {
 						req.session.profile = false;
 					}
-					//req.session.profile = rows[0].profile
 					req.session.authenticated = true;
 					// Creating User folder
 					if (!fs.existsSync(__dirname.slice(0, -7) + "/uploads/" + req.session.username)){
@@ -375,7 +374,7 @@ const deleteHistory = async (req) => {
 			FROM history
 			WHERE pk_id = ?`,
 			[req.body.id])
-		return ({status: true, message: "History deleted!"})
+		return ({status: true, message: "Deleted!"})
 	} catch (err) {
 		return({status: false, message: "Server connection error"});
 	}

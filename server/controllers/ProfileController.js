@@ -9,6 +9,7 @@ router.get("/profile", async (req, res) => {
 
 router.post("/uploadprofileimage", async (req, res) => {
 	var error = {}
+
 	if(Validator.checkImage(req, error)) {
 		res.send(await ProfileModel.uploadProfileImage(req))
 	} else {
@@ -165,6 +166,30 @@ router.delete("/block", async (req, res) => {
 router.get("/disconnect", async (req, res) => {
 	try {
 		res.send(await ProfileModel.checkDisconnect(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.get("/connectrequest", async (req, res) => {
+	try {
+		res.send(await ProfileModel.connectRequest(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.get("/watchedbyhistory", async (req, res) => {
+	try {
+		res.send(await ProfileModel.watchedByHistory(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.delete("/watchedbyhistory", async (req, res) => {
+	try {
+		res.send(await ProfileModel.deleteWatchedByHistory(req))
 	} catch (e) {
 		res.send({ status: false, err: "Something went wrong!" })
 	}

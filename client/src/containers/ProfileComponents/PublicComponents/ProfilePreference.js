@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LoadingSpinnerPromiseComponent } from "../../../components/LoadingSpinnerPromiseComponent";
 import { SocketContext } from "../../../context/SocketContext";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom"
 import toast from 'react-simple-toasts';
+import { UserContext } from '../../../context/UserContext';
 
 export default function ProfilePreference(props) {
 	const socket = useContext(SocketContext);
 	const { pathname } = useLocation();
 	const [promiseTracker, setPromiseTracker] = useState(false);
 	const [errorPreference, setErrorPreference] = useState("");
+	const { user } = useContext(UserContext);
+
+	useEffect(() => {
+		if(socket && socket.disconnected && user.auth) {
+			socket.open()
+		}
+	}, [socket, user.auth]);
 
 	async function handleSubmit(e) {
 		try {

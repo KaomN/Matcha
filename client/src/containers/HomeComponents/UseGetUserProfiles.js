@@ -17,7 +17,7 @@ export default function UseGetUserProfiles(profileLimit, setUserProfiles, setHas
 		}
 	}
 
-		useEffect(() => {
+	useEffect(() => {
 		setLoading(true)
 		setError(false)
 		let cancel

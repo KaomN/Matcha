@@ -120,15 +120,15 @@ const checkImage = (req, error) => {
 			let ext = req.files[imageName].name.split(".").pop();
 			let mime = req.files[imageName].mimetype;
 			if (mime != "image/jpeg" && mime != "image/png") {
-				Object.assign(error, {"mime": "Mimetype Error!"});
+				Object.assign(error, {"err": "Mimetype Error!"});
 			}
 			if (mime === "image/jpeg") {
 				if(ext != "jpg" && ext != "jpeg") {
-					Object.assign(error, {"extension": "Extension Error!"});
+					Object.assign(error, {"err": "Extension Error!"});
 				}
 			} else if (mime === "image/png") {
 				if(ext != "png") {
-					Object.assign(error, {"extension": "Extension Error!"});
+					Object.assign(error, {"err": "Extension Error!"});
 				}
 			}
 		}
@@ -205,21 +205,6 @@ const checkPreference = (req, error) => {
 	const { preference } = req.body;
 	if(preference !== "male" && preference !== "female" && preference !== "both")
 		Object.assign(error, {"err": "Incorrect preference value!"});
-	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-const checkInterest = (req, error) => {
-	const { interest } = req.body;
-	if(interest.trim().length > 25) {
-		Object.assign(error, {"err": "Interest tags max length 25!"});
-	}
-	if(interest.trim().length === 0) {
-		Object.assign(error, {"err": "Interest tags cant be empty!"});
-	}
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		return true;
 	} else {
@@ -322,7 +307,6 @@ module.exports = {
 	checkDate,
 	checkGender,
 	checkPreference,
-	checkInterest,
 	checkBiography,
 	checkEmail,
 	checkPassword,

@@ -107,6 +107,29 @@ async function updateHistory(user, userid) {
 	}
 }
 
+async function updateWatchedByHistory(user, userid) {
+	try {
+		// Check if user has visited userid before
+		const [history, fieldsHistory] = await con.execute(
+			` SELECT * FROM watchedbyhistory WHERE fk_userid = ? AND targetuserid = ?`,
+			[user, userid])
+		if (history.length > 0) {
+			// If so, update date
+			await con.execute(
+				`UPDATE watchedbyhistory SET date = NOW() WHERE fk_userid = ? AND targetuserid = ?`,
+				[user, userid])
+			return (true)
+		}
+		// If not, insert into history
+		await con.execute(
+			`INSERT INTO watchedbyhistory (fk_userid, targetuserid) VALUES (?, ?)`,
+			[user, userid])
+		return (true)
+	} catch (err) {
+		return(false);
+	}
+}
+
 async function updateLastActive(userid) {
 	try {
 		// Update last active time
@@ -369,4 +392,5 @@ module.exports = {
 	addRating,
 	amIBlocked,
 	deleteConnections,
+	updateWatchedByHistory,
 };

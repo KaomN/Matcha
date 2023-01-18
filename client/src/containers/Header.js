@@ -112,32 +112,48 @@ export default function Header() {
 	const { refNotification, isNotificationVisible, setIsNotificationVisible } = useNotificationVisible(false);
 	const [state, setState] = useState("loading");
 	const [history, setHistory] = useState([])
+	const [watchedByHistory, setWatchedByHistory] = useState([])
+	const [connectRequests, setConnectRequests] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 
 	//Emit updating activity everytime pathname changes
 	useEffect(() => {
-		if(pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot" && pathname !== "/" && pathname !== "/passwordreset" && pathname !== "/forgotpassword" ) {
-			if(socket.disconnected)
-				socket.open()
-			socket.emit("update_last_active", { path: pathname });
+		if(socket && socket.disconnected && user.auth) {
+			socket.open()
 		}
-	}, [pathname, socket]);
-
+		socket.emit("update_last_active", { path: pathname });
+	}, [socket, user.auth, pathname]);
 	useEffect(() => {
 		let mounted = true;
 		if(mounted) {
-			if(pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot" && pathname !== "/" && pathname !== "/passwordreset" && pathname !== "/forgotpassword" ) {
+			if(pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot" && pathname !== "/" && pathname !== "/passwordreset" && pathname !== "/forgotpassword" !== "/completeprofile" ) {
 				setIsLoading(true)
 				setTimeout(() => {
 					(async function() {
 						try {
-							const response = await fetch("http://localhost:3001/user/history", {
+							const response1 = await fetch("http://localhost:3001/user/history", {
 								credentials: "include",
 								method: 'GET'
 							})
-							const data = await response.json()
-							if (data.status) {
-								setHistory(data.history)
+							const data1 = await response1.json()
+							if (data1.status) {
+								setHistory(data1.history)
+								const response2 = await fetch("http://localhost:3001/profile/watchedbyhistory", {
+									credentials: "include",
+									method: 'GET'
+								})
+								const data2 = await response2.json()
+								if (data2.status) {
+									setWatchedByHistory(data2.recentlyWatched)
+									const response3 = await fetch("http://localhost:3001/profile/connectrequest", {
+										credentials: "include",
+										method: 'GET'
+									})
+									const data3 = await response3.json()
+									if (data3.status) {
+										setConnectRequests(data3.connectRequests)
+									}
+								}
 							}
 							setIsLoading(false)
 						} catch (error) {
@@ -166,10 +182,9 @@ export default function Header() {
 
 	async function handleLogout(event) {
 		event.preventDefault();
-			if (socket.disconnected)
-				socket.open()
 			socket.emit("logout", { userId: user.userid });
 			await trackPromise(fetchLogout());
+			socket.disconnect();
 			setUser({})
 			navigate("/login");
 
@@ -248,6 +263,10 @@ export default function Header() {
 							isProfileVisible={isProfileVisible}
 							setIsProfileVisible={setIsProfileVisible}
 							user={user}
+							watchedByHistory={watchedByHistory}
+							setWatchedByHistory={setWatchedByHistory}
+							connectRequests={connectRequests}
+							setConnectRequests={setConnectRequests}
 							/>
 						</li>
 						<li><i className="material-icons header-material-icons" title="Search" onClick={handleNavigate} >search</i></li>

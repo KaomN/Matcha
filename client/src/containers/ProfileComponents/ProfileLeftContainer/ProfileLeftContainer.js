@@ -9,7 +9,7 @@ export default function ProfileLeftContainer(props) {
 		if(!date) return "Offline";
 		let dateArray = date.split("T")[0].split("-");
 		let time = 	date.split("T")[1].split(":");
-		return(`Offline last active: ${dateArray[2]}-${dateArray[1]}-${dateArray[0]} ${parseInt(time[0]) + 2}:${time[1]}:${time[2].split(".")[0]}`)
+		return(`Offline last active: ${dateArray[2]}-${dateArray[1]}-${dateArray[0]} ${parseInt(time[0])}:${time[1]}:${time[2].split(".")[0]}`)
 	}
 	if(props.profile.lastactive) {
 		parseDate(props.profile.lastactive)

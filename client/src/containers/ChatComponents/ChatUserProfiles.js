@@ -6,8 +6,6 @@ export default function ChatUserProfiles(props) {
 	const socket = useContext(SocketContext);
 
 	useEffect(() => {
-		if(socket.disconnected)
-			socket.open()
 		socket.on("receive_message_chat_notification", async (data) => {
 			if (data.channel === props.profile.room && props.activeChat.channel !== props.profile.room) {
 				setUnreadMessage(true);
@@ -16,7 +14,7 @@ export default function ChatUserProfiles(props) {
 				await fetch(`http://localhost:3001/chat/markread`,{
 					credentials: "include",
 					method: "PUT",
-					headers: { 'content-type': 'application/json' },
+					headers: {"Content-Type": "application/json",},
 					body: JSON.stringify({channel: props.profile.room})
 				})
 			}
@@ -40,7 +38,7 @@ export default function ChatUserProfiles(props) {
 		await fetch(`http://localhost:3001/chat/markread`,{
 			credentials: "include",
 			method: "PUT",
-			headers: { 'content-type': 'application/json' },
+			headers: {"Content-Type": "application/json",},
 			body: JSON.stringify({channel: props.profile.room})
 		})
 		setUnreadMessage(false);

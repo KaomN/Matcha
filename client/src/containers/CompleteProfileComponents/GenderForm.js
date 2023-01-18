@@ -17,7 +17,7 @@ export default function GenderForm(props) {
 									<label style={{fontSize: "23px"}} defaultChecked={props.gender === "male" ? true : false }  htmlFor="genderMale">Male</label>
 								</div>
 								<div style={{border: "0px", marginBottom: "0.5rem"}}>
-									<input type="radio" name="gender" style={{border: "0px", height: "1.5em", width: "1.5em"}}  id="genderFemale" onClick={function(e) {props.setGender("female")}}/>
+									<input type="radio" name="gender" style={{border: "0px", height: "1.5em", width: "1.5em"}}  id="genderFemale" defaultChecked={props.gender === "female" ? true : false } onClick={function(e) {props.setGender("female")}}/>
 									<label style={{fontSize: "23px"}} htmlFor="genderFemale">Female</label>
 								</div>
 							</div>
