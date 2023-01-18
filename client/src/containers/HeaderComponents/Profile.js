@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import {LoadingSpinnerComponent} from "../../components/LoadingSpinnerComponent";
-import HistoryItems from "./HistoryItems";
+import { useState } from "react";
+import RecentlyWatchedProfiles from "./RecentlyWatchedProfiles";
+import ConnectRequested from "./ConnectRequested";
+import RecentlyWatchedBy from "./RecentlyWatchedBy";
 
 
 export default function Profile(props) {
 	const navigate = useNavigate();
+	const [visibleTab, setVisibleTab] = useState(1);
 
 	return (
 		<>
@@ -16,34 +19,29 @@ export default function Profile(props) {
 						<img className="header-profile-dropdown-profile-image" src={props.user.imageSrc} alt="profile"></img>
 						<div className="ml05 header-font-color unselectable">@{props.user.username}</div>
 					</div>
-					<div className="header-profile-dropdown-profile-history">
-						<div>
-							<div className="profile_history_font_size">Profile history</div>
-						</div>
-						<div className="profile_history_container">
-						{props.isLoading ?
-							<LoadingSpinnerComponent
-							class={"header_notification_loading_spinner"}
-							/>
-							:
-							props.history.length > 0 ?
-							props.history.map((history, index) => {
-								return (
-									<div className="header_history_item" key={index}>
-										<HistoryItems
-										id={history.id}
-										setHistory={props.setHistory}
-										username={history.username}
-										imageSrc={ "http://localhost:3001/images/" + history.username + "/" + history.image}
-										userid={history.pk_userid}
-										setIsProfileVisible={props.setIsProfileVisible}
-										/>
-									</div>)
-							})
-							:
-							<div className="flex center">No history</div>}
-						</div>
+					<div className="header_tabs_buttons_container">
+						<i className="material-icons header_tabs_buttons" title="Recently Watched Profiles" onClick={() => {setVisibleTab(1)}}>history</i>
+						<i className="material-icons header_tabs_buttons" title="Connect Requests" onClick={() => {setVisibleTab(2)}}>hotel_class</i>
+						<i className="material-icons header_tabs_buttons" title="Recently Watched By" onClick={() => {setVisibleTab(3)}}>update</i>
 					</div>
+					 {visibleTab === 1 && <RecentlyWatchedProfiles
+					isLoading={props.isLoading}
+					history={props.history}
+					setHistory={props.setHistory}
+					setIsProfileVisible={props.setIsProfileVisible}
+					/>}
+					{visibleTab === 2 && <ConnectRequested
+					isLoading={props.isLoading}
+					setIsProfileVisible={props.setIsProfileVisible}
+					connectRequests={props.connectRequests}
+					setConnectRequests={props.setConnectRequests}
+					/>}
+					{visibleTab === 3 && <RecentlyWatchedBy
+					isLoading={props.isLoading}
+					setIsProfileVisible={props.setIsProfileVisible}
+					watchedByHistory={props.watchedByHistory}
+					setWatchedByHistory={props.setWatchedByHistory}
+					/>}
 				</div>
 				}
 			</div>

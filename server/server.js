@@ -26,7 +26,6 @@ const job = new CronJob('00 00 00 * * *', async function() {
 
 	}
 });
-
 job.start();
 
 app.use('/images', express.static(__dirname + '/uploads'));
@@ -46,6 +45,7 @@ app.use(cors({
 
 // Session middleware
 app.use(sessionMiddleware);
+
 const httpServer = app.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 });
@@ -55,7 +55,7 @@ const io = new Server(httpServer, {
 		origin: 'http://localhost:3000',
 		methods: ['GET', 'POST'],
 		credentials: true
-	},
+	}
 });
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
@@ -116,11 +116,14 @@ io.use((socket, next) => {
 	if (session && session.authenticated) {
 		updateUserStatus(session.userid, socket.id)
 		next();
+	} else {
+		next(new Error("Not authenticated"));
 	}
 });
 
 io.on('connection', (socket) => {
 	try {
+		//updateUserStatus(session.userid, socket.id)
 		socket.on("message", async function (data) {
 			const user = getUser(data.userid);
 			updateUserStatus(socket.request.session.userid, socket.id, data.path)

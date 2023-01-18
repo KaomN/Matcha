@@ -18,6 +18,7 @@ async function createDatabase() {
 				con.query("CREATE TABLE IF NOT EXISTS notifications (pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, fk_userid INT NOT NULL, targetuserid INT NOT NULL, notification VARCHAR(255) NOT NULL, date DATETIME DEFAULT CURRENT_TIMESTAMP, isread BOOLEAN NOT NULL DEFAULT FALSE, type INT NOT NULL)"),
 				con.query("CREATE TABLE IF NOT EXISTS messages (pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, messagedate DATETIME DEFAULT CURRENT_TIMESTAMP, fk_connected VARCHAR(73) NOT NULL, userid INT NOT NULL, message TEXT NOT NULL, isread BOOLEAN NOT NULL DEFAULT FALSE)"),
 				con.query("CREATE TABLE IF NOT EXISTS rating (fk_userid INT NOT NULL, fk_fromuserid INT NOT NULL, date DATETIME DEFAULT CURRENT_TIMESTAMP, type VARCHAR(10) NOT NULL)"),
+				con.query("CREATE TABLE IF NOT EXISTS watchedbyhistory (pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, fk_userid INT NOT NULL, targetuserid INT NOT NULL, date DATETIME DEFAULT CURRENT_TIMESTAMP)"),
 				con.query("ALTER TABLE images ADD FOREIGN KEY (fk_userid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 				con.query("ALTER TABLE tagitem ADD FOREIGN KEY (fk_userid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 				con.query("ALTER TABLE tagitem ADD FOREIGN KEY (fk_tagid) REFERENCES tag (pk_tagid) ON DELETE CASCADE"),
@@ -38,7 +39,8 @@ async function createDatabase() {
 				con.query("ALTER TABLE notifications ADD FOREIGN KEY (targetuserid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 				con.query("ALTER TABLE rating ADD FOREIGN KEY (fk_userid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 				con.query("ALTER TABLE rating ADD FOREIGN KEY (fk_fromuserid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
-				
+				con.query("ALTER TABLE watchedbyhistory ADD FOREIGN KEY (fk_userid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
+				con.query("ALTER TABLE watchedbyhistory ADD FOREIGN KEY (targetuserid) REFERENCES users (pk_userid) ON DELETE CASCADE"),
 			])
 			await con.end();
 			return true

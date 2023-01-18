@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { LoadingSpinnerPromiseComponent } from "../../../components/LoadingSpinnerPromiseComponent";
 import { SocketContext } from "../../../context/SocketContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom"
 import toast from 'react-simple-toasts';
-
+import { UserContext } from '../../../context/UserContext';
 
 export default function ProfileGender(props) {
 	const socket = useContext(SocketContext);
 	const { pathname } = useLocation();
 	const [errorGender, setErrorGender] = useState("");
 	const [promiseTracker, setPromiseTracker] = useState(false);
+	const { user } = useContext(UserContext);
+
+	useEffect(() => {
+		if(socket && socket.disconnected && user.auth) {
+			socket.open()
+		}
+	}, [socket, user.auth]);
 
 	async function handleSubmit(e) {
 		try {
@@ -45,7 +52,6 @@ export default function ProfileGender(props) {
 					}
 					setPromiseTracker(false)
 		} catch (err) {
-			console.log(err)
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			setPromiseTracker(false)
 		}

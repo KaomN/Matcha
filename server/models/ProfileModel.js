@@ -4,7 +4,7 @@ var fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const ImageProcessing = require('../modules/ImageProcessing');
 const emailTransporter =  require("../setup").emailTransporter;
-const { checkConnectRequest, updateHistory, canConnect, addRating } = require("../modules/HelperModules");
+const { checkConnectRequest, updateHistory, canConnect, addRating, updateWatchedByHistory } = require("../modules/HelperModules");
 
 // Get user profile
 const getProfile = async (userID, req) => {
@@ -74,6 +74,7 @@ const getProfile = async (userID, req) => {
 			delete rows[0].longitude
 			// Update History
 			await updateHistory(req.session.userid, rows[0].userid)
+			await updateWatchedByHistory(rows[0].userid, req.session.userid)
 			return (rows[0]);
 		} else {
 			return ({status: false, msg: "usernotfound"});
@@ -268,7 +269,6 @@ const updateDate = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -412,7 +412,6 @@ const sendEmailChangeRequest = async (req) => {
 			return ({ status: false, err: "Something went wrong!" })
 		}
 	} catch(err) {
-		console.log(err)
 		return ({ status: false, err: "Something went wrong!" })
 	}
 }
@@ -625,6 +624,50 @@ const checkDisconnect = async (req) => {
 	}
 }
 
+const connectRequest = async (req) => {
+	try {
+		const [connectRequests, fields] = await con.execute(
+			`SELECT connect.pk_id as 'id', users.username, users.pk_userid,
+				(SELECT imagename FROM images WHERE images.fk_userid = users.pk_userid AND images.profilepic = 1) as 'image'
+			FROM connect
+			INNER JOIN users ON connect.fk_userid = users.pk_userid
+			WHERE targetuserid = ?`,
+			[req.session.userid])
+		return ({status: true, connectRequests: connectRequests})
+	} catch(err) {
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const watchedByHistory= async (req) => {
+	try {
+		const [recentlyWatched, fields] = await con.execute(
+			`SELECT watchedbyhistory.pk_id as 'id', users.username, users.pk_userid,
+				(SELECT imagename FROM images WHERE images.fk_userid = users.pk_userid AND images.profilepic = 1) as 'image'
+			FROM watchedbyhistory
+			INNER JOIN users ON watchedbyhistory.targetuserid = users.pk_userid
+			WHERE fk_userid = ?
+			ORDER BY date DESC`,
+			[req.session.userid])
+		return ({status: true, recentlyWatched: recentlyWatched})
+	} catch(err) {
+		return ({ status: false, err: "Something went wrong!" })
+	}
+}
+
+const deleteWatchedByHistory = async (req) => {
+	try {
+		const res = await con.execute(
+			`DELETE
+			FROM watchedbyhistory
+			WHERE pk_id = ?`,
+			[req.body.id])
+		return ({status: true, message: "Deleted!"})
+	} catch (err) {
+		return({status: false, message: "Server connection error"});
+	}
+}
+
 module.exports = {
 	getProfile,
 	uploadProfileImage,
@@ -647,4 +690,7 @@ module.exports = {
 	block,
 	unblock,
 	checkDisconnect,
+	connectRequest,
+	watchedByHistory,
+	deleteWatchedByHistory,
 }

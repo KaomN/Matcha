@@ -2,6 +2,7 @@ import toast from 'react-simple-toasts';
 import { SocketContext } from "../../context/SocketContext";
 import { useEffect, useContext, useState } from "react";
 import { useLocation } from "react-router-dom"
+import { UserContext } from '../../context/UserContext';
 
 export default function ProfileButtons(props) {
 	const socket = useContext(SocketContext);
@@ -9,6 +10,13 @@ export default function ProfileButtons(props) {
 	const [connected, setConnected] = useState(false);
 	const [amIBlocked, setAmIBlocked] = useState(false);
 	const { pathname } = useLocation();
+	const { user } = useContext(UserContext);
+	
+	useEffect(() => {
+		if(socket && socket.disconnected && user.auth) {
+			socket.open()
+		}
+	}, [socket, user.auth]);
 
 	useEffect(() => {
 		setConnectRequest(props.profile.connectRequest);
@@ -17,30 +25,22 @@ export default function ProfileButtons(props) {
 	}, [props.profile]);
 	
 	useEffect(() => {
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_connect_request", (data) => {
 			if (data.myUserID === props.profile.userid) {
 				setConnectRequest(data.connectRequest)
 			}
 		});
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_disconnect_request", (data) => {
 			if (data.myUserID === props.profile.userid) {
 				setConnected(data.connected)
 				setConnectRequest(data.connectRequest)
 			}
 		});
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_connected_request", (data) => {
 			if (data.myUserID === props.profile.userid) {
 				setConnected(data.connected)
 			}
 		});
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_unblocked_request", (data) => {
 			if (data.myUserID === props.profile.userid) {
 				setAmIBlocked(data.amiblocked)
@@ -61,8 +61,6 @@ export default function ProfileButtons(props) {
 				}
 			}
 		});
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_blocked_request", (data) => {
 			if (data.myUserID === props.profile.userid) {
 				setAmIBlocked(data.amiblocked)
@@ -85,8 +83,6 @@ export default function ProfileButtons(props) {
 				}
 			}
 		});
-		if (socket.disconnected)
-			socket.open()
 		socket.on("receive_report_request", (data) => {
 			if (data.myUserID === props.profile.userid) {
 				setConnected(false)
@@ -135,8 +131,6 @@ export default function ProfileButtons(props) {
 								...profile, blocked: true, connectRequestSent: true, connectRequest: false, connected: false
 							}))
 						}
-						if (socket.disconnected)
-							socket.open()
 						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname, wasConnected:connected})
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
@@ -181,8 +175,6 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-						if (socket.disconnected)
-							socket.open()
 						socket.emit("send_unblocked", {userid: props.profile.userid, path: pathname})
 						props.setLoading(false)
 					}
@@ -226,8 +218,6 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-						if (socket.disconnected)
-							socket.open()
 						socket.emit("send_report", {userid: props.profile.userid, path: pathname})
 						props.setLoading(false)
 					}
@@ -271,8 +261,6 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-						if (socket.disconnected)
-							socket.open()
 						socket.emit("update_last_active", { path: pathname })
 						props.setLoading(false)
 					}
@@ -333,18 +321,10 @@ export default function ProfileButtons(props) {
 							}
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-						// setTimeout(() => {
-							if (socket.disconnected)
-								socket.open()
 							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname});
-							if (socket.disconnected)
-								socket.open()
 							socket.emit("send_connected", { userid: props.profile.userid, path: pathname});
-							if (socket.disconnected)
-								socket.open()
 							socket.emit("send_connect_request", { userid: props.profile.userid , path: pathname});
 							props.setLoading(false)
-						// }, 1300)
 					} else {
 						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 						props.setLoading(false)
@@ -397,8 +377,6 @@ export default function ProfileButtons(props) {
 							}))
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-						if (socket.disconnected)
-							socket.open()
 						socket.emit("send_disconnect_request", { userid: props.profile.userid, path: pathname });
 						props.setLoading(false)
 					}

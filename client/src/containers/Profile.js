@@ -47,6 +47,11 @@ export default function Profile() {
 		setOnlineStatus(false)
 	}, [pathname]);
 
+	useEffect(() => {
+		if(socket && socket.disconnected && user.auth) {
+			socket.open()
+		}
+	}, [socket, user.auth]);
 
 	let params = useParams()
 	useEffect(() => {
@@ -60,16 +65,10 @@ export default function Profile() {
 				})
 				const data = await response.json()
 				if(data.status) {
-					if(socket.disconnected)
-						socket.open()
 					socket.emit("online_query", { queryId: data.userid, path: pathname });
 					if(params.profileID) {
-						if(socket.disconnected)
-							socket.open()
 						socket.emit("join_profile_room", { userid: params.profileID, path: pathname });
 					}
-					if(socket.disconnected)
-						socket.open()
 					socket.emit("send_notification", { username: data.username, userid: data.userid, type: "profile" });
 					setProfile(data);
 					if(data.isOwn) {
@@ -91,11 +90,9 @@ export default function Profile() {
 			})();
 		}
 		return () => {mounted = false};
-	}, [params, socket, pathname, user.userid]);
+	}, [params, socket, pathname]);
 
 	useEffect(() => {
-		if(socket.disconnected)
-			socket.open()
 		socket.on("online_response", data => {
 			setOnlineStatus(data.onlineStatus)
 		});

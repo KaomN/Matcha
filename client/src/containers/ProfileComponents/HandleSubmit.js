@@ -117,44 +117,6 @@ export async function HandleSubmit(props) {
 			props.setPromiseTracker(false)
 		}
 	}
-	else if (props.type === "preference") {
-		try {
-			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/preference', {
-				credentials: "include",
-				headers: { 'content-type': 'application/json' },
-				method: "PUT",
-				body: JSON.stringify({ preference: props.value})
-			});
-			response = await response.json()
-			if (response.status) {
-				props.socket.emit("gender_preference_change", {userid: props.profile.userid, path: props.pathname})
-				props.setPreferenceSuccessMsg("Updated successfully!")
-				setTimeout(() => {
-					props.setPreferenceSuccessMsg("")
-				}, 3000)
-				props.setPreference(props.value)
-				props.setUser(user => ( {
-					...user,
-					preference: props.value
-				}))
-				props.setProfile(user => ( {
-					...user,
-					preference: props.value
-				}))
-			} else {
-				props.setErrorPreference(response.err)
-				setTimeout(() => {
-					props.setErrorPreference("")
-				}, 3000)
-			}
-			props.setPromiseTracker(false)
-		} catch (err) {
-			console.log(err)
-			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
-			props.setPromiseTracker(false)
-		}
-	}
 	else if (props.type === "interestPut") {
 		try {
 			props.setPromiseTracker(true)

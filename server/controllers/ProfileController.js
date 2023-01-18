@@ -170,5 +170,29 @@ router.get("/disconnect", async (req, res) => {
 	}
 });
 
+router.get("/connectrequest", async (req, res) => {
+	try {
+		res.send(await ProfileModel.connectRequest(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.get("/watchedbyhistory", async (req, res) => {
+	try {
+		res.send(await ProfileModel.watchedByHistory(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
+router.delete("/watchedbyhistory", async (req, res) => {
+	try {
+		res.send(await ProfileModel.deleteWatchedByHistory(req))
+	} catch (e) {
+		res.send({ status: false, err: "Something went wrong!" })
+	}
+});
+
 module.exports = router;
 
