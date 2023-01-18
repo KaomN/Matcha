@@ -9,6 +9,7 @@ router.get("/profile", async (req, res) => {
 
 router.post("/uploadprofileimage", async (req, res) => {
 	var error = {}
+
 	if(Validator.checkImage(req, error)) {
 		res.send(await ProfileModel.uploadProfileImage(req))
 	} else {

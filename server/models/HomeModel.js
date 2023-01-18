@@ -24,7 +24,7 @@ const getUsers = async (req, min, max) => {
 					LEFT JOIN report
 						ON users.pk_userid = report.fk_userid
 					WHERE NOT users.pk_userid = ?
-						AND genderpreference = ?
+						AND (genderpreference = ? OR genderpreference = 'both')
 						AND blocked.targetuserid NOT IN (SELECT fk_userid FROM blocked WHERE targetuserid = users.pk_userid AND fk_userid = ?)
 						AND blocked.targetuserid NOT IN (SELECT targetuserid FROM blocked WHERE fk_userid = users.pk_userid AND targetuserid = ?)
 						AND connect.targetuserid NOT IN (SELECT fk_userid FROM connect WHERE targetuserid = users.pk_userid AND fk_userid = ?)
