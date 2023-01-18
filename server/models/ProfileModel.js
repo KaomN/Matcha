@@ -633,6 +633,13 @@ const connectRequest = async (req) => {
 			INNER JOIN users ON connect.fk_userid = users.pk_userid
 			WHERE targetuserid = ?`,
 			[req.session.userid])
+		for (const users of connectRequests) {
+			if(users.image === null) {
+				users.image = `http://localhost:3001/images/defaultProfile.png`
+			} else {
+				users.image = `http://localhost:3001/images/${users.username}/${users.image}`
+			}
+		}
 		return ({status: true, connectRequests: connectRequests})
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
@@ -649,6 +656,13 @@ const watchedByHistory= async (req) => {
 			WHERE fk_userid = ?
 			ORDER BY date DESC`,
 			[req.session.userid])
+		for (const users of recentlyWatched) {
+			if(users.image === null) {
+				users.image = `http://localhost:3001/images/defaultProfile.png`
+			} else {
+				users.image = `http://localhost:3001/images/${users.username}/${users.image}`
+			}
+		}
 		return ({status: true, recentlyWatched: recentlyWatched})
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })

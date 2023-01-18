@@ -15,12 +15,14 @@ export const UserProvider = ({ children }) => {
 			if(pathname === "/home" || pathname.slice(0, 8) === "/profile" || pathname === "/chat" || pathname === "/completeprofile" || pathname === "/search") {
 				setTimeout(() => {
 					(async () => {
-						const response = await fetch('http://localhost:3001/request/getuserinfo', {
+						const response = await fetch('http://localhost:3001/user/getuserinfo', {
 							credentials: "include",
 							method: 'GET'
 						});
 						const data = await response.json()
-						setUser(data)
+						if(!data.authMessage) {
+							setUser(data)
+						}
 						setUserContextLoading(false)
 					})()
 				}, 300)

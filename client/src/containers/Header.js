@@ -9,7 +9,7 @@ import Notifications from "./HeaderComponents/Notifications";
 import Chats from "./HeaderComponents/Chats";
 import Profile from "./HeaderComponents/Profile";
 import toast from 'react-simple-toasts';
-
+import notAuthenticated from "../components/notAuthenticated";
 
 function useProfileVisible(profileInitialIsVisible) {
 	const [isProfileVisible, setIsProfileVisible] = useState(
@@ -152,6 +152,18 @@ export default function Header() {
 									const data3 = await response3.json()
 									if (data3.status) {
 										setConnectRequests(data3.connectRequests)
+									} else {
+										if(!data3.isAuthenticated) {
+											notAuthenticated()
+										} else  {
+											toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+										}
+									}
+								} else {
+									if(!data2.isAuthenticated) {
+										notAuthenticated()
+									} else  {
+										toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 									}
 								}
 							}
@@ -170,7 +182,7 @@ export default function Header() {
 	function fetchLogout() {
 		const promise = new Promise((resolve, reject) => {
 			setTimeout(() => {
-				resolve(fetch('http://localhost:3001/request/logout', {
+				resolve(fetch('http://localhost:3001/user/logout', {
 					credentials: "include",
 					method: 'GET'
 				})
@@ -182,12 +194,11 @@ export default function Header() {
 
 	async function handleLogout(event) {
 		event.preventDefault();
-			socket.emit("logout", { userId: user.userid });
-			await trackPromise(fetchLogout());
-			socket.disconnect();
-			setUser({})
-			navigate("/login");
-
+		socket.emit("logout", { userId: user.userid });
+		await trackPromise(fetchLogout());
+		socket.disconnect();
+		setUser({})
+		navigate("/login");
 	}
 
 	function handleNavigate() {
@@ -230,7 +241,6 @@ export default function Header() {
 	if(state === "loading") {
 		return null
 	}
-
 	if (path[1] === "home" || path[1] === "profile" || path[1] === "chat" || path[1] === "search") {
 		return (<header>
 			<div className="flex-center">

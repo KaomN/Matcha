@@ -3,26 +3,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 const UserModel = require('../models/UserModel');
-const Validator = require('../modules/InputValidator');
 
-// Register request
-router.post("/register", async (req, res) => {
-	var error = {}
-	if(Validator.register(req, error)) {
-		res.send(await UserModel.register(req))
-	} else {
-		res.send(error)
-	}
-});
-//Login request
-router.post("/login", async (req, res) => {
-	var error = {}
-	if(Validator.login(req, error)) {
-		res.send(await UserModel.login(req))
-	} else {
-		res.send(error)
-	}
-});
 // Get login status
 router.get("/getuserinfo", async (req, res) => {
 	if (req.session.username !== undefined) {
@@ -41,32 +22,6 @@ router.get("/logout", (req, res) => {
 
 	}
 });
-// Verify account request
-router.post("/resendverification", async (req, res) => {
-	res.send(await UserModel.resendVerification(req))
-});
-// Verify account request
-router.post("/verify", async (req, res) => {
-	res.send(await UserModel.verify(req))
-});
-// Forgot password request
-router.post("/forgotpassword", async (req, res) => {
-	var error = {}
-	if(Validator.forgotPassword(req, error)) {
-		res.send(await UserModel.forgotPassword(req))
-	} else {
-		res.send(error)
-	}
-});
-// Password reset request
-router.post("/passwordreset", async (req, res) => {
-	var error = {}
-	if(Validator.passwordReset(req, error)) {
-		res.send(await UserModel.passwordReset(req))
-	} else {
-		res.send(error)
-	}
-});
 // Google Location API
 router.post("/getlocation", async (req, res) => {
 	try {
@@ -78,19 +33,6 @@ router.post("/getlocation", async (req, res) => {
 		res.send(response.data)
 	} catch (error) {
 		res.send({status: false, msg: "Error fetching API location data"})
-	}
-});
-
-router.get("/getprofileimage", async (req, res) => {
-	res.send(await UserModel.getProfileImage(req))
-});
-
-router.put("/email", async (req, res) => {
-	var error = {}
-	if(Validator.checkPin(req, error)) {
-		res.send(await UserModel.changeEmail(req))
-	} else {
-		res.send(error)
 	}
 });
 
@@ -124,6 +66,14 @@ router.get("/history", async (req, res) => {
 
 router.delete("/history", async (req, res) => {
 	res.send(await UserModel.deleteHistory(req))
+});
+
+router.delete("/checkauth", (req, res) => {
+	if(req.session.userid) {
+		res.send({status:true})
+	} else {
+		res.send({status:false})
+	}
 });
 
 module.exports = router;

@@ -4,6 +4,7 @@ import Cropper from 'react-easy-crop'
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import toast from "react-simple-toasts";
+import notAuthenticated from '../../components/notAuthenticated';
 
 export default function ProfileForm(props) {
 	const { setUser } = useContext(UserContext);
@@ -96,20 +97,21 @@ export default function ProfileForm(props) {
 							...user,
 							profile: true
 						}))
-						setIsLoading(false)
 						navigate("/home");
 					} else {
-						setIsLoading(false)
 						toast("Something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 					}
 				} else {
-					setIsLoading(false)
 					toast("Something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 				}
 			} else {
-				setIsLoading(false)
-				toast("Something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+				if(!data1.isAuthenticated) {
+					notAuthenticated()
+				} else {
+					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+				}
 			}
+			setIsLoading(false)
 		}
 	}
 

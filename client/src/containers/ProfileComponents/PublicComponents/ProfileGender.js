@@ -5,6 +5,7 @@ import { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom"
 import toast from 'react-simple-toasts';
 import { UserContext } from '../../../context/UserContext';
+import notAuthenticated from "../../../components/notAuthenticated";
 
 export default function ProfileGender(props) {
 	const socket = useContext(SocketContext);
@@ -22,35 +23,39 @@ export default function ProfileGender(props) {
 	async function handleSubmit(e) {
 		try {
 			setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/gender', {
-						credentials: "include",
-						headers: { 'content-type': 'application/json' },
-						method: "PUT",
-						body: JSON.stringify({ gender: e.target.value})
-					});
-					response = await response.json()
-					if (response.status) {
-						props.setGenderSuccessMsg("Updated successfully!")
-						setTimeout(() => {
-							props.setGenderSuccessMsg("")
-						}, 3000)
-						props.setGender(e.target.value)
-						props.setUser(user => ( {
-							...user,
-							gender: e.target.value
-						}))
-						props.setProfile(user => ( {
-							...user,
-							gender: e.target.value
-						}))
-						socket.emit("gender_preference_change", { path: pathname, gender: e.target.value, preference: props.user.preference, username: props.user.username})
-					} else {
-						setErrorGender(response.err)
-						setTimeout(() => {
-							setErrorGender("")
-						}, 3000)
-					}
-					setPromiseTracker(false)
+			const response = await fetch('http://localhost:3001/profile/gender', {
+				credentials: "include",
+				headers: { 'content-type': 'application/json' },
+				method: "PUT",
+				body: JSON.stringify({ gender: e.target.value})
+			});
+			const data = await response.json()
+			if (data.status) {
+				props.setGenderSuccessMsg("Updated successfully!")
+				setTimeout(() => {
+					props.setGenderSuccessMsg("")
+				}, 3000)
+				props.setGender(e.target.value)
+				props.setUser(user => ( {
+					...user,
+					gender: e.target.value
+				}))
+				props.setProfile(user => ( {
+					...user,
+					gender: e.target.value
+				}))
+				socket.emit("gender_preference_change", { path: pathname, gender: e.target.value, preference: props.user.preference, username: props.user.username})
+			} else {
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					setErrorGender(data.err)
+					setTimeout(() => {
+						setErrorGender("")
+					}, 3000)
+				}
+			}
+			setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			setPromiseTracker(false)

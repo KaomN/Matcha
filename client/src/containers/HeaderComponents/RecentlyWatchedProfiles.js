@@ -24,7 +24,7 @@ export default function RecentlyWatchedProfiles(props) {
 								id={history.id}
 								setHistory={props.setHistory}
 								username={history.username}
-								imageSrc={ "http://localhost:3001/images/" + history.username + "/" + history.image}
+								imageSrc={history.image}
 								userid={history.pk_userid}
 								setIsProfileVisible={props.setIsProfileVisible}
 								/>

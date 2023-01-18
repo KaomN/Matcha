@@ -7,6 +7,8 @@ import Maps from "./SearchComponents/Maps";
 import { UserContext } from "../context/UserContext";
 import Select from "../components/Select";
 import "./styles/Search.css";
+import toast from "react-simple-toasts";
+import notAuthenticated from "../components/notAuthenticated";
 
 export default function AdvancedSearch() {
 	const { user } = useContext(UserContext);
@@ -33,6 +35,12 @@ export default function AdvancedSearch() {
 				const data = await response.json();
 				if(data.status) {
 					setOptions(data.tags);
+				} else {
+					if(!data.isAuthenticated) {
+						notAuthenticated()
+					} else  {
+						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+					}
 				}
 				setIsLoading(false);
 			})();
@@ -74,8 +82,12 @@ export default function AdvancedSearch() {
 			setIsSearching(true);
 			setHasSearched(true);
 		} else {
-			setIsSearching(false);
-			setHasSearched(false)
+			if(!data.isAuthenticated) {
+				notAuthenticated()
+			} else  {
+				setIsSearching(false);
+				setHasSearched(false)
+			}
 		}
 		setIsSearching(false);
 	}

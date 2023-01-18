@@ -24,7 +24,7 @@ export default function ConnectRequested(props) {
 								id={connectRequests.id}
 								setConnectRequests={props.setConnectRequests}
 								username={connectRequests.username}
-								imageSrc={ "http://localhost:3001/images/" + connectRequests.username + "/" + connectRequests.image}
+								imageSrc={connectRequests.image}
 								userid={connectRequests.pk_userid}
 								setIsProfileVisible={props.setIsProfileVisible}
 								/>

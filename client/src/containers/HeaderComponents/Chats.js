@@ -3,7 +3,7 @@ import { ActiveChatContext } from '../../context/ActiveChatContext';
 import { LoadingSpinnerComponent } from "../../components/LoadingSpinnerComponent";
 import ChatItems from "./ChatItems";
 import toast from 'react-simple-toasts';
-
+import notAuthenticated from "../../components/notAuthenticated";
 
 export default function Chats(props) {
 	const { activeChat, setActiveChat } = useContext(ActiveChatContext);
@@ -21,7 +21,11 @@ export default function Chats(props) {
 			if(data.status) {
 				setConnectedUser(data.connectedUsers)
 			} else {
-				toast("Something went wrong!", { position: 'top-center', duration: 5000 })
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else {
+					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+				}
 			}
 			setIsLoading(false)
 		})();

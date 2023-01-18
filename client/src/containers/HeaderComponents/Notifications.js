@@ -3,7 +3,7 @@ import { SocketContext } from "../../context/SocketContext";
 import NotificationItems from "./NotificationItems";
 import {LoadingSpinnerComponent} from "../../components/LoadingSpinnerComponent";
 import toast from 'react-simple-toasts';
-
+import notAuthenticated from "../../components/notAuthenticated";
 
 export default function Notifications(props) {
 	const socket = useContext(SocketContext);
@@ -95,6 +95,12 @@ export default function Notifications(props) {
 						setIsRead(true)
 					}
 					setNotification(data.notification)
+				} else {
+					if(!data.isAuthenticated) {
+						notAuthenticated()
+					} else {
+						toast(data.err, { position: 'top-center', duration: 5000 })
+					}
 				}
 				setIsLoading(false)
 			})();
@@ -115,6 +121,12 @@ export default function Notifications(props) {
 					const data = await response.json()
 					if (data.status) {
 						setNotification([])
+					} else {
+						if(!data.isAuthenticated) {
+							notAuthenticated()
+						} else {
+							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+						}
 					}
 					setIsRead(true)
 					setIsLoading(false)

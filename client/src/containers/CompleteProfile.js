@@ -12,6 +12,7 @@ import InterestForm from "./CompleteProfileComponents/InterestForm";
 import ProfileForm from "./CompleteProfileComponents/ProfileForm";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import toast from 'react-simple-toasts';
+import notAuthenticated from "../components/notAuthenticated";
 
 export default function CompleteProfile() {
 	const { user } = useContext(UserContext);
@@ -44,7 +45,11 @@ export default function CompleteProfile() {
 				if(data.status) {
 					setTagOptions(data.tags);
 				} else {
-					toast("Something went wrong! Error loading tags, please refresh the page!", { position: 'top-center', duration: 5000 })
+					if(!data.isAuthenticated) {
+						notAuthenticated()
+					} else  {
+						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+					}
 				}
 				setIsLoading(false);
 			})();
@@ -74,14 +79,20 @@ export default function CompleteProfile() {
 	}
 
 	async function getLocationAPI() {
-		let response = await fetch('http://localhost:3001/request/getlocation', {
+		const response = await fetch('http://localhost:3001/user/getlocation', {
 			credentials: "include",
 			method: "POST",
 		});
-		response = await response.json();
-		if(response.status) {
-			setLocationLat(response.location.lat)
-			setLocationLng(response.location.lng)
+		const data = await response.json();
+		if(data.status) {
+			setLocationLat(data.location.lat)
+			setLocationLng(data.location.lng)
+		} else {
+			if(!data.isAuthenticated) {
+				notAuthenticated()
+			} else  {
+				toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+			}
 		}
 	}
 

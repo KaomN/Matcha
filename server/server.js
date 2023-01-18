@@ -368,8 +368,21 @@ io.on('connection', (socket) => {
 	} catch (err) {
 	}
 });
-// UserController
-app.use('/request', require('./controllers/UserController'));
+// Middleware for checking if user is authenticated
+const isAuthenticated = function (req, res, next) {
+	try {
+		if(req.session.userid) {
+			next()
+		} else {
+			res.send({status:false, isAuthenticated: false, authMessage: "Not Authenticated!"})
+		}
+	} catch (err) {
+	}
+}
+// Requests that doe not require authentication
+app.use('/request', require('./controllers/PublicController'));
+// Middleware for checking if user is authenticated
+app.use(isAuthenticated)
 // UserController
 app.use('/user', require('./controllers/UserController'));
 // CompleteProfileController

@@ -5,8 +5,8 @@ import ChatUserProfiles from "./ChatComponents/ChatUserProfiles";
 import ChatMessage from "./ChatComponents/ChatMessage";
 import { ActiveChatContext } from '../context/ActiveChatContext';
 import useChat from "./ChatComponents/UseChat";
-
-
+import toast from "react-simple-toasts";
+import notAuthenticated from "../components/notAuthenticated";
 
 import "./styles/Chat.css";
 
@@ -30,6 +30,12 @@ export default function Chat() {
 					const data = await response.json()
 					if(data.status) {
 						setConnectedUser(data.connectedUsers)
+					} else {
+						if(!data.isAuthenticated) {
+							notAuthenticated()
+						} else  {
+							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+						}
 					}
 					setComponentIsLoading(false)
 				})();
@@ -43,6 +49,12 @@ export default function Chat() {
 					const data = await response.json()
 					if(data.status) {
 						setConnectedUser(data.connectedUsers)
+					} else {
+						if(!data.isAuthenticated) {
+							notAuthenticated()
+						} else  {
+							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+						}
 					}
 					setIsLoading(false)
 				})();

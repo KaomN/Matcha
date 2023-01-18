@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import notAuthenticated from "../../components/notAuthenticated";
+import toast from "react-simple-toasts";
 
 export default function HistoryItems(props) {
 	const navigate = useNavigate();
@@ -16,6 +18,12 @@ export default function HistoryItems(props) {
 			const data = await res.json()
 			if (data.status) {
 				props.setHistory(history => history.filter(item => item.username !== props.username))
+			} else {
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else {
+					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+				}
 			}
 		} else if(props.type === "watchedbyhistory") {
 			const res = await fetch("http://localhost:3001/profile/watchedbyhistory", {
@@ -29,6 +37,12 @@ export default function HistoryItems(props) {
 			const data = await res.json()
 			if (data.status) {
 				props.setWatchedByHistory(watchedByHistory => watchedByHistory.filter(item => item.username !== props.username))
+			} else {
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else {
+					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+				}
 			}
 		}
 	}

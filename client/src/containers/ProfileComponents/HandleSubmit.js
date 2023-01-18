@@ -1,4 +1,5 @@
 import toast from 'react-simple-toasts';
+import notAuthenticated from '../../components/notAuthenticated';
 
 function capitalize(s) {
 	return s && s[0].toUpperCase() + s.slice(1);
@@ -9,14 +10,14 @@ export async function HandleSubmit(props) {
 	if (props.type === "name") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/name', {
+			const response = await fetch('http://localhost:3001/profile/name', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ firstname: capitalize(props.firstname), surname:capitalize(props.surname) })
 			});
-			response = await response.json();
-			if (response.status) {
+			const data = await response.json();
+			if (data.status) {
 				props.setNameSuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setNameSuccessMsg("")
@@ -32,12 +33,16 @@ export async function HandleSubmit(props) {
 					surname: capitalize(props.surname)
 				}))
 			} else {
-				props.setErrorFirstname(response.errorFirstname)
-				props.setErrorSurname(response.errorSurname)
-				setTimeout(() => {
-					props.setErrorFirstname("")
-					props.setErrorSurname("")
-				}, 3000)
+				if(data.authMessage) {
+					toast(data.authMessage + " Please login again!", { position: 'top-center', duration: 5000 })
+				} else  {
+					props.setErrorFirstname(data.errorFirstname)
+					props.setErrorSurname(data.errorSurname)
+					setTimeout(() => {
+						props.setErrorFirstname("")
+						props.setErrorSurname("")
+					}, 3000)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
@@ -48,14 +53,14 @@ export async function HandleSubmit(props) {
 	else if (props.type === "username") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/username', {
+			const response = await fetch('http://localhost:3001/profile/username', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ username: props.username })
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setUsernameSuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setUsernameSuccessMsg("")
@@ -69,10 +74,14 @@ export async function HandleSubmit(props) {
 					username: props.username
 				}))
 			} else {
-				props.setErrorUsername(response.err)
-				setTimeout(() => {
-					props.setErrorUsername("")
-				}, 3000)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorUsername(data.err)
+					setTimeout(() => {
+						props.setErrorUsername("")
+					}, 3000)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
@@ -83,14 +92,14 @@ export async function HandleSubmit(props) {
 	else if (props.type === "dateofbirth") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/dateofbirth', {
+			const response = await fetch('http://localhost:3001/profile/dateofbirth', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ dateofbirth: props.dateOfBirth, age: props.age })
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setDateOfBirthSuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setDateOfBirthSuccessMsg("")
@@ -106,10 +115,14 @@ export async function HandleSubmit(props) {
 					age: props.age
 				}))
 			} else {
-				props.setErrorDate(response.err)
-				setTimeout(() => {
-					props.setErrorDate("")
-				}, 3000)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorDate(data.err)
+					setTimeout(() => {
+						props.setErrorDate("")
+					}, 3000)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
@@ -125,28 +138,32 @@ export async function HandleSubmit(props) {
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ interest: props.interest})
-		});
-		const data = await response.json()
-		if (data.status) {
-			props.setInterestSuccessMsg("Updated successfully!")
-			setTimeout(() => {
-				props.setInterestSuccessMsg("")
-			}, 3000)
-			props.setUser(user => ( {
-				...user,
-				interest: props.interest
-			}))
-			props.setProfile(user => ( {
-				...user,
-				interest: props.interest
-			}))
-		} else {
-			props.setErrorPutInterest(data.err)
-			setTimeout(() => {
-				props.setErrorPutInterest("")
-			}, 3000)
-		}
-		props.setPromiseTracker(false)
+			});
+			const data = await response.json()
+			if (data.status) {
+				props.setInterestSuccessMsg("Updated successfully!")
+				setTimeout(() => {
+					props.setInterestSuccessMsg("")
+				}, 3000)
+				props.setUser(user => ( {
+					...user,
+					interest: props.interest
+				}))
+				props.setProfile(user => ( {
+					...user,
+					interest: props.interest
+				}))
+			} else {
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorPutInterest(data.err)
+					setTimeout(() => {
+						props.setErrorPutInterest("")
+					}, 3000)
+				}
+			}
+			props.setPromiseTracker(false)
 		} catch (err) {
 			toast("Something went wrong!", { position: 'top-center', duration: 5000 })
 			props.setPromiseTracker(false)
@@ -155,14 +172,14 @@ export async function HandleSubmit(props) {
 	else if (props.type === "biography") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/biography', {
+			const response = await fetch('http://localhost:3001/profile/biography', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ biography: props.biography})
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setBiographySuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setBiographySuccessMsg("")
@@ -178,7 +195,11 @@ export async function HandleSubmit(props) {
 					biography: props.biography
 				}))
 			} else {
-				props.setErrorBiography(response.err)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorBiography(data.err)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
@@ -189,14 +210,14 @@ export async function HandleSubmit(props) {
 	else if (props.type === "email") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/email', {
+			const response = await fetch('http://localhost:3001/profile/email', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ email: props.email})
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setEmailSuccessMsg("Email change request sent!")
 				props.setEmailChangeMsg(response.msg)
 				setTimeout(() => {
@@ -206,7 +227,11 @@ export async function HandleSubmit(props) {
 					props.setEmailChangeMsg("")
 				}, 6000)
 			} else {
-				props.setErrorEmail(response.err)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorEmail(data.err)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
@@ -217,22 +242,26 @@ export async function HandleSubmit(props) {
 	else if (props.type === "password") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/password', {
+			const response = await fetch('http://localhost:3001/profile/password', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ currentPassword: props.password, newPassword: props.newPassword, confirmNewPassword: props.confirmNewPassword})
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setPasswordSuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setPasswordSuccessMsg("")
 				}, 3000)
 			} else {
-				props.setErrorPassword(response.errorPassword)
-				props.setErrorNewPassword(response.errorNewPassword)
-				props.setErrorConfirmNewPassword(response.errorConfirmNewPassword)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorPassword(data.errorPassword)
+					props.setErrorNewPassword(data.errorNewPassword)
+					props.setErrorConfirmNewPassword(data.errorConfirmNewPassword)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {
@@ -243,14 +272,14 @@ export async function HandleSubmit(props) {
 	else if (props.type === "position") {
 		try {
 			props.setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/position', {
+			const response = await fetch('http://localhost:3001/profile/position', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ lat: props.savedPosition.lat, lng: props.savedPosition.lng})
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setUser(user => ( {
 					...user,
 					latitude: props.savedPosition.lat,
@@ -261,10 +290,14 @@ export async function HandleSubmit(props) {
 					props.setPositionSuccessMsg("")
 				}, 3000)
 			} else {
-				props.setErrorPosition(response.errorPassword)
-				setTimeout(() => {
-					props.setErrorPosition("")
-				}, 3000)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else  {
+					props.setErrorPosition(data.err)
+					setTimeout(() => {
+						props.setErrorPosition("")
+					}, 3000)
+				}
 			}
 			props.setPromiseTracker(false)
 		} catch (err) {

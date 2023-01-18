@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from 'react-simple-toasts';
-
+import notAuthenticated from "../../../components/notAuthenticated";
 
 export default function ProfileImages(props) {
 	const [imagePage, setImagePage] = useState(0);
@@ -12,15 +12,29 @@ export default function ProfileImages(props) {
 		setImagePage(imagePage - 1)
 	}
 
-	async function deleteImage(image) {
-		let response = await fetch('http://localhost:3001/profile/deleteimage', {
+	async function deleteImage() {
+		const response = await fetch('http://localhost:3001/profile/deleteimage', {
 			credentials: "include",
 			headers: { 'content-type': 'application/json' },
 			method: "POST",
-			body: JSON.stringify(image)
+			body: JSON.stringify(props.profile.images[imagePage])
 		});
-		response = await response.json();
-		return response
+		const data = await response.json();
+		if(data.status) {
+			const profileCopy = JSON.parse(JSON.stringify(props.profile));
+			profileCopy.images.splice(imagePage, 1)
+			if(imagePage !== 0) {
+				setImagePage(imagePage - 1);
+			}
+			props.setProfile(profileCopy)
+			toast("Image Deleted!", { position: 'top-center', duration: 5000 })
+		} else {
+			if(!data.isAuthenticated) {
+				notAuthenticated()
+			} else {
+				toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+			}
+		}
 	}
 
 	if(props.profile.amiblocked) {
@@ -33,17 +47,7 @@ export default function ProfileImages(props) {
 				<img src={props.profile.images[imagePage].imageSrc} className="rounded-corners" alt="images"/>
 				{(props.isOwn === true)
 					?
-					<i className="material-icons pos-abs-bottom-middle profile_image_delete_btn" draggable="false" onClick={() => {
-						if(deleteImage(props.profile.images[imagePage])) {
-							const profileCopy = JSON.parse(JSON.stringify(props.profile));
-							profileCopy.images.splice(imagePage, 1)
-							if(imagePage !== 0) {
-								setImagePage(imagePage - 1);
-							}
-							props.setProfile(profileCopy)
-							toast("Image Deleted!", { position: 'top-center', duration: 5000 })
-						}
-					}} title="Delete">close</i>
+					<i className="material-icons pos-abs-bottom-middle profile_image_delete_btn" draggable="false" onClick={deleteImage} title="Delete">close</i>
 					:
 					null
 				}

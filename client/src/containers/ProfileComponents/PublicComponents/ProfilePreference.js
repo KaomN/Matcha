@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom"
 import toast from 'react-simple-toasts';
 import { UserContext } from '../../../context/UserContext';
+import notAuthenticated from "../../../components/notAuthenticated";
 
 export default function ProfilePreference(props) {
 	const socket = useContext(SocketContext);
@@ -22,14 +23,14 @@ export default function ProfilePreference(props) {
 	async function handleSubmit(e) {
 		try {
 			setPromiseTracker(true)
-			let response = await fetch('http://localhost:3001/profile/preference', {
+			const response = await fetch('http://localhost:3001/profile/preference', {
 				credentials: "include",
 				headers: { 'content-type': 'application/json' },
 				method: "PUT",
 				body: JSON.stringify({ preference: e.target.value})
 			});
-			response = await response.json()
-			if (response.status) {
+			const data = await response.json()
+			if (data.status) {
 				props.setPreferenceSuccessMsg("Updated successfully!")
 				setTimeout(() => {
 					props.setPreferenceSuccessMsg("")
@@ -45,10 +46,14 @@ export default function ProfilePreference(props) {
 				}))
 				socket.emit("gender_preference_change", { path: pathname, gender: props.user.gender, preference: e.target.value, username: props.user.username})
 			} else {
-				setErrorPreference(response.err)
-				setTimeout(() => {
-					setErrorPreference("")
-				}, 3000)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else {
+					setErrorPreference(data.err)
+					setTimeout(() => {
+						setErrorPreference("")
+					}, 3000)
+				}
 			}
 			setPromiseTracker(false)
 		} catch (err) {

@@ -25,7 +25,11 @@ async function getProfilePic(user) {
 			FROM images
 			WHERE fk_userid = ? AND profilepic = 1`,
 			[user.userid])
-		return (path + user.username + "/" + profilepic[0].imagename)
+		if(profilepic[0]) {
+			return (path + user.username + "/" + profilepic[0].imagename)
+		} else {
+			return (path + "defaultProfile.png")
+		}
 	} catch (err) {
 		return({status: false, message: "Server connection error"});
 	}

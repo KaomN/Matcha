@@ -228,25 +228,6 @@ const getUserInfo = async (req) => {
 	}
 }
 
-const getProfileImage = async (req) => {
-	if(req.session.userid) {
-		var [rows, fields] = await con.execute(`SELECT imagename
-												FROM images
-												WHERE fk_userid = ?`,
-												[req.session.userid])
-		if (rows[0] !== undefined) {
-			var profileImagePath = __dirname.slice(0, -6) + "uploads/" + req.session.username + "/" + rows[0].imagename
-			if (fs.existsSync(profileImagePath)) {
-				return ({ imageSrc: "http://localhost:3001/images/" + req.session.username + "/" + rows[0].imagename})
-			}
-			return ({ imageSrc: "http://localhost:3001/images/defaultProfile.png" })
-		} else {
-			return ({ imageSrc: "http://localhost:3001/images/defaultProfile.png" })
-		}
-	} else {
-		return ({ imageSrc: "http://localhost:3001/images/defaultProfile.png" })
-	}
-}
 
 const changeEmail = async (req) => {
 	try {
@@ -361,6 +342,13 @@ const getHistory = async (req) => {
 			WHERE fk_userid = ?
 			ORDER BY date DESC`,
 			[req.session.userid])
+		for (const users of history) {
+			if(users.image === null) {
+				users.image = `http://localhost:3001/images/defaultProfile.png`
+			} else {
+				users.image = `http://localhost:3001/images/${users.username}/${users.image}`
+			}
+		}
 		return ({status: true, history})
 	} catch (err) {
 		return({status: false, message: "Server connection error"});
@@ -411,7 +399,6 @@ module.exports = {
 	forgotPassword,
 	passwordReset,
 	getUserInfo,
-	getProfileImage,
 	changeEmail,
 	logout,
 	markNotificationRead,

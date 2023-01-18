@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import Cropper from 'react-easy-crop'
 import { LoadingSpinnerPromiseComponent } from '../../../components/LoadingSpinnerPromiseComponent';
 import toast from 'react-simple-toasts';
-
+import notAuthenticated from "../../../components/notAuthenticated";
 
 export default function EditProfileImagePopup(props) {
 	const [profileImageFileInput, setProfileImageFileInput] = useState("");
@@ -44,28 +44,31 @@ export default function EditProfileImagePopup(props) {
 			formdata.append("y", imageSize.y)
 			formdata.append("cropWidth", imageSize.width)
 			formdata.append("cropHeight", imageSize.height)
-			let response = await fetch('http://localhost:3001/profile/uploadprofileimage', {
+			const response = await fetch('http://localhost:3001/profile/uploadprofileimage', {
 				credentials: "include",
 				method: "POST",
 				body: formdata
 			});
-			response = await response.json();
-			if(response.status) {
+			const data = await response.json();
+			if(data.status) {
 				props.setUser(user => ( {
 					...user,
-					imageSrc: response.imageSrc
+					imageSrc: data.imageSrc
 				}))
 				props.setProfile(profile => ( {
 					...profile,
-					profileSrc: response.imageSrc
+					profileSrc: data.imageSrc
 				}))
 				props.setIsEditProfileImageVisible(false)
 				toast("Profile Image Updated!", { position: 'top-center', duration: 5000 })
-				setPromiseTracker(false)
 			} else {
-				toast(response.err, { position: 'top-center', duration: 5000 })
-				setPromiseTracker(false)
+				if(!data.isAuthenticated) {
+					notAuthenticated()
+				} else {
+					toast(data.err, { position: 'top-center', duration: 5000 })
+				}
 			}
+			setPromiseTracker(false)
 		}
 	}
 	return (

@@ -117,7 +117,7 @@ const getUsers = async (req, min, max) => {
 							delete user.latitude
 							delete user.longitude
 						} catch (err) {
-							console.error(err)
+							//console.error(err)
 						}
 					}
 				}

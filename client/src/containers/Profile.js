@@ -8,6 +8,7 @@ import ProfileButtons from "./ProfileComponents/ProfileButtons";
 import { SocketContext } from "../context/SocketContext";
 import { LoadingSpinnerComponent } from "../components/LoadingSpinnerComponent";
 import toast from 'react-simple-toasts';
+import notAuthenticated from "../components/notAuthenticated"
 
 
 // Popups Components
@@ -80,11 +81,19 @@ export default function Profile() {
 						if(data.status) {
 							setTagOptions(data.tags);
 						} else {
-							toast("Something went wrong! Error loading tags, please refresh the page!", { position: 'top-center', duration: 5000 })
+							if(!data.isAuthenticated) {
+								notAuthenticated()
+							} else  {
+								toast("Something went wrong! Error loading tags, please refresh the page!", { position: 'top-center', duration: 5000 })
+							}
 						}
 					}
 				} else {
-					toast("Something went wrong! Error loading Profile, please refresh the page!", { position: 'top-center', duration: 5000 })
+					if(!data.isAuthenticated) {
+						notAuthenticated()
+					} else  {
+						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
+					}
 				}
 				setIsLoading(false);
 			})();

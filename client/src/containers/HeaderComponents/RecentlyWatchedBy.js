@@ -24,7 +24,7 @@ export default function RecentlyWatchedBy(props) {
 								id={watchedByHistory.id}
 								setWatchedByHistory={props.setWatchedByHistory}
 								username={watchedByHistory.username}
-								imageSrc={ "http://localhost:3001/images/" + watchedByHistory.username + "/" + watchedByHistory.image}
+								imageSrc={watchedByHistory.image}
 								userid={watchedByHistory.pk_userid}
 								setIsProfileVisible={props.setIsProfileVisible}
 								/>
