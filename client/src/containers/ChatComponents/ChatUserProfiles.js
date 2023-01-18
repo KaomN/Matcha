@@ -32,7 +32,6 @@ export default function ChatUserProfiles(props) {
 		setUnreadMessage(unread);
 	}, [props.profile.messages, props.activeChat, props.profile.userid]);
 
-
 	async function handleOnclick() {
 		props.setComponentIsLoading(true)
 		await fetch(`http://localhost:3001/chat/markread`,{
@@ -43,8 +42,8 @@ export default function ChatUserProfiles(props) {
 		})
 		setUnreadMessage(false);
 		props.setActiveChat({userid: props.profile.userid, channel: props.profile.room})
-
 	}
+
 	return (
 		<div className="chat_user_profile_container" onClick={handleOnclick}>
 			<img className="chat_user_profile_image" src={props.profile.profilePic} alt={"profileImage"}></img>

@@ -321,7 +321,7 @@ export default function ProfileButtons(props) {
 							}
 						}
 						toast(data.message, { position: 'top-center', duration: 5000 })
-							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname});
+							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "connect", path: pathname, usernameUser:user.username});
 							socket.emit("send_connected", { userid: props.profile.userid, path: pathname});
 							socket.emit("send_connect_request", { userid: props.profile.userid , path: pathname});
 							props.setLoading(false)
@@ -342,7 +342,10 @@ export default function ProfileButtons(props) {
 			
 			setTimeout(() => {
 				(async function() {
-					const response = await fetch(`http://localhost:3001/profile/disconnect/?userid1=${props.profile.userid}&userid2=${props.user.userid}`)
+					const response = await fetch(`http://localhost:3001/profile/disconnect/?userid1=${props.profile.userid}&userid2=${props.user.userid}`, {
+						credentials: "include",
+						method: "GET"
+					})
 					const data = await response.json()
 					if (data.status) {
 						socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect", usernameUser: user.username});

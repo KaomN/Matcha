@@ -167,7 +167,7 @@ io.on('connection', (socket) => {
 					isread: false,
 				});
 			} else {
-				await saveNotification(data.sentto, socket.request.session.userid, `${data.username} has sent you a message!`, 3)
+				await saveNotification(data.sendto, socket.request.session.userid, `${data.username} has sent you a message!`, 3)
 			}
 		});
 		/* Updating connection requests */
