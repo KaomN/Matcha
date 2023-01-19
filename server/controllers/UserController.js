@@ -68,7 +68,7 @@ router.delete("/history", async (req, res) => {
 	res.send(await UserModel.deleteHistory(req))
 });
 
-router.delete("/checkauth", (req, res) => {
+router.get("/checkauth", (req, res) => {
 	if(req.session.userid) {
 		res.send({status:true})
 	} else {

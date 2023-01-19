@@ -33,9 +33,9 @@ export async function HandleSubmit(props) {
 					surname: capitalize(props.surname)
 				}))
 			} else {
-				if(data.authMessage) {
-					toast(data.authMessage + " Please login again!", { position: 'top-center', duration: 5000 })
-				} else  {
+				if(data.isAuthenticated === false) {
+					notAuthenticated()
+				} else {
 					props.setErrorFirstname(data.errorFirstname)
 					props.setErrorSurname(data.errorSurname)
 					setTimeout(() => {
@@ -65,16 +65,12 @@ export async function HandleSubmit(props) {
 				setTimeout(() => {
 					props.setUsernameSuccessMsg("")
 				}, 3000)
-				props.setUser(user => ( {
-					...user,
-					username: props.username
-				}))
 				props.setProfile(user => ( {
 					...user,
 					username: props.username
 				}))
 			} else {
-				if(!data.isAuthenticated) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorUsername(data.err)
@@ -111,11 +107,11 @@ export async function HandleSubmit(props) {
 				}))
 				props.setProfile(user => ( {
 					...user,
-					birthdate: props.dateOfBirth,
+					dateofbirth: props.dateOfBirth,
 					age: props.age
 				}))
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorDate(data.err)
@@ -154,7 +150,7 @@ export async function HandleSubmit(props) {
 					interest: props.interest
 				}))
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorPutInterest(data.err)
@@ -195,7 +191,7 @@ export async function HandleSubmit(props) {
 					biography: props.biography
 				}))
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorBiography(data.err)
@@ -227,7 +223,7 @@ export async function HandleSubmit(props) {
 					props.setEmailChangeMsg("")
 				}, 6000)
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorEmail(data.err)
@@ -255,7 +251,7 @@ export async function HandleSubmit(props) {
 					props.setPasswordSuccessMsg("")
 				}, 3000)
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorPassword(data.errorPassword)
@@ -290,7 +286,7 @@ export async function HandleSubmit(props) {
 					props.setPositionSuccessMsg("")
 				}, 3000)
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorPosition(data.err)

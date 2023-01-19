@@ -46,7 +46,7 @@ export default function ProfilePreference(props) {
 				}))
 				socket.emit("gender_preference_change", { path: pathname, gender: props.user.gender, preference: e.target.value, username: props.user.username})
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else {
 					setErrorPreference(data.err)

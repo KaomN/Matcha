@@ -29,7 +29,7 @@ export default function ProfileImages(props) {
 			props.setProfile(profileCopy)
 			toast("Image Deleted!", { position: 'top-center', duration: 5000 })
 		} else {
-			if(!data.isAuthenticated) {
+			if(!data.isAuthenticated === false) {
 				notAuthenticated()
 			} else {
 				toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })

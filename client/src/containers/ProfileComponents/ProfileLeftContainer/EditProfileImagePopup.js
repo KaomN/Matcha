@@ -62,7 +62,7 @@ export default function EditProfileImagePopup(props) {
 				props.setIsEditProfileImageVisible(false)
 				toast("Profile Image Updated!", { position: 'top-center', duration: 5000 })
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else {
 					toast(data.err, { position: 'top-center', duration: 5000 })

@@ -19,7 +19,7 @@ export default function HistoryItems(props) {
 			if (data.status) {
 				props.setHistory(history => history.filter(item => item.username !== props.username))
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else {
 					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -38,7 +38,7 @@ export default function HistoryItems(props) {
 			if (data.status) {
 				props.setWatchedByHistory(watchedByHistory => watchedByHistory.filter(item => item.username !== props.username))
 			} else {
-				if(!data.isAuthenticated) {
+				if(!data.isAuthenticated === false) {
 					notAuthenticated()
 				} else {
 					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })

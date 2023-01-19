@@ -618,7 +618,7 @@ const checkDisconnect = async (req) => {
 			FROM connected
 			WHERE (userid1 = ? AND userid2 = ?) OR (userid2 = ? AND userid1 = ?)`,
 			[req.query['userid1'], req.query['userid2'], req.query['userid1'], req.query['userid2']])
-		return ({status: res[0].length > 0})
+		return ({status: true, wasConnected: res[0].length > 0})
 	} catch(err) {
 		return ({ status: false, err: "Something went wrong!" })
 	}
@@ -630,9 +630,13 @@ const connectRequest = async (req) => {
 			`SELECT connect.pk_id as 'id', users.username, users.pk_userid,
 				(SELECT imagename FROM images WHERE images.fk_userid = users.pk_userid AND images.profilepic = 1) as 'image'
 			FROM connect
-			INNER JOIN users ON connect.fk_userid = users.pk_userid
-			WHERE targetuserid = ?`,
-			[req.session.userid])
+				INNER JOIN users ON connect.fk_userid = users.pk_userid
+				LEFT JOIN connected ON connect.fk_userid = connected.userid1 AND connect.fk_userid = connected.userid2
+			WHERE targetuserid = ?
+				AND connected.userid1 NOT IN (SELECT userid1 FROM connected WHERE userid1 = ? AND userid2 = users.pk_userid OR userid2 = ? AND userid1 = users.pk_userid)
+				OR connected.userid2 NOT IN (SELECT userid2 FROM connected WHERE userid1 = ? AND userid2 = users.pk_userid OR userid2 = ? AND userid1 = users.pk_userid)
+				AND NOT users.pk_userid = ?`,
+			[req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid])
 		for (const users of connectRequests) {
 			if(users.image === null) {
 				users.image = `http://localhost:3001/images/defaultProfile.png`

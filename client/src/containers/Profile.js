@@ -81,7 +81,7 @@ export default function Profile() {
 						if(data.status) {
 							setTagOptions(data.tags);
 						} else {
-							if(!data.isAuthenticated) {
+							if(!data.isAuthenticated === false) {
 								notAuthenticated()
 							} else  {
 								toast("Something went wrong! Error loading tags, please refresh the page!", { position: 'top-center', duration: 5000 })
@@ -89,7 +89,7 @@ export default function Profile() {
 						}
 					}
 				} else {
-					if(!data.isAuthenticated) {
+					if(!data.isAuthenticated === false) {
 						notAuthenticated()
 					} else  {
 						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
