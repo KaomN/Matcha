@@ -100,14 +100,23 @@ export default function Profile() {
 		}
 		return () => {mounted = false};
 	}, [params, socket, pathname, user.userid, user.username]);
-
+	
 	useEffect(() => {
 		socket.on("online_response", data => {
 			setOnlineStatus(data.onlineStatus)
 		});
-		return () => {socket.off("online_response");};
+		socket.on("repsonse_logout", data => {
+			setOnlineStatus(data.onlineStatus)
+			setProfile(profile => ( {
+				...profile,
+				lastactive: data.lastActive
+			}))
+		});
+		return () => {
+			socket.off("online_response")
+			socket.off("response_logout")
+		};
 	}, [socket]);
-
 	if (isLoading) {
 		return <LoadingSpinner />
 	} else if (profile.status) {

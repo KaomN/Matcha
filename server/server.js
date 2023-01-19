@@ -361,8 +361,11 @@ io.on('connection', (socket) => {
 			await updateLastActive(socket.request.session.userid)
 			// Delete user from userStatus array
 			deleteUser(socket.request.session.userid)
-			socket.to(socket.request.session.token).emit('online_response', {
-				onlineStatus: false
+			let currTime = new Date()
+			let modifiedTime = new Date(currTime.getTime() - currTime.getTimezoneOffset() * 60000)
+			socket.to(socket.request.session.token).emit('repsonse_logout', {
+				onlineStatus: false,
+				lastActive: modifiedTime.toISOString()
 			});
 		});
 	} catch (err) {
