@@ -1,10 +1,11 @@
-const emailValidator = require('email-validator');
 const Moment = require('moment');
 
 const register = (req, error) => {
 	const { firstname, surname, username, email, password, passwordConfirm} = req.body;
 	const rePassword = /\d|[A-Z]/;
 	const reUsername = /^[a-zA-Z0-9\-\_]+$/;
+	const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 	if(firstname.trim().length === 0)
 		Object.assign(error, {"errorFirstname": "Firstname required!"});
 	else if (firstname.trim().length > 50)
@@ -25,7 +26,7 @@ const register = (req, error) => {
 		Object.assign(error, {"errorEmail": "Email required!"});
 	else if (email.trim().length > 100)
 		Object.assign(error, {"errorEmail": "Email too long! Max 100 characters!"});
-	else if (!emailValidator.validate(email))
+	else if (!reEmail.test(email))
 		Object.assign(error, {"errorEmail": "Invalid Email address!"});
 	if(password.trim().length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
