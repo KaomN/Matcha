@@ -96,7 +96,7 @@ export default function Notifications(props) {
 					}
 					setNotification(data.notification)
 				} else {
-					if(!data.isAuthenticated === false) {
+					if(data.isAuthenticated === false) {
 						notAuthenticated()
 					} else {
 						toast(data.err, { position: 'top-center', duration: 5000 })
@@ -122,7 +122,7 @@ export default function Notifications(props) {
 					if (data.status) {
 						setNotification([])
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })

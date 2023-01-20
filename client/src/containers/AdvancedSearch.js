@@ -36,7 +36,7 @@ export default function AdvancedSearch() {
 				if(data.status) {
 					setOptions(data.tags);
 				} else {
-					if(!data.isAuthenticated === false) {
+					if(data.isAuthenticated === false) {
 						notAuthenticated()
 					} else  {
 						toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -82,7 +82,7 @@ export default function AdvancedSearch() {
 			setIsSearching(true);
 			setHasSearched(true);
 		} else {
-			if(!data.isAuthenticated === false) {
+			if(data.isAuthenticated === false) {
 				notAuthenticated()
 			} else  {
 				setIsSearching(false);

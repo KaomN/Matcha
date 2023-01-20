@@ -45,7 +45,7 @@ const useChat = (activeChat) => {
 						setMessages((messages) => [...messages, incomingMessage]);
 					}
 				} else {
-					if(!data.isAuthenticated === false) {
+					if(data.isAuthenticated === false) {
 						notAuthenticated()
 					}else {
 						toast("Something went wrong!", { position: 'top-center', duration: 5000 })
@@ -73,7 +73,7 @@ const useChat = (activeChat) => {
 					username: user.username
 				});
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else {
 					toast("Something went wrong sending your message! Please try again later", { position: 'top-center', duration: 5000 })

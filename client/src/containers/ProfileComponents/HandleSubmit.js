@@ -111,7 +111,7 @@ export async function HandleSubmit(props) {
 					age: props.age
 				}))
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorDate(data.err)
@@ -150,7 +150,7 @@ export async function HandleSubmit(props) {
 					interest: props.interest
 				}))
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorPutInterest(data.err)
@@ -191,7 +191,7 @@ export async function HandleSubmit(props) {
 					biography: props.biography
 				}))
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorBiography(data.err)
@@ -223,7 +223,7 @@ export async function HandleSubmit(props) {
 					props.setEmailChangeMsg("")
 				}, 6000)
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorEmail(data.err)
@@ -251,7 +251,7 @@ export async function HandleSubmit(props) {
 					props.setPasswordSuccessMsg("")
 				}, 3000)
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorPassword(data.errorPassword)
@@ -286,7 +286,7 @@ export async function HandleSubmit(props) {
 					props.setPositionSuccessMsg("")
 				}, 3000)
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else  {
 					props.setErrorPosition(data.err)

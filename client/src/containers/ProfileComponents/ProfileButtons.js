@@ -135,7 +135,7 @@ export default function ProfileButtons(props) {
 						socket.emit("send_blocked", {userid: props.profile.userid, path: pathname, wasConnected:connected})
 						toast(data.message, { position: 'top-center', duration: 5000 })
 					} else { 
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -184,7 +184,7 @@ export default function ProfileButtons(props) {
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						socket.emit("send_unblocked", {userid: props.profile.userid, path: pathname})
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else  {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -233,7 +233,7 @@ export default function ProfileButtons(props) {
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						socket.emit("send_report", {userid: props.profile.userid, path: pathname})
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else  {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -282,7 +282,7 @@ export default function ProfileButtons(props) {
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						socket.emit("update_last_active", { path: pathname })
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else  {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -352,7 +352,7 @@ export default function ProfileButtons(props) {
 							socket.emit("send_connect_request", { userid: props.profile.userid , path: pathname});
 							props.setLoading(false)
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else  {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -381,7 +381,7 @@ export default function ProfileButtons(props) {
 							socket.emit("send_notification", { username: props.user.username, userid: props.profile.userid, type: "disconnect", usernameUser: user.username});
 						}
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
@@ -420,7 +420,7 @@ export default function ProfileButtons(props) {
 						toast(data.message, { position: 'top-center', duration: 5000 })
 						socket.emit("send_disconnect_request", { userid: props.profile.userid, path: pathname });
 					} else {
-						if(!data.isAuthenticated === false) {
+						if(data.isAuthenticated === false) {
 							notAuthenticated()
 						} else  {
 							toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })

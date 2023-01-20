@@ -2,8 +2,13 @@ const Moment = require('moment');
 
 const register = (req, error) => {
 	const { firstname, surname, username, email, password, passwordConfirm} = req.body;
-	const rePassword = /\d|[A-Z]/;
 	const reUsername = /^[a-zA-Z0-9\-\_]+$/;
+	const hasUpperCase = /[A-Z]/.test(password);
+	const hasLowerCase = /[a-z]/.test(password);
+	const hasNumbers = /\d/.test(password);
+	const hasUpperCaseConfirm = /[A-Z]/.test(passwordConfirm);
+	const hasLowerCaseConfirm = /[a-z]/.test(passwordConfirm);
+	const hasNumbersConfirm = /\d/.test(passwordConfirm);
 	const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if(firstname.trim().length === 0)
@@ -34,16 +39,16 @@ const register = (req, error) => {
 		Object.assign(error, {"errorPassword": "Password too long! Max 255 characters!"});
 	else if (password.length < 8)
 		Object.assign(error, {"errorPassword": "Password minimum length of 8!"});
-	else if(!rePassword.test(password))
-		Object.assign(error, {"errorPassword": "Password needs to include atleast an uppercase letter or number!"});
+	else if(!hasUpperCase || !hasLowerCase || !hasNumbers)
+		Object.assign(error, {"errorPassword": "Password needs to include atleast upper-case letter, lower-case letter and number!"});
 	if(passwordConfirm.length === 0)
 		Object.assign(error, {"errorPasswordConfirm": "Password Confirm required!"});
 	else if (passwordConfirm.length > 50)
 		Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
 	else if (passwordConfirm.length < 8)
 		Object.assign(error, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
-	else if(!rePassword.test(passwordConfirm))
-		Object.assign(error, {"errorPasswordConfirm": "Password needs to include atleast an uppercase letter or number!"});
+	else if(!hasUpperCaseConfirm || !hasLowerCaseConfirm || !hasNumbersConfirm)
+		Object.assign(error, {"errorPasswordConfirm": "Password needs to include atleast upper-case letter, lower-case letter and number!"});
 	if(password !== passwordConfirm) {
 		Object.assign(error, {"errorPassword": "Password did not match!"});
 		Object.assign(error, {"errorPasswordConfirm": "Password did not match!"});
@@ -84,24 +89,31 @@ const forgotPassword = (req, error) => {
 }
 
 const passwordReset = (req, error) => {
-	const rePassword = /\d|[A-Z]/;
 	const { password, passwordConfirm } = req.body;
+	const hasUpperCase = /[A-Z]/.test(password);
+	const hasLowerCase = /[a-z]/.test(password);
+	const hasNumbers = /\d/.test(password);
+	const hasUpperCaseConfirm = /[A-Z]/.test(passwordConfirm);
+	const hasLowerCaseConfirm = /[a-z]/.test(passwordConfirm);
+	const hasNumbersConfirm = /\d/.test(passwordConfirm);
+
+
 	if(password.trim().length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
 	else if (password.length > 50)
 		Object.assign(error, {"errorPassword": "Password too long! Max 255 characters!"});
 	else if (password.length < 8)
 		Object.assign(error, {"errorPassword": "Password minimum length of 8!"});
-	else if(!rePassword.test(password))
-		Object.assign(error, {"errorPassword": "Password needs to include atleast an uppercase letter or number!"});
+	else if(!hasUpperCase || !hasLowerCase || !hasNumbers)
+		Object.assign(error, {"errorPassword": "Password needs to include atleast upper-case letter, lower-case letter and number!"});
 	if(passwordConfirm.length === 0)
 		Object.assign(error, {"errorPasswordConfirm": "Password Confirm required!"});
 	else if (passwordConfirm.length > 50)
 		Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
 	else if (passwordConfirm.length < 8)
 		Object.assign(error, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
-	else if(!rePassword.test(passwordConfirm))
-		Object.assign(error, {"errorPasswordConfirm": "Password needs to include atleast an uppercase letter or number!"});
+	else if(!hasUpperCaseConfirm || !hasLowerCaseConfirm || !hasNumbersConfirm)
+		Object.assign(error, {"errorPasswordConfirm": "Password needs to include atleast upper-case letter, lower-case letter and number!"});
 	if(password !== passwordConfirm) {
 		Object.assign(error, {"errorPassword": "Password did not match!"});
 		Object.assign(error, {"errorPasswordConfirm": "Password did not match!"});
@@ -242,7 +254,12 @@ const checkEmail = (req, error) => {
 
 const checkPassword = (req, error) => {
 	const { currentPassword, newPassword, confirmNewPassword } = req.body;
-	const rePassword = /\d|[A-Z]/;
+	const hasUpperCase = /[A-Z]/.test(newPassword);
+	const hasLowerCase = /[a-z]/.test(newPassword);
+	const hasNumbers = /\d/.test(newPassword);
+	const hasUpperCaseConfirm = /[A-Z]/.test(confirmNewPassword);
+	const hasLowerCaseConfirm = /[a-z]/.test(confirmNewPassword);
+	const hasNumbersConfirm = /\d/.test(confirmNewPassword);
 
 	if(currentPassword.length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
@@ -252,16 +269,16 @@ const checkPassword = (req, error) => {
 		Object.assign(error, {"errorNewPassword": "Password too long! Max 255 characters!"});
 	else if (newPassword.length < 8)
 		Object.assign(error, {"errorNewPassword": "Password minimum length of 8!"});
-	else if(!rePassword.test(newPassword))
-		Object.assign(error, {"errorNewPassword": "Password needs to include atleast an uppercase letter or number!"});
+	else if(!hasUpperCase || !hasLowerCase || !hasNumbers)
+		Object.assign(error, {"errorNewPassword": "Password needs to include atleast upper-case letter, lower-case letter and number!"});
 	if(confirmNewPassword.length === 0)
 		Object.assign(error, {"errorConfirmNewPassword": "Password Confirm required!"});
 	else if (confirmNewPassword.length > 50)
 		Object.assign(error, {"errorConfirmNewPassword": "Password confirm too long! Max 255 characters!"});
 	else if (confirmNewPassword.length < 8)
 		Object.assign(error, {"errorConfirmNewPassword": "Password confirm minimum length of 8!"});
-	else if(!rePassword.test(confirmNewPassword))
-		Object.assign(error, {"errorConfirmNewPassword": "Password needs to include atleast an uppercase letter or number!"});
+	else if(!hasUpperCaseConfirm || !hasLowerCaseConfirm || !hasNumbersConfirm)
+		Object.assign(error, {"errorConfirmNewPassword": "Password needs to include atleast upper-case letter, lower-case letter and number!"});
 	if(newPassword !== confirmNewPassword) {
 		Object.assign(error, {"errorNewPassword": "Password did not match!"});
 		Object.assign(error, {"errorConfirmNewPassword": "Password did not match!"});

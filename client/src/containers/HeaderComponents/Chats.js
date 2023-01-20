@@ -21,7 +21,7 @@ export default function Chats(props) {
 			if(data.status) {
 				setConnectedUser(data.connectedUsers)
 			} else {
-				if(!data.isAuthenticated === false) {
+				if(data.isAuthenticated === false) {
 					notAuthenticated()
 				} else {
 					toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
