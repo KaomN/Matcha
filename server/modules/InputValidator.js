@@ -9,6 +9,7 @@ const register = (req, error) => {
 	const hasUpperCaseConfirm = /[A-Z]/.test(passwordConfirm);
 	const hasLowerCaseConfirm = /[a-z]/.test(passwordConfirm);
 	const hasNumbersConfirm = /\d/.test(passwordConfirm);
+	//  RFC 5322 Official Standard
 	const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if(firstname.trim().length === 0)
@@ -75,11 +76,13 @@ const login = (req, error) => {
 
 const forgotPassword = (req, error) => {
 	let email = req.body.email;
+	const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 	if(email.trim().length === 0)
 		Object.assign(error, {"errorEmail": "Email required!"});
 	else if (email.trim().length > 100)
 		Object.assign(error, {"errorEmail": "Email too long! Max 100 characters!"});
-	else if (!emailValidator.validate(email))
+	else if (!reEmail.test(email))
 		Object.assign(error, {"errorEmail": "Invalid Email address!"});
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		return true;
@@ -239,11 +242,13 @@ const checkBiography = (req, error) => {
 
 const checkEmail = (req, error) => {
 	const { email } = req.body;
+	const reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 	if(email.trim().length === 0)
 		Object.assign(error, {"err": "Email required!"});
 	else if (email.trim().length > 100)
 		Object.assign(error, {"err": "Email too long! Max 100 characters!"});
-	else if (!emailValidator.validate(email))
+	else if (!reEmail.test(email))
 		Object.assign(error, {"err": "Invalid Email address!"});
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		return true;
