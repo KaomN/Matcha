@@ -314,7 +314,6 @@ const users = [
 ];
 
 async function insert() {
-	var dot = "."
 	try {
 		for (const user of users) {
 			const username = user.username
