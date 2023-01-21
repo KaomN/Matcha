@@ -12,6 +12,10 @@ const sessionMiddleware = session({
 	clearExpired: true,
 	checkExpirationInterval: 86400000, // Clears expired sessions every day
 	expiration: 604800000 , // Set session expiration 1 week
+	cookie: {
+		HttpOnly : true,
+		secure: false,
+	}
 });
 
 module.exports = {
