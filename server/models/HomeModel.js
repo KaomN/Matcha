@@ -83,16 +83,15 @@ const getUsers = async (req) => {
 						ON users.pk_userid = report.targetuserid AND users.pk_userid = report.fk_userid
 					WHERE NOT users.pk_userid = ?
 						AND gender = ?
-						AND (genderpreference = ? OR (genderpreference = "both" AND NOT gender = ?))
+						AND (genderpreference = ? OR genderpreference = "both")
 						AND blocked.targetuserid NOT IN (SELECT fk_userid FROM blocked WHERE targetuserid = users.pk_userid AND fk_userid = ?)
 						AND blocked.targetuserid NOT IN (SELECT targetuserid FROM blocked WHERE fk_userid = users.pk_userid AND targetuserid = ?)
 						AND connect.targetuserid NOT IN (SELECT fk_userid FROM connect WHERE targetuserid = users.pk_userid AND fk_userid = ?)
 						AND report.targetuserid NOT IN (SELECT fk_userid FROM report WHERE targetuserid = users.pk_userid AND fk_userid = ?)
 					HAVING distance <= ?
 						AND commonInterests >= ?
-					ORDER BY distance ASC, rating DESC
-					LIMIT ? , ?`,
-					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.preference, req.session.gender, req.session.gender, req.session.userid, req.session.userid, req.session.userid, req.session.userid, searchRadius, minInterestCount, min, max])
+					ORDER BY distance ASC, rating DESC`,
+					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.preference, req.session.gender, req.session.userid, req.session.userid, req.session.userid, req.session.userid, searchRadius, minInterestCount])
 				// If there are any rows returned from the database (i.e. users were found)
 				if (rows && rows.length) {
 					// Loop through each user
