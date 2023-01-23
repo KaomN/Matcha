@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from '../context/UserContext';
-import { useNavigate } from "react-router-dom";
 import "./styles/Home.css";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import UserProfile from "./HomeComponents/UserProfile";
