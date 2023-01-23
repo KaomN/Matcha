@@ -14,12 +14,12 @@ const register = (req, error) => {
 
 	if(firstname.trim().length === 0)
 		Object.assign(error, {"errorFirstname": "Firstname required!"});
-	else if (firstname.trim().length > 50)
-		Object.assign(error, {"errorFirstname": "Firstname too long! Max 50 characters!"});
+	else if (firstname.trim().length > 20)
+		Object.assign(error, {"errorFirstname": "Firstname too long! Max 20 characters!"});
 	if(surname.trim().length === 0)
 		Object.assign(error, {"errorSurname": "Surname required!"});
-	else if (surname.trim().length > 50)
-		Object.assign(error, {"errorSurname": "Surname too long! Max 50 characters!"});
+	else if (surname.trim().length > 20)
+		Object.assign(error, {"errorSurname": "Surname too long! Max 20 characters!"});
 	if(username.trim().length === 0)
 		Object.assign(error, {"errorUsername": "Username required!"});
 	else if (username.trim().length > 20)
@@ -37,7 +37,7 @@ const register = (req, error) => {
 	if(password.trim().length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
 	else if (password.length > 50)
-		Object.assign(error, {"errorPassword": "Password too long! Max 255 characters!"});
+		Object.assign(error, {"errorPassword": "Password too long! Max 50 characters!"});
 	else if (password.length < 8)
 		Object.assign(error, {"errorPassword": "Password minimum length of 8!"});
 	else if(!hasUpperCase || !hasLowerCase || !hasNumbers)
@@ -45,7 +45,7 @@ const register = (req, error) => {
 	if(passwordConfirm.length === 0)
 		Object.assign(error, {"errorPasswordConfirm": "Password Confirm required!"});
 	else if (passwordConfirm.length > 50)
-		Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
+		Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 50 characters!"});
 	else if (passwordConfirm.length < 8)
 		Object.assign(error, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
 	else if(!hasUpperCaseConfirm || !hasLowerCaseConfirm || !hasNumbersConfirm)
@@ -104,7 +104,7 @@ const passwordReset = (req, error) => {
 	if(password.trim().length === 0)
 		Object.assign(error, {"errorPassword": "Password required!"});
 	else if (password.length > 50)
-		Object.assign(error, {"errorPassword": "Password too long! Max 255 characters!"});
+		Object.assign(error, {"errorPassword": "Password too long! Max 50 characters!"});
 	else if (password.length < 8)
 		Object.assign(error, {"errorPassword": "Password minimum length of 8!"});
 	else if(!hasUpperCase || !hasLowerCase || !hasNumbers)
@@ -112,7 +112,7 @@ const passwordReset = (req, error) => {
 	if(passwordConfirm.length === 0)
 		Object.assign(error, {"errorPasswordConfirm": "Password Confirm required!"});
 	else if (passwordConfirm.length > 50)
-		Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 255 characters!"});
+		Object.assign(error, {"errorPasswordConfirm": "Password confirm too long! Max 50 characters!"});
 	else if (passwordConfirm.length < 8)
 		Object.assign(error, {"errorPasswordConfirm": "Password confirm minimum length of 8!"});
 	else if(!hasUpperCaseConfirm || !hasLowerCaseConfirm || !hasNumbersConfirm)
@@ -160,12 +160,12 @@ const checkName = (req, error) => {
 	const { firstname, surname } = req.body;
 	if(firstname.trim().length === 0)
 		Object.assign(error, {"errorFirstname": "Firstname required!"});
-	else if (firstname.trim().length > 50)
-		Object.assign(error, {"errorFirstname": "Firstname too long! Max 50 characters!"});
+	else if (firstname.trim().length > 20)
+		Object.assign(error, {"errorFirstname": "Firstname too long! Max 20 characters!"});
 	if(surname.trim().length === 0)
 		Object.assign(error, {"errorSurname": "Surname required!"});
-	else if (surname.trim().length > 50)
-		Object.assign(error, {"errorSurname": "Surname too long! Max 50 characters!"});
+	else if (surname.trim().length > 20)
+		Object.assign(error, {"errorSurname": "Surname too long! Max 20 characters!"});
 	if(error && Object.keys(error).length === 0 && Object.getPrototypeOf(error) === Object.prototype) {
 		return true;
 	} else {
@@ -271,7 +271,7 @@ const checkPassword = (req, error) => {
 	if(newPassword.length === 0)
 		Object.assign(error, {"errorNewPassword": "Password required!"});
 	else if (newPassword.length > 50)
-		Object.assign(error, {"errorNewPassword": "Password too long! Max 255 characters!"});
+		Object.assign(error, {"errorNewPassword": "Password too long! Max 50 characters!"});
 	else if (newPassword.length < 8)
 		Object.assign(error, {"errorNewPassword": "Password minimum length of 8!"});
 	else if(!hasUpperCase || !hasLowerCase || !hasNumbers)
@@ -279,7 +279,7 @@ const checkPassword = (req, error) => {
 	if(confirmNewPassword.length === 0)
 		Object.assign(error, {"errorConfirmNewPassword": "Password Confirm required!"});
 	else if (confirmNewPassword.length > 50)
-		Object.assign(error, {"errorConfirmNewPassword": "Password confirm too long! Max 255 characters!"});
+		Object.assign(error, {"errorConfirmNewPassword": "Password confirm too long! Max 50 characters!"});
 	else if (confirmNewPassword.length < 8)
 		Object.assign(error, {"errorConfirmNewPassword": "Password confirm minimum length of 8!"});
 	else if(!hasUpperCaseConfirm || !hasLowerCaseConfirm || !hasNumbersConfirm)

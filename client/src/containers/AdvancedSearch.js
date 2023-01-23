@@ -87,6 +87,7 @@ export default function AdvancedSearch() {
 			} else  {
 				setIsSearching(false);
 				setHasSearched(false)
+				toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			}
 		}
 		setIsSearching(false);

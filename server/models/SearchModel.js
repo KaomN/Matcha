@@ -13,6 +13,18 @@ const getTags = async (req) => {
 const getSearch = async (req) => {
 	try {
 		const distance = 50;
+		const [tagsRes, tagFields] = await con.query("SELECT tag as 'label' FROM tag");
+		const searchTags = req.body.tags.map(function(tag) {
+			return tag.label;
+		})
+		const tags= tagsRes.map(function(tag) {
+			return tag.label;
+		})
+		for (const tag of searchTags) {
+			if (!tags.includes(tag)) {
+				return { status: false, err: "Invalid tags!" };
+			}
+		}
 		var tagsQuery =  createTagsSearchQuery(req.body.tags)
 		var [rows, fields] = await con.execute(`
 			SELECT username, age, firstname, surname, latitude, longitude, pk_userid as 'userid', biography, genderpreference as 'preference', gender,

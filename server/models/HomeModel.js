@@ -2,7 +2,7 @@ const con = require("../setup").pool;
 const { v4: uuidv4 } = require('uuid');
 const { getUserInterests, getProfilePic, getUserImages, checkConnectRequest, canConnect, addRating }  = require("../modules/HelperModules");
 
-const getUsers = async (req, min, max) => {
+const getUsers = async (req) => {
 	try {
 		const searchRadius = 50;
 		const minInterestCount = 1;
@@ -18,11 +18,11 @@ const getUsers = async (req, min, max) => {
 						(SELECT COUNT(*) FROM rating WHERE rating.fk_userid = users.pk_userid) AS rating
 					FROM users
 					LEFT JOIN blocked
-						ON users.pk_userid = blocked.fk_userid
+						ON users.pk_userid = blocked.targetuserid AND users.pk_userid = blocked.fk_userid
 					LEFT JOIN connect
-						ON users.pk_userid = connect.fk_userid
+						ON users.pk_userid = connect.targetuserid AND users.pk_userid = connect.fk_userid
 					LEFT JOIN report
-						ON users.pk_userid = report.fk_userid
+						ON users.pk_userid = report.targetuserid AND users.pk_userid = report.fk_userid
 					WHERE NOT users.pk_userid = ?
 						AND (genderpreference = ? OR genderpreference = 'both')
 						AND blocked.targetuserid NOT IN (SELECT fk_userid FROM blocked WHERE targetuserid = users.pk_userid AND fk_userid = ?)
@@ -31,9 +31,8 @@ const getUsers = async (req, min, max) => {
 						AND report.targetuserid NOT IN (SELECT fk_userid FROM report WHERE targetuserid = users.pk_userid AND fk_userid = ?)
 					HAVING distance <= ?
 						AND commonInterests >= ?
-					ORDER BY distance ASC, rating DESC
-					LIMIT ? , ?`,
-					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.gender, req.session.userid, req.session.userid, req.session.userid, req.session.userid, searchRadius, minInterestCount, min, max])
+					ORDER BY distance ASC, rating DESC`,
+					[req.session.latitude, req.session.longitude, req.session.latitude, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.userid, req.session.gender, req.session.userid, req.session.userid, req.session.userid, req.session.userid, searchRadius, minInterestCount])
 					// If there are any rows returned from the database (i.e. users were found)
 					if (rows && rows.length) {
 					// Loop through each user
@@ -77,11 +76,11 @@ const getUsers = async (req, min, max) => {
 						(SELECT COUNT(*) FROM rating WHERE rating.fk_userid = users.pk_userid) AS rating
 					FROM users
 					LEFT JOIN blocked
-						ON users.pk_userid = blocked.fk_userid
+						ON users.pk_userid = blocked.targetuserid AND users.pk_userid = blocked.fk_userid
 					LEFT JOIN connect
-						ON users.pk_userid = connect.fk_userid
+						ON users.pk_userid = connect.targetuserid AND users.pk_userid = connect.fk_userid
 					LEFT JOIN report
-						ON users.pk_userid = report.fk_userid
+						ON users.pk_userid = report.targetuserid AND users.pk_userid = report.fk_userid
 					WHERE NOT users.pk_userid = ?
 						AND gender = ?
 						AND (genderpreference = ? OR (genderpreference = "both" AND NOT gender = ?))
@@ -125,7 +124,7 @@ const getUsers = async (req, min, max) => {
 				return({status: false, message: "Please update your location!"});
 			}
 		}
-		return (rows)
+		return ({status: true, users: rows})
 	} catch (err) {
 		return({status: false, message: "Server connection error"});
 	}

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const HomeModel = require("../models/HomeModel");
 
 router.get("/getusers", async (req, res) => {
-	res.send(await HomeModel.getUsers(req, req.query['min'], req.query['max']));
+	res.send(await HomeModel.getUsers(req));
 });
 
 router.post("/blockuser", async (req, res) => {

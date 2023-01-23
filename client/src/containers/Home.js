@@ -2,54 +2,38 @@ import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from "react-router-dom";
 import "./styles/Home.css";
-import { LoadingSpinnerPromiseComponent } from "../components/LoadingSpinnerPromiseComponent";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import UseGetUserProfiles from "./HomeComponents/UseGetUserProfiles";
 import UserProfile from "./HomeComponents/UserProfile";
 import UserProfileSortFilter from "./HomeComponents/UserProfileSortFilter";
 
 export default function Home() {
 	const { user } = useContext(UserContext);
-	const [profileLimit, setProfileLimit] = useState({min: 0, max: 5});
 	const [userProfiles, setUserProfiles] = useState([]);
 	const [sort, setSort] = useState("distanceAsc");
 	const [filterAge, setFilterAge] = useState({min: 18, max: 100});
 	const [filterRating, setFilterRating] = useState({min: 0, max: 100});
 	const [filterDistance, setFilterDistance] = useState({min: 0, max: 50});
 	const [filterInterest, setFilterInterest] = useState({min: 1, max: 5});
-	const [isLoading, setIsLoading] = useState(true);
-	const [hasMore, setHasMore] = useState(true);
-	const navigate = useNavigate();
+	const [isLoading, setIsLoading] = useState(false);
 
-	const {
-		loading,
-		error,
-	} = UseGetUserProfiles(profileLimit, setUserProfiles, setHasMore, userProfiles)
-
-	const observer = useRef()
-	// use ref to keep track of the bottom of the page
-	const lastUserRef = useCallback(node => {
-		// if data is still loading, return
-		if (loading) return
-		// create a new observer that will check if bottom of the page is visible
-		observer.current = new IntersectionObserver(entries => {
-			// if bottom of the page is visible, and there is more data to load, set the profile limit
-			if (entries[0].isIntersecting && hasMore) {
-				setProfileLimit({min: 0, max: profileLimit.max + 5})
-				//divRef.current.scrollTo({top: 0, left: 0})
-			}
-		})
-		// if node exists, observe it
-		if (node) observer.current.observe(node)
-	}, [loading, hasMore, profileLimit])
-
-	// Check if user has completed profile
 	useEffect(() => {
-		if(!user.profile) {
-			// If not, redirect to profile completion page
-			navigate("/completeprofile");
+		let mounted = true;
+		if(mounted) {
+			(async () => {
+				setIsLoading(true);
+				const response = await fetch('http://localhost:3001/home/getusers/', {
+					credentials: "include",
+					method: "GET",
+				});
+				const data = await response.json();
+				if(data.status) {
+					setUserProfiles(data.users);
+				} 
+				setIsLoading(false);
+			})()
 		}
-	}, [navigate, user]);
+		return () => mounted = false;
+	}, [])
 
 	function userSort(sort) {
 		if(sort === "ageAsc") {
@@ -103,55 +87,41 @@ export default function Home() {
 		return profile.commonInterests >= filterInterest.min && profile.commonInterests <= filterInterest.max;
 	}
 
-	useEffect(() => {
-		if(!loading) {
-			setIsLoading(false);
-		}
-	}, [loading, setIsLoading]);
-	
 	return (
 		<>
 		{isLoading ?
 		<LoadingSpinner/>
 		:
 		<main className="ma home_profile_container">
-			{userProfiles.length === 0 && !loading ?
+			{userProfiles.length === 0 ?
 			<div className="home_no_profile">No matching profiles found</div>
 			:
 			<>
-			{/* <SearchProfile/> */}
-			<UserProfileSortFilter
-			setUserProfiles={setUserProfiles}
-			userProfiles={userProfiles}
-			setSort={setSort}
-			sort={sort}
-			setFilterAge={setFilterAge}
-			setFilterRating={setFilterRating}
-			setFilterDistance={setFilterDistance}
-			setFilterInterest={setFilterInterest}
-			/>
-			<div className="home_profiles_container">
-			{userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).length > 0 ?
-				userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).map(profile => {
-					return <div key={profile.userid} className="home_user_profile_container">
-								<UserProfile
-								profile={profile}
-								setUserProfiles={setUserProfiles}
-								user={user}
-								/>
-							</div>
-				})
-			:
-			<div> No results from filter</div>
-			}
-			{loading && <LoadingSpinnerPromiseComponent/>}
-			{hasMore ?
-			<div className="home_scroll_ref" ref={lastUserRef}></div>
-			:
-			null
-			}
-			<div>{error && 'Error'}</div>
-			</div>
+				<UserProfileSortFilter
+				setUserProfiles={setUserProfiles}
+				userProfiles={userProfiles}
+				setSort={setSort}
+				sort={sort}
+				setFilterAge={setFilterAge}
+				setFilterRating={setFilterRating}
+				setFilterDistance={setFilterDistance}
+				setFilterInterest={setFilterInterest}
+				/>
+				<div className="home_profiles_container">
+					{userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).length > 0 ?
+						userProfiles.sort(userSort(sort)).filter(filterAgeFunc).filter(filterRatingFunc).filter(filterDistanceFunc).filter(filterInterestFunc).map(profile => {
+							return <div key={profile.userid} className="home_user_profile_container">
+										<UserProfile
+										profile={profile}
+										setUserProfiles={setUserProfiles}
+										user={user}
+										/>
+									</div>
+						})
+					:
+					<div> No results from filter</div>
+					}
+				</div>
 			</>
 			}
 

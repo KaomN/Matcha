@@ -7,6 +7,8 @@ export default class PikadayWrap extends React.Component {
 		this.myRef = React.createRef()
 		// Min 18 years of age
 		this.maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+		// min 100 years of age
+		this.minDate = new Date(new Date().setFullYear(new Date().getFullYear() - 100))
 		// Get Max date from value props
 		if(this.props.value) {
 			const dateParts = this.props.value.split('-')
@@ -14,6 +16,8 @@ export default class PikadayWrap extends React.Component {
 		}
 		// Max year range
 		this.maxYear = new Date().getFullYear() - 18
+		// Min Year range
+		this.minYear = new Date().getFullYear() - 100
 	}
 
 	componentDidMount () {
@@ -23,8 +27,9 @@ export default class PikadayWrap extends React.Component {
 		format: 'DD-MM-YYYY',
 		firstDay: 0,
 		maxDate: this.maxDate,
+		minDate: this.minDate,
 		onSelect: this.props.onSelect,
-		yearRange: [1900,this.maxYear],
+		yearRange: [this.minYear,this.maxYear],
 		 position: "bottom right"
 		})
 	}
