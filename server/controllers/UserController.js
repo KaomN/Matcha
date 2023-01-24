@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env'});
 const UserModel = require('../models/UserModel');
@@ -20,19 +19,6 @@ router.get("/logout", (req, res) => {
 		})
 	} catch (err) {
 
-	}
-});
-// Google Location API
-router.post("/getlocation", async (req, res) => {
-	try {
-		const response = await axios({
-			method: 'post',
-			url:'https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.API_KEY
-		});
-		Object.assign(response.data, {"status": true});
-		res.send(response.data)
-	} catch (error) {
-		res.send({status: false, msg: "Error fetching API location data"})
 	}
 });
 

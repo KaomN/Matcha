@@ -64,7 +64,6 @@ export default function CompleteProfile() {
 				saveLocation,
 				// Error function, get location from google API instead
 				getLocationAPI,
-				// Options. See MDN for details.
 				{
 					enableHighAccuracy: true,
 					timeout: 5000,
@@ -79,20 +78,20 @@ export default function CompleteProfile() {
 	}
 
 	async function getLocationAPI() {
-		const response = await fetch('http://localhost:3001/user/getlocation', {
-			credentials: "include",
-			method: "POST",
-		});
-		const data = await response.json();
-		if(data.status) {
-			setLocationLat(data.location.lat)
-			setLocationLng(data.location.lng)
-		} else {
-			if(data.isAuthenticated === false) {
-				notAuthenticated()
-			} else  {
+		try {
+			const response = await fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=' + process.env.REACT_APP_API_KEY, {
+				method: "POST",
+			});
+			if (response.ok) {
+				const data = await response.json();
+				setLocationLat(data.location.lat)
+				setLocationLng(data.location.lng)
+			} else {
 				toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 			}
+		} catch(err) {
+			
+			toast("Oops something went wrong, please try again later", { position: 'top-center', duration: 5000 })
 		}
 	}
 
