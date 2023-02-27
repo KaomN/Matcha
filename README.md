@@ -22,4 +22,4 @@ nvm install --lts
 ```console
 npm install
 ```
-Use the above command in both client folder and root folder
+Use the above command in both client folder and root folder 
