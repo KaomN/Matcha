@@ -18,8 +18,6 @@ chat with those that “liked” back.
 	* Socket.io
 ```
 
-## Landing
-![Screenshot](images/main_page.png)
 ## Home
 ![Screenshot](images/main_page.png)
 ## User Profile
