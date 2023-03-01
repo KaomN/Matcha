@@ -20,7 +20,6 @@ chat with those that “liked” back.
 
 ## Landing
 ![Screenshot](images/main_page.png)
-
 ## Home
 ![Screenshot](images/main_page.png)
 ## User Profile
