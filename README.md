@@ -11,11 +11,11 @@ chat with those that “liked” back.
 ## Stack
 
 ```console
-	* React
-	* Node.js
-	* Express.js
-	* MySQL
-	* Socket.io
+* React
+* Node.js
+* Express.js
+* MySQL
+* Socket.io
 ```
 
 ## Home
