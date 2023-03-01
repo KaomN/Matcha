@@ -21,6 +21,9 @@ chat with those that “liked” back.
 ![Screenshot](images/landing_page.png)
 ## Landing
 
+## Test
+![Screenshot](images/landing_page.png)
+
 ## Home
 ![Screenshot](images/main_page.png)
 ## User Profile
