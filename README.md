@@ -22,7 +22,7 @@ chat with those that “liked” back.
 ## Landing
 
 ## Test
-![Screenshot](images/landing_page.png)
+![Screenshot](images/main_page.png)
 
 ## Home
 ![Screenshot](images/main_page.png)
